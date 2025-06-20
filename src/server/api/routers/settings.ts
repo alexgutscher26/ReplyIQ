@@ -22,6 +22,7 @@ import {
   mailConfigurationSchema,
   paymentProviderSettingsSchema,
   siteSettingsSchema,
+  type SOCIAL_PROVIDERS,
   storageProviderSettingsSchema,
   supportFormSchema,
   testConnectionSchema,
@@ -102,11 +103,13 @@ export const settingsRouter = createTRPCRouter({
 
       return result;
     }),
-  socialAuthProviders: publicProcedure.query(async ({ ctx }) => {
+  socialAuthProviders: publicProcedure.query(async ({
+    ctx,
+  }): Promise<(typeof SOCIAL_PROVIDERS)[number][]> => {
     try {
       const settings = await ctx.db.query.settings.findFirst();
-
-      return settings?.general?.auth?.enabledProviders ?? [];
+      const auth = authSettingsSchema.parse(settings?.general?.auth ?? {});
+      return auth.enabledProviders;
     } catch (error) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",

@@ -2,7 +2,9 @@ import { type AuthSettings } from "@/utils/schema/settings";
 
 class ConfigStore {
   private auth: AuthSettings = {
-    secret: "",
+    secret:
+      process.env.BETTER_AUTH_SECRET ??
+      "c9b1f7e8a3d0e4c6b8a2d1f7e8c3b0a2d1f7e8c3b0a2d1f7e8c3b0a2d1f7e8c3",
     trustedOrigins: [],
     enabledProviders: [],
     providerCredentials: {},

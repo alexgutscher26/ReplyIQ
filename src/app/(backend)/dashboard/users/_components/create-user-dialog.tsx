@@ -42,7 +42,7 @@ export default function CreateUserDialog() {
       name: data.name as string,
       email: data.email as string,
       password: data.password as string,
-      role: data.role as string,
+      role: data.role as "user" | "admin",
       data: {
         source: "dashboard",
       },
@@ -59,7 +59,7 @@ export default function CreateUserDialog() {
                   name: data.name as string,
                   email: data.email as string,
                   password: data.password as string,
-                  role: data.role as string,
+                  role: data.role as "user" | "admin",
                   data: {
                     source: "dashboard",
                   },

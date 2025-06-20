@@ -2,7 +2,7 @@ import { configStore } from "@/server/auth/config-store";
 import { getAuthSettingsFromDB } from "@/server/auth/creds";
 import { db } from "@/server/db";
 import { isFirstUser } from "@/server/utils";
-import { type SocialProvider } from "@daveyplate/better-auth-ui";
+import { type SOCIAL_PROVIDERS } from "@/utils/schema/settings";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -10,6 +10,8 @@ import { admin } from "better-auth/plugins";
 
 // Initialize auth settings before creating the auth instance
 await getAuthSettingsFromDB();
+
+type SocialProvider = (typeof SOCIAL_PROVIDERS)[number];
 
 // Helper to create provider config
 const createProviderConfig = (provider: SocialProvider) => ({
@@ -25,11 +27,12 @@ const createProviderConfig = (provider: SocialProvider) => ({
 const enabledProviders = configStore.getEnabledProviders();
 
 // Create social providers config object dynamically
-const socialProvidersConfig = Object.fromEntries(
-  enabledProviders.map((provider) => [
-    provider,
-    createProviderConfig(provider),
-  ]),
+const socialProvidersConfig = enabledProviders.reduce(
+  (acc, provider) => {
+    acc[provider] = createProviderConfig(provider);
+    return acc;
+  },
+  {} as Record<SocialProvider, { clientId: string; clientSecret: string }>,
 );
 
 export const auth = betterAuth({

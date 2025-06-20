@@ -50,7 +50,7 @@ export default function ChangeUserRoleAction<TData>({
         users.map((user) =>
           authClient.admin.setRole({
             userId: user.id,
-            role: data.role as string,
+            role: data.role as "user" | "admin",
             fetchOptions: {
               onSuccess: () => {
                 void queryClient.invalidateQueries({ queryKey: ["users"] });

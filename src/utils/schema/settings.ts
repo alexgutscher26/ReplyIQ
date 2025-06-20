@@ -1,5 +1,4 @@
 /// <reference lib="dom" />
-import { type SocialProvider } from "@daveyplate/better-auth-ui";
 import { z } from "zod";
 
 export const siteSettingsSchema = z.object({
@@ -32,7 +31,7 @@ export const SOCIAL_PROVIDERS = [
   "linkedin",
   "gitlab",
   "reddit",
-] as [SocialProvider, ...SocialProvider[]];
+] as const;
 
 export const socialProviderCredentialsSchema = z.object({
   clientId: z.string().default(""),
