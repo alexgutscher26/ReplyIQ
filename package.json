@@ -103,5 +103,9 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.38.1"
+  },
+  "resolutions": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

@@ -14,7 +14,9 @@ export function ThemeProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!mounted) return;
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
