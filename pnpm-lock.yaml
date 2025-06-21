@@ -25,11 +25,11 @@ importers:
         specifier: ^1.8.0
         version: 1.9.1
       '@daveyplate/better-auth-tanstack':
-        specifier: ^1.2.31
-        version: 1.3.6(@tanstack/query-core@5.80.10)(@tanstack/react-query@5.80.10(react@18.3.1))(better-auth@1.2.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.3.6
+        version: 1.3.6(@tanstack/query-core@5.80.10)(@tanstack/react-query@5.80.10(react@18.3.1))(better-auth@1.2.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@daveyplate/better-auth-ui':
-        specifier: ^1.2.37
-        version: 1.7.4(144b326f4b7dd3629160f0878883b25e)
+        specifier: ^2.0.8
+        version: 2.0.8(18f09142384330feb8802e440dfd54c6)
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.58.1(react@18.3.1))
@@ -115,8 +115,8 @@ importers:
         specifier: ^4.1.61
         version: 4.3.16(react@18.3.1)(zod@3.25.67)
       better-auth:
-        specifier: ^1.2.4
-        version: 1.2.9
+        specifier: ^1.2.10
+        version: 1.2.10
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -385,12 +385,10 @@ packages:
       react: ^18.3.1
       react-dom: ^18.3.1
 
-  '@daveyplate/better-auth-ui@1.7.4':
-    resolution: {integrity: sha512-YMlH0jXxZkfi97ibxvPqzYn02hQWOqV2EZ7jXab/NRYC57/KEacRV2ykWnyswzsBnes6LGW6ir8TREPitz2K+Q==}
+  '@daveyplate/better-auth-ui@2.0.8':
+    resolution: {integrity: sha512-o99+El+sJnYYrFLyYmj3zatgcPOoqY0TG16XWTWYpjRWg0dTYctTxmFFd4tTdwbW1jgf5+N6j0Oszs/sdLWfPA==}
     peerDependencies:
-      '@better-fetch/fetch': '>=1.1.0'
-      '@daveyplate/better-auth-tanstack': ^1.3.5
-      '@hcaptcha/react-hcaptcha': '>=1.12.0'
+      '@daveyplate/better-auth-tanstack': ^1.3.6
       '@hookform/resolvers': '>=5.0.0'
       '@instantdb/react': '>=0.18.0'
       '@marsidev/react-turnstile': '>=1.1.0'
@@ -407,25 +405,20 @@ packages:
       '@radix-ui/react-tabs': '>=1.1.0'
       '@radix-ui/react-use-callback-ref': '>=1.1.0'
       '@radix-ui/react-use-layout-effect': '>=1.1.0'
-      '@react-email/components': '>=0.0.33'
       '@tanstack/react-query': '>=5.66.0'
       '@triplit/client': '>=1.0.0'
       '@triplit/react': '>=1.0.0'
-      '@wojtekmaj/react-recaptcha-v3': '>=0.1.4'
-      better-auth: ^1.2.4
+      better-auth: ^1.2.9
       class-variance-authority: '>=0.7.0'
       clsx: '>=2.1.0'
       input-otp: '>=1.4.0'
       lucide-react: '>=0.469.0'
       react: ^18.3.1
       react-dom: ^18.3.1
-      react-google-recaptcha: '>=3.1.0'
       react-hook-form: '>=7.55.0'
-      react-qr-code: '>=2.0.0'
       sonner: '>=1.7.0'
       tailwind-merge: '>=2.6.0'
       tailwindcss: '>=3.0.0'
-      ua-parser-js: '>=2.0.0'
       zod: '>=3.24.0'
 
   '@drizzle-team/brocli@0.10.2':
@@ -1569,14 +1562,14 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
-  '@react-email/button@0.1.0':
-    resolution: {integrity: sha512-fg4LtgTu5zXxaRSly9cuv6sHVF/hi1lElbRaIA8EPx5coWOBhCto6rCPfawcXpaN2oER7rNHUrcNBkI+lz5F9A==}
+  '@react-email/button@0.0.19':
+    resolution: {integrity: sha512-HYHrhyVGt7rdM/ls6FuuD6XE7fa7bjZTJqB2byn6/oGsfiEZaogY77OtoLL/mrQHjHjZiJadtAMSik9XLcm7+A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.3.1
 
-  '@react-email/code-block@0.1.0':
-    resolution: {integrity: sha512-jSpHFsgqnQXxDIssE4gvmdtFncaFQz5D6e22BnVjcCPk/udK+0A9jRwGFEG8JD2si9ZXBmU4WsuqQEczuZn4ww==}
+  '@react-email/code-block@0.0.13':
+    resolution: {integrity: sha512-4DE4yPSgKEOnZMzcrDvRuD6mxsNxOex0hCYEG9F9q23geYgb2WCCeGBvIUXVzK69l703Dg4Vzrd5qUjl+JfcwA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.3.1
@@ -1593,8 +1586,8 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
-  '@react-email/components@0.1.0':
-    resolution: {integrity: sha512-Rx0eZk0XuzLKXC5NoMm8xuH72ALVsPYNb/BvcdCJx4EZAoVpQISb4sCqpo9blVYVIazNr4MqWroqFb3ZNrCLMQ==}
+  '@react-email/components@0.0.42':
+    resolution: {integrity: sha512-KZtf7RjCoLgEwa5swrsbEF/liGrmfMlZCDNDXqaAjlgF3iRq0h5KY/HNMs6LbLmW7fEneRhnynrwApwbkEwe+A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.3.1
@@ -2252,8 +2245,8 @@ packages:
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
-  better-auth@1.2.9:
-    resolution: {integrity: sha512-WLqBXDzuaCQetQctLGC5oTfGmL32zUvxnM4Y+LZkhwseMaZWq5EKI+c/ZATgz2YkFt7726q659PF8CfB9P1VuA==}
+  better-auth@1.2.10:
+    resolution: {integrity: sha512-nEj1RG4DdLUuJiV5CR93ORyPCptGRBwksaPPCkUtGo9ka+UIlTpaiKoTaTqVLLYlqwX4bOj9tJ32oBNdf2G3Kg==}
 
   better-call@1.0.9:
     resolution: {integrity: sha512-Qfm0gjk0XQz0oI7qvTK1hbqTsBY4xV2hsHAxF8LZfUYl3RaECCIifXuVqtPpZJWvlCCMlQSvkvhhyuApGUba6g==}
@@ -3163,6 +3156,9 @@ packages:
 
   jose@6.0.11:
     resolution: {integrity: sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==}
+
+  js-sha256@0.11.1:
+    resolution: {integrity: sha512-o6WSo/LUvY2uC4j7mO50a2ms7E/EAdbP0swigLV+nzHKTTaYnaLIWJ02VdXrsJX0vGedDESQnLsOekr94ryfjg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4362,18 +4358,18 @@ snapshots:
 
   '@better-fetch/fetch@1.1.18': {}
 
-  '@daveyplate/better-auth-tanstack@1.3.6(@tanstack/query-core@5.80.10)(@tanstack/react-query@5.80.10(react@18.3.1))(better-auth@1.2.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@daveyplate/better-auth-tanstack@1.3.6(@tanstack/query-core@5.80.10)(@tanstack/react-query@5.80.10(react@18.3.1))(better-auth@1.2.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 5.80.10
       '@tanstack/react-query': 5.80.10(react@18.3.1)
-      better-auth: 1.2.9
+      better-auth: 1.2.10
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@daveyplate/better-auth-ui@1.7.4(144b326f4b7dd3629160f0878883b25e)':
+  '@daveyplate/better-auth-ui@2.0.8(18f09142384330feb8802e440dfd54c6)':
     dependencies:
       '@better-fetch/fetch': 1.1.18
-      '@daveyplate/better-auth-tanstack': 1.3.6(@tanstack/query-core@5.80.10)(@tanstack/react-query@5.80.10(react@18.3.1))(better-auth@1.2.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@daveyplate/better-auth-tanstack': 1.3.6(@tanstack/query-core@5.80.10)(@tanstack/react-query@5.80.10(react@18.3.1))(better-auth@1.2.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hcaptcha/react-hcaptcha': 1.12.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers': 3.10.0(react-hook-form@7.58.1(react@18.3.1))
       '@instantdb/react': 0.19.22(react@18.3.1)
@@ -4391,15 +4387,16 @@ snapshots:
       '@radix-ui/react-tabs': 1.1.12(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-use-callback-ref': 1.1.1(@types/react@18.3.23)(react@18.3.1)
       '@radix-ui/react-use-layout-effect': 1.1.1(@types/react@18.3.23)(react@18.3.1)
-      '@react-email/components': 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@react-email/components': 0.0.42(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query': 5.80.10(react@18.3.1)
       '@triplit/client': 1.0.44(typescript@5.8.3)
       '@triplit/react': 1.0.44(react@18.3.1)(typescript@5.8.3)
       '@wojtekmaj/react-recaptcha-v3': 0.1.4(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      better-auth: 1.2.9
+      better-auth: 1.2.10
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       input-otp: 1.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      js-sha256: 0.11.1
       lucide-react: 0.476.0(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -4410,7 +4407,12 @@ snapshots:
       tailwind-merge: 3.3.1
       tailwindcss: 4.1.10
       ua-parser-js: 2.0.3
+      vaul: 1.1.2(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zod: 3.25.67
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - encoding
 
   '@drizzle-team/brocli@0.10.2': {}
 
@@ -5393,11 +5395,11 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@react-email/button@0.1.0(react@18.3.1)':
+  '@react-email/button@0.0.19(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
-  '@react-email/code-block@0.1.0(react@18.3.1)':
+  '@react-email/code-block@0.0.13(react@18.3.1)':
     dependencies:
       prismjs: 1.30.0
       react: 18.3.1
@@ -5410,11 +5412,11 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@react-email/components@0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@react-email/components@0.0.42(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@react-email/body': 0.0.11(react@18.3.1)
-      '@react-email/button': 0.1.0(react@18.3.1)
-      '@react-email/code-block': 0.1.0(react@18.3.1)
+      '@react-email/button': 0.0.19(react@18.3.1)
+      '@react-email/code-block': 0.0.13(react@18.3.1)
       '@react-email/code-inline': 0.0.5(react@18.3.1)
       '@react-email/column': 0.0.13(react@18.3.1)
       '@react-email/container': 0.0.15(react@18.3.1)
@@ -6070,7 +6072,7 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  better-auth@1.2.9:
+  better-auth@1.2.10:
     dependencies:
       '@better-auth/utils': 0.2.5
       '@better-fetch/fetch': 1.1.18
@@ -6550,8 +6552,8 @@ snapshots:
       '@typescript-eslint/parser': 8.34.1(eslint@8.57.1)(typescript@5.8.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.31.0)(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.2.0(eslint@8.57.1)
@@ -6570,7 +6572,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0)(eslint@8.57.1):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.1
@@ -6581,18 +6583,18 @@ snapshots:
       tinyglobby: 0.2.14
       unrs-resolver: 1.9.0
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.34.1(eslint@8.57.1)(typescript@5.8.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.31.0)(eslint@8.57.1)
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -6600,7 +6602,7 @@ snapshots:
     dependencies:
       eslint: 8.57.1
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -6611,7 +6613,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.34.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -7116,6 +7118,8 @@ snapshots:
   jose@5.10.0: {}
 
   jose@6.0.11: {}
+
+  js-sha256@0.11.1: {}
 
   js-tokens@4.0.0: {}
 
