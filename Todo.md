@@ -15,7 +15,7 @@ run next build and fix all errors and then run it again and fix those and keep d
 
 ### AI & Content Generation
 - [ ] **Content Scheduling** - Schedule AI-generated posts across platforms
-- [ ] **Hashtag Generator** - AI-powered hashtag suggestions
+- [X] **Hashtag Generator** - AI-powered hashtag suggestions
 - [ ] **Image Caption Generator** - AI captions for uploaded images
 - [ ] **Thread Generator** - Create Twitter/LinkedIn thread content
 - [ ] **Story Generator** - AI-generated Instagram/Facebook stories
@@ -65,7 +65,7 @@ run next build and fix all errors and then run it again and fix those and keep d
 - [ ] **Offline Mode** - Limited functionality when offline
 - [ ] **Progressive Web App** - PWA capabilities for mobile
 - [ ] **Multi-tab Sync** - Sync data across browser tabs
-- [ ] **Undo/Redo Actions** - Action history with undo capability
+- [X] **Undo/Redo Actions** - Action history with undo capability
 
 ## 🔧 Technical Improvements
 

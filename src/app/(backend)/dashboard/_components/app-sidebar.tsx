@@ -36,6 +36,11 @@ const data = {
       icon: LayoutDashboard,
     },
     {
+      title: "Hashtag Generator",
+      url: "/dashboard/hashtag-generator",
+      icon: Command,
+    },
+    {
       title: "Reports",
       url: "/dashboard/reports",
       icon: ChartArea,

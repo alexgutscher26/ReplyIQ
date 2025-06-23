@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useUndo } from "@/hooks/use-undo";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
 
@@ -33,24 +34,43 @@ const defaultValues: Partial<AppearanceFormValues> = {
 
 export function AppearanceForm() {
   const { theme, setTheme } = useTheme();
+  const {
+    state: themeState,
+    setState: setThemeState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    reset,
+  } = useUndo<AppearanceFormValues["theme"]>(
+    (theme as AppearanceFormValues["theme"]) || defaultValues.theme!,
+  );
 
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
-      theme: (theme as AppearanceFormValues["theme"]) || defaultValues.theme,
+      theme: themeState,
     },
   });
 
-  // Update form value when theme changes
+  // Update form value when theme changes from useUndo hook
   useEffect(() => {
-    if (theme) {
-      form.setValue("theme", theme as AppearanceFormValues["theme"]);
-    }
-  }, [theme, form]);
+    form.setValue("theme", themeState);
+  }, [themeState, form]);
+
+  // Update useUndo state when theme changes from next-themes
+  useEffect(() => {
+    reset(theme as AppearanceFormValues["theme"]);
+  }, [theme, reset]);
 
   function onSubmit(data: AppearanceFormValues) {
     setTheme(data.theme);
   }
+
+  const handleThemeChange = (value: AppearanceFormValues["theme"]) => {
+    setThemeState(value);
+    form.setValue("theme", value, { shouldValidate: true });
+  };
 
   return (
     <Form {...form}>
@@ -66,8 +86,8 @@ export function AppearanceForm() {
               </FormDescription>
               <FormMessage />
               <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
+                onValueChange={handleThemeChange}
+                value={field.value}
                 className="grid max-w-md grid-cols-3 gap-4 pt-2"
               >
                 <FormItem>
@@ -117,9 +137,29 @@ export function AppearanceForm() {
           )}
         />
 
-        <Button type="submit" size={"sm"} variant={"outline"}>
-          Update preferences
-        </Button>
+        <div className="flex items-center gap-x-2">
+          <Button
+            type="button"
+            size={"sm"}
+            variant={"outline"}
+            onClick={undo}
+            disabled={!canUndo}
+          >
+            Undo
+          </Button>
+          <Button
+            type="button"
+            size={"sm"}
+            variant={"outline"}
+            onClick={redo}
+            disabled={!canRedo}
+          >
+            Redo
+          </Button>
+          <Button type="submit" size={"sm"}>
+            Update preferences
+          </Button>
+        </div>
       </form>
     </Form>
   );
