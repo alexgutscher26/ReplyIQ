@@ -339,11 +339,11 @@ Custom Prompt: ${customPrompt}`;
     results.forEach((row) => {
       if (row.createdAt) {
         const month = row.createdAt.getMonth();
-        if (monthlyData[month]) {
-          if (row.source === "facebook") monthlyData[month].facebook++;
-          if (row.source === "twitter") monthlyData[month].twitter++;
-          if (row.source === "linkedin") monthlyData[month].linkedin++;
-          monthlyData[month].total++;
+        if (month >= 0 && month < 12) {
+          if (row.source === "facebook") monthlyData[month]!.facebook++;
+          if (row.source === "twitter") monthlyData[month]!.twitter++;
+          if (row.source === "linkedin") monthlyData[month]!.linkedin++;
+          monthlyData[month]!.total++;
         }
       }
     });

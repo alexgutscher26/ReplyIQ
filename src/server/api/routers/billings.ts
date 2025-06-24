@@ -329,8 +329,8 @@ export const billingsRouter = createTRPCRouter({
     results.forEach((row) => {
       if (row.createdAt) {
         const month = row.createdAt.getMonth();
-        if (monthlyData[month]) {
-          monthlyData[month].total += Number(row.amount ?? 0);
+        if (month >= 0 && month < 12) {
+          monthlyData[month]!.total += Number(row.amount ?? 0);
         }
       }
     });

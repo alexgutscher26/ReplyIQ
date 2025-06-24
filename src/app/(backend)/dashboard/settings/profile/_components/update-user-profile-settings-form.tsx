@@ -90,7 +90,7 @@ export function UpdateUserProfileSettingsForm() {
     }
 
     await authClient.updateUser({
-      name: data.name,
+      name: typeof data.name === 'string' ? data.name : undefined,
       ...(avatarUrl && { image: avatarUrl }),
       fetchOptions: {
         onError: ({ error }) => {
