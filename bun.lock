@@ -45,6 +45,7 @@
         "date-fns": "^4.1.0",
         "drizzle-orm": "^0.33.0",
         "drizzle-seed": "^0.3.1",
+        "flagsmith": "^9.2.2",
         "geist": "^1.3.1",
         "lucide-react": "^0.476.0",
         "next": "^15.2.2",
@@ -885,6 +886,8 @@
     "find-my-way-ts": ["find-my-way-ts@0.1.5", "", {}, "sha512-4GOTMrpGQVzsCH2ruUn2vmwzV/02zF4q+ybhCIrw/Rkt3L8KWcycdC6aJMctJzwN4fXD4SD5F/4B9Sksh5rE0A=="],
 
     "find-up": ["find-up@5.0.0", "", { "dependencies": { "locate-path": "^6.0.0", "path-exists": "^4.0.0" } }, "sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng=="],
+
+    "flagsmith": ["flagsmith@9.2.2", "", {}, "sha512-9UNI5Rdtv4r3rEruT3sLinZDKH1o7co8kSopmGDB5q9fCWHXLa1HLbjAwe9xPoMtWMpdS8gqLdY2UZBdfxuVdg=="],
 
     "flat-cache": ["flat-cache@3.2.0", "", { "dependencies": { "flatted": "^3.2.9", "keyv": "^4.5.3", "rimraf": "^3.0.2" } }, "sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw=="],
 

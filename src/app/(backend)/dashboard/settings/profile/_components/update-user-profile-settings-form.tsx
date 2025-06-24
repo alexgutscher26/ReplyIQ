@@ -176,7 +176,7 @@ export function UpdateUserProfileSettingsForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Name" {...field} />
+                  <Input placeholder="Your Name" {...field} value={typeof field.value === "string" ? field.value : ""} />
                 </FormControl>
                 <FormDescription>
                   Your full name or nickname that will be displayed.

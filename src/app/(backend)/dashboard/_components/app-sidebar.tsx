@@ -101,7 +101,7 @@ export default function AppSidebar({
                 <div className="flex aspect-square size-8 items-center justify-center">
                   <Avatar className="h-8 w-8 shrink-0 rounded-none">
                     <AvatarImage
-                      src={siteSettings?.logo ?? undefined}
+                      src={typeof siteSettings?.logo === "string" ? siteSettings.logo : undefined}
                       alt="Logo preview"
                       className="object-cover"
                     />

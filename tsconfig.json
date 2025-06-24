@@ -34,7 +34,8 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "maxNodeModuleJsDepth": 2
   },
   "include": [
     ".eslintrc.cjs",
