@@ -1,0 +1,105 @@
+select {
+    height: 2.25rem;
+    min-width: 8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: transparent;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 1px var(--ring);
+}
+
+select:hover {
+    border-color: var(--ring);
+}
+
+option {
+    background-color: var(--background);
+    padding: 0.5rem;
+}
+
+option:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+input {
+    height: 2.25rem;
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: transparent;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 1px var(--ring);
+}
+
+input:hover {
+    border-color: var(--ring);
+}
+
+input::placeholder {
+    color: var(--muted-foreground);
+}
+
+/* Dark mode using media query for shadow DOM */
+[data-theme-type="dark"] {
+
+    select,
+    input {
+        background-color: transparent;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    select:hover,
+    input:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    select option {
+        background-color: #000;
+    }
+
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    select,
+    input,
+    option,
+    select option {
+        background-color: transparent;
+        color: rgb(255 255 255 / 0.9);
+        border-color: rgb(255 255 255 / 0.1);
+    }
+
+    select:hover,
+    input:hover {
+        border-color: rgb(255 255 255 / 0.2);
+    }
+
+    input::placeholder {
+        color: rgb(255 255 255 / 0.5);
+    }
+}

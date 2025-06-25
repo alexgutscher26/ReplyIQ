@@ -1,0 +1,88 @@
+form {
+    margin-left: 2.4rem;
+    margin-right: 2.4rem;
+}
+
+form button {
+    height: 3rem;
+    font-size: 1.5rem;
+}
+
+select {
+    height: 3rem;
+    min-width: 8rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: transparent;
+    padding: 0 0.75rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+}
+
+select:focus {
+    border-color: #0073b1;
+    box-shadow: 0 0 0 1px #0073b1;
+}
+
+select:hover {
+    border-color: #0073b1;
+}
+
+input {
+    height: 3rem;
+    width: 100%;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: transparent;
+    padding: 0 0.75rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: #0073b1;
+    box-shadow: 0 0 0 1px #0073b1;
+}
+
+input:hover {
+    border-color: #0073b1;
+}
+
+input::placeholder {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+/* Base light theme styles */
+select,
+input {
+    background-color: transparent;
+    border-color: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.9);
+}
+
+/* Replace media query with data attribute selector */
+[data-theme-type="dark"] {
+
+    select,
+    input {
+        background-color: transparent;
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    select:hover,
+    input:hover {
+        border-color: #41b4f2;
+    }
+
+    select:focus,
+    input:focus {
+        border-color: #41b4f2;
+        box-shadow: 0 0 0 1px #41b4f2;
+    }
+
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}

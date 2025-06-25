@@ -47,6 +47,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "extension-v6.0.0"
   ]
 }
