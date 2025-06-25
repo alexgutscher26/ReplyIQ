@@ -5,7 +5,16 @@ import { chromeLink } from 'trpc-chrome/link'
 
 import type { AppRouter } from './background'
 
-import { Test } from './content/Test'
+// Simple test component
+function ExampleComponent() {
+  return (
+    <div className="p-4 bg-blue-100 border border-blue-300 rounded">
+      <p className="text-blue-800">
+        This is an example React component in a content script.
+      </p>
+    </div>
+  )
+}
 
 // Integrated - Vanilla
 // More: https://wxt.dev/guide/content-script-ui.html
@@ -33,7 +42,7 @@ export default defineContentScript({
         container.append(wrapper)
 
         const root = ReactDOM.createRoot(wrapper)
-        root.render(<Test />)
+        root.render(<ExampleComponent />)
         return { root, wrapper }
       },
       onRemove: (elements) => {

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+bun.lock
+
+# Build outputs
+.output/
+dist/
+.wxt/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Config files that should maintain their format
+*.json
+tsconfig.json
+components.json
+
+# Documentation
+*.md
+
+# Version control
+.git/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db 

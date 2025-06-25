@@ -3,20 +3,58 @@
   "type": "module",
   "version": "6.0.0",
   "private": true,
+  "packageManager": "bun@1.1.38",
+  "description": "AI-powered social media reply generator browser extension",
+  "author": "WaitListNow",
+  "license": "UNLICENSED",
+  "keywords": [
+    "ai",
+    "social-media",
+    "browser-extension",
+    "twitter",
+    "facebook",
+    "linkedin",
+    "reply-generator"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
+    "dev:chrome": "wxt -b chrome",
+    "dev:edge": "wxt -b edge",
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
+    "build:chrome": "wxt build -b chrome",
+    "build:edge": "wxt build -b edge",
+    "build:all": "bun run build:chrome && bun run build:firefox && bun run build:edge",
+    "clean": "rimraf .output dist node_modules/.wxt",
+    "rebuild": "bun run clean && bun install && bun run build",
+    "preview": "wxt preview",
     "bump": "bumpp -y -q",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
+    "zip:chrome": "wxt zip -b chrome",
+    "zip:edge": "wxt zip -b edge",
+    "zip:all": "bun run zip:chrome && bun run zip:firefox && bun run zip:edge",
     "submit": "wxt submit",
     "submit:latest": "bun exec 'rm -rf .output'; wxt zip && wxt submit --chrome-zip .output/*.zip",
+    "prepare": "wxt prepare",
     "compile": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --skipLibCheck",
     "postinstall": "wxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:build": "bun run typecheck && bun run lint:check && bun run build",
+    "deps:update": "bun update --latest",
+    "deps:check": "bun outdated",
+    "analyze": "wxt analyze",
+    "manifest": "wxt manifest"
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^1.2.37",
@@ -47,6 +85,11 @@
     "trpc-chrome": "^1.0.0",
     "zod": "^3.24.2"
   },
+  "browserslist": [
+    "chrome >= 88",
+    "firefox >= 90",
+    "edge >= 88"
+  ],
   "devDependencies": {
     "@antfu/eslint-config": "^4.10.1",
     "@eslint/eslintrc": "^3.3.0",
@@ -60,6 +103,8 @@
     "eslint-plugin-perfectionist": "^4.10.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "postcss": "^8.5.3",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^4.0.14",
     "typescript": "^5.8.2",
     "wxt": "^0.19.29"
