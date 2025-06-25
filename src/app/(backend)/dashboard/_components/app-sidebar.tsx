@@ -84,38 +84,22 @@ export default function AppSidebar({
   ...props
 }: ComponentProps<typeof Sidebar>) {
   const { user } = useSession();
-  const [siteSettings] = api.settings.site.useSuspenseQuery();
-  const [currentPlan] = api.payments.getCurrentBilling.useSuspenseQuery();
-
-  const filteredNavMain = data.navMain.filter(
-    (item) => !item.requireAdmin || user?.role === "admin",
-  );
+  const { data: usage } = api.usage.getTotalUsage.useQuery({});
 
   return (
-    <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
+    <Sidebar variant="inset" className="border-r-2" {...props}>
+      <SidebarHeader className="border-b px-4 py-3 sm:px-6 sm:py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center">
-                  <Avatar className="h-8 w-8 shrink-0 rounded-none">
-                    <AvatarImage
-                      src={typeof siteSettings?.logo === "string" ? siteSettings.logo : undefined}
-                      alt="Logo preview"
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="rounded-lg">
-                      <Command className="size-4" />
-                    </AvatarFallback>
-                  </Avatar>
+            <SidebarMenuButton size="lg" asChild className="hover:bg-accent/50">
+              <Link href="/dashboard">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {siteSettings.name ?? "Replier Social"}
-                  </span>
-                  <span className="truncate text-xs">
-                    {currentPlan?.product?.name ?? "Free"}
+                  <span className="truncate font-semibold">AI Replier</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {usage?.total ? `${usage.total} generations` : "Loading..."}
                   </span>
                 </div>
               </Link>
@@ -123,11 +107,11 @@ export default function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={filteredNavMain} />
+      <SidebarContent className="px-2 sm:px-3">
+        <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t px-2 py-2 sm:px-3 sm:py-3">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

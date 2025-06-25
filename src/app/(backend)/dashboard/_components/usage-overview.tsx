@@ -1,21 +1,11 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -26,19 +16,25 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/trpc/react";
 import { useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+} from "recharts";
 
 const chartConfig = {
   facebook: {
     label: "Facebook",
-    color: "var(--chart-1)",
+    color: "hsl(var(--chart-1))",
+  },
+  linkedin: {
+    label: "LinkedIn", 
+    color: "hsl(var(--chart-2))",
   },
   twitter: {
     label: "Twitter",
-    color: "var(--chart-2)",
-  },
-  linkedin: {
-    label: "LinkedIn",
-    color: "var(--chart-3)",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
 
@@ -55,15 +51,15 @@ export function UsageOverview({
 
   return (
     <Card className="col-span-full">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+      <CardHeader className="flex flex-col gap-4 space-y-0 border-b py-4 sm:flex-row sm:items-center sm:py-5">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Daily Usage Trends</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl">Daily Usage Trends</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Showing daily generation statistics across platforms
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[160px] rounded-lg sm:ml-auto">
+          <SelectTrigger className="w-full sm:w-[160px] sm:ml-auto">
             <SelectValue placeholder="Last 30 days" />
           </SelectTrigger>
           <SelectContent>
@@ -74,7 +70,7 @@ export function UsageOverview({
         </Select>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer config={chartConfig} className="aspect-3/1 w-full">
+        <ChartContainer config={chartConfig} className="aspect-[4/3] w-full sm:aspect-[3/1]">
           <AreaChart data={data}>
             <defs>
               {Object.entries(chartConfig).map(([key, config]) => (
@@ -106,6 +102,7 @@ export function UsageOverview({
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
+              tick={{ fontSize: 12 }}
               tickFormatter={(value: string) => {
                 const date = new Date(value);
                 return date.toLocaleDateString("en-US", {
@@ -129,17 +126,30 @@ export function UsageOverview({
                 />
               }
             />
-            {Object.entries(chartConfig).map(([key, config]) => (
-              <Area
-                key={key}
-                dataKey={key}
-                type="natural"
-                fill={`url(#fill${key})`}
-                stroke={config.color}
-                stackId={key} // Add unique stackId to prevent stacking
-              />
-            ))}
-            <ChartLegend content={<ChartLegendContent />} />
+            <Area
+              dataKey="facebook"
+              type="natural"
+              fill="url(#fillfacebook)"
+              fillOpacity={0.4}
+              stroke="var(--color-facebook)"
+              stackId="a"
+            />
+            <Area
+              dataKey="twitter"
+              type="natural"
+              fill="url(#filltwitter)"
+              fillOpacity={0.4}
+              stroke="var(--color-twitter)"
+              stackId="a"
+            />
+            <Area
+              dataKey="linkedin"
+              type="natural"
+              fill="url(#filllinkedin)"
+              fillOpacity={0.4}
+              stroke="var(--color-linkedin)"
+              stackId="a"
+            />
           </AreaChart>
         </ChartContainer>
       </CardContent>

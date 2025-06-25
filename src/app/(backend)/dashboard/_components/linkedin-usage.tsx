@@ -14,17 +14,19 @@ export default function LinkedinUsage({
   });
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
+    <Card className="transition-all duration-200 hover:shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
+        <CardTitle className="text-sm font-medium sm:text-base">
           LinkedIn Generations
         </CardTitle>
-        <Linkedin className="text-muted-foreground size-4" />
+        <Linkedin className="text-muted-foreground size-4 sm:size-5" />
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{data.total.toLocaleString()}</div>
-        <p className="text-muted-foreground text-xs">
-          {`${data.percentageChange > 0 ? "+" : ""}${data.percentageChange.toFixed(1)}%`}{" "}
+      <CardContent className="space-y-1">
+        <div className="text-xl font-bold sm:text-2xl lg:text-3xl">{data.total.toLocaleString()}</div>
+        <p className="text-muted-foreground text-xs sm:text-sm">
+          <span className={`font-medium ${data.percentageChange > 0 ? 'text-green-600' : data.percentageChange < 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
+            {`${data.percentageChange > 0 ? "+" : ""}${data.percentageChange.toFixed(1)}%`}
+          </span>{" "}
           from last month
         </p>
       </CardContent>

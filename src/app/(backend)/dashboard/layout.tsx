@@ -28,9 +28,9 @@ export default async function DashboardLayout({
         <SidebarProvider>
           <AppSidebarSkeleton />
           <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center gap-2">
-              <div className="flex items-center gap-2 px-4">
-                <Skeleton className="size-7 rounded-md" />
+            <header className="flex h-14 shrink-0 items-center gap-2 sm:h-16">
+              <div className="flex items-center gap-2 px-3 sm:px-4">
+                <Skeleton className="size-6 rounded-md sm:size-7" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
                 <BreadcrumbMenuSkeleton />
               </div>
@@ -46,14 +46,14 @@ export default async function DashboardLayout({
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center gap-2">
-              <div className="flex items-center gap-2 px-4">
+            <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:h-16">
+              <div className="flex items-center gap-2 px-3 sm:px-4">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
                 <BreadcrumbMenu />
               </div>
             </header>
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <div className="flex flex-1 flex-col gap-3 p-3 pt-0 sm:gap-4 sm:p-4 sm:pt-0">
               {children}
             </div>
           </SidebarInset>

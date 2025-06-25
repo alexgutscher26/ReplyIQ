@@ -4,8 +4,8 @@ import { getSession } from "@/server/utils";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Forms",
-  description: "Advanced form example using react-hook-form and Zod.",
+  title: "Settings",
+  description: "Manage your account settings and preferences.",
 };
 
 const sidebarNavItems = [
@@ -47,22 +47,27 @@ export default async function SettingsLayout({
   );
 
   return (
-    <>
-      <div className="space-y-6 p-10 pb-16 md:block">
-        <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-          <p className="text-muted-foreground">
-            Manage your account settings and set e-mail preferences.
-          </p>
-        </div>
-        <Separator className="my-6" />
-        <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-          <aside className="lg:w-1/5">
+    <div className="space-y-4 p-4 pb-16 sm:space-y-6 sm:p-6 lg:p-10 md:block">
+      <div className="space-y-1 sm:space-y-0.5">
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">Settings</h2>
+        <p className="text-sm text-muted-foreground sm:text-base">
+          Manage your account settings and set e-mail preferences.
+        </p>
+      </div>
+      
+      <Separator className="my-4 sm:my-6" />
+      
+      <div className="flex flex-col space-y-6 lg:flex-row lg:space-y-0 lg:space-x-12">
+        <aside className="w-full lg:w-1/5">
+          <div className="sticky top-4">
             <SidebarNav items={filteredSidebarNavItems} />
-          </aside>
-          <div className="flex-1 lg:max-w-2xl">{children}</div>
+          </div>
+        </aside>
+        
+        <div className="flex-1 min-w-0 lg:max-w-2xl">
+          {children}
         </div>
       </div>
-    </>
+    </div>
   );
 }
