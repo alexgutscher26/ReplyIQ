@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ interface ThreadResponse {
 }
 
 export default function ThreadGeneratorPage() {
+  const searchParams = useSearchParams();
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState<"twitter" | "linkedin">("twitter");
   const [threadLength, setThreadLength] = useState(5);
@@ -34,6 +36,66 @@ export default function ThreadGeneratorPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [loadedFromExtension, setLoadedFromExtension] = useState(false);
+
+  // Load thread data transferred from extension
+  useEffect(() => {
+    const fromExtension = searchParams.get('from') === 'extension';
+    if (fromExtension) {
+      try {
+        // Load data from URL parameters
+        const topicParam = searchParams.get('topic');
+        const platformParam = searchParams.get('platform');
+        const toneParam = searchParams.get('tone');
+        const threadLengthParam = searchParams.get('threadLength');
+        const postLengthParam = searchParams.get('postLength');
+        const threadParam = searchParams.get('thread');
+
+        // Set form data from URL parameters
+        if (topicParam) {
+          setTopic(topicParam);
+        }
+        if (platformParam === 'twitter' || platformParam === 'linkedin') {
+          setPlatform(platformParam);
+        }
+        if (toneParam === 'professional' || toneParam === 'casual' || 
+            toneParam === 'informative' || toneParam === 'engaging' || 
+            toneParam === 'humorous') {
+          setTone(toneParam);
+        }
+        if (threadLengthParam) {
+          const length = Number.parseInt(threadLengthParam, 10);
+          if (!Number.isNaN(length)) {
+            setThreadLength(length);
+          }
+        }
+        if (postLengthParam === 'short' || postLengthParam === 'medium' || 
+            postLengthParam === 'long' || postLengthParam === 'x-pro') {
+          setPostLength(postLengthParam);
+        }
+
+        // Decode and set thread data if available
+        if (threadParam) {
+          try {
+            const decodedThread = decodeURIComponent(escape(atob(threadParam)));
+            const threadArray: unknown = JSON.parse(decodedThread);
+            if (Array.isArray(threadArray)) {
+              const validThread = threadArray.filter((item): item is string => typeof item === 'string');
+              if (validThread.length > 0) {
+                setThread(validThread);
+              }
+            }
+          } catch (decodeError) {
+            console.error('Failed to decode thread data:', decodeError);
+          }
+        }
+
+        setLoadedFromExtension(true);
+      } catch (err) {
+        console.error('Failed to load extension data:', err);
+      }
+    }
+  }, [searchParams]);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -99,6 +161,11 @@ export default function ThreadGeneratorPage() {
                 <CardTitle>Thread Generator</CardTitle>
                 <CardDescription>
                   Create engaging Twitter or LinkedIn threads with AI assistance.
+                  {loadedFromExtension && (
+                    <span className="ml-2 inline-flex items-center px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium">
+                      📱 Loaded from Extension
+                    </span>
+                  )}
                 </CardDescription>
               </div>
             </div>

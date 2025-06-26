@@ -7,37 +7,54 @@ interface EmojiSuggestionsProps {
   text: string
 }
 
-export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({ onEmojiClick, text }) => {
+// Constants for better maintainability
+const DEBOUNCE_DELAY = 500
+const MIN_TEXT_LENGTH = 2
+const MAX_SUGGESTIONS_WIDTH = 320
+
+export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({
+  onEmojiClick,
+  text,
+}) => {
   const trpc = useTRPC()
   const [suggestions, setSuggestions] = React.useState<string[]>([])
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<null | string>(null)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
   const [isVisible, setIsVisible] = React.useState(false)
+
+  // Refs for optimization and DOM access
   const lastTextRef = React.useRef('')
-  const debounceTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined)
+  const debounceTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  // Emoji selection handler
-  const handleEmojiSelect = React.useCallback((emoji: string) => {
-    onEmojiClick(emoji)
+  // Helper function to check if text is meaningful
+  const isMeaningfulText = React.useCallback((inputText: string): boolean => {
+    if (!inputText || inputText.trim().length < MIN_TEXT_LENGTH)
+      return false
+
+    const meaningfulText = inputText.replace(/[^\w\s]/g, '').trim()
+    return meaningfulText.length >= MIN_TEXT_LENGTH
+  }, [])
+
+  // Reset suggestions state
+  const resetSuggestions = React.useCallback(() => {
+    setSuggestions([])
     setIsVisible(false)
     setSelectedIndex(0)
-  }, [onEmojiClick])
+    setError(null)
+  }, [])
 
-  // Debounced fetch function
+  // Emoji selection handler with improved UX
+  const handleEmojiSelect = React.useCallback((emoji: string) => {
+    onEmojiClick(emoji)
+    resetSuggestions()
+  }, [onEmojiClick, resetSuggestions])
+
+  // Optimized fetch function with better error handling
   const fetchSuggestions = React.useCallback(async (inputText: string) => {
-    if (!inputText || inputText.trim().length < 2) {
-      setSuggestions([])
-      setIsVisible(false)
-      return
-    }
-
-    // Only fetch if text has meaningful content (not just spaces or punctuation)
-    const meaningfulText = inputText.replace(/[^\w\s]/g, '').trim()
-    if (meaningfulText.length < 2) {
-      setSuggestions([])
-      setIsVisible(false)
+    if (!isMeaningfulText(inputText)) {
+      resetSuggestions()
       return
     }
 
@@ -45,31 +62,36 @@ export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({ onEmojiClick
     setError(null)
 
     try {
-      console.warn('Fetching emoji suggestions for text:', inputText)
       const data = await trpc.emojis.query({ text: inputText })
-      console.warn('Emoji suggestions received:', data)
-      if (data.emojis && data.emojis.length > 0) {
+
+      if (data?.emojis?.length > 0) {
         setSuggestions(data.emojis)
         setSelectedIndex(0)
         setIsVisible(true)
       }
       else {
-        setSuggestions([])
-        setIsVisible(false)
+        resetSuggestions()
       }
     }
     catch (err) {
       console.error('Error fetching emoji suggestions:', err)
-      setError('Failed to load emoji suggestions')
+      setError(err instanceof Error ? err.message : 'Failed to load emoji suggestions')
       setSuggestions([])
       setIsVisible(false)
     }
     finally {
       setLoading(false)
     }
-  }, [trpc])
+  }, [trpc, isMeaningfulText, resetSuggestions])
 
-  // Debounced effect for text changes
+  // Retry handler
+  const handleRetry = React.useCallback(() => {
+    if (text) {
+      fetchSuggestions(text)
+    }
+  }, [text, fetchSuggestions])
+
+  // Optimized debounced effect for text changes
   React.useEffect(() => {
     // Clear previous timeout
     if (debounceTimeoutRef.current) {
@@ -77,16 +99,13 @@ export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({ onEmojiClick
     }
 
     // Skip if text hasn't changed
-    if (text === lastTextRef.current) {
+    if (text === lastTextRef.current)
       return
-    }
-
     lastTextRef.current = text
 
-    // Hide suggestions immediately if text is too short
-    if (!text || text.trim().length < 2) {
-      setSuggestions([])
-      setIsVisible(false)
+    // Reset immediately if text is too short
+    if (!isMeaningfulText(text)) {
+      resetSuggestions()
       setLoading(false)
       return
     }
@@ -94,16 +113,16 @@ export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({ onEmojiClick
     // Debounce the API call
     debounceTimeoutRef.current = setTimeout(() => {
       fetchSuggestions(text)
-    }, 500) // 500ms debounce
+    }, DEBOUNCE_DELAY)
 
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)
       }
     }
-  }, [text, fetchSuggestions])
+  }, [text, fetchSuggestions, isMeaningfulText, resetSuggestions])
 
-  // Keyboard navigation
+  // Enhanced keyboard navigation with better UX
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isVisible || suggestions.length === 0)
@@ -119,63 +138,76 @@ export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({ onEmojiClick
           setSelectedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length)
           break
         case 'Enter':
-          event.preventDefault()
-          if (suggestions[selectedIndex]) {
-            handleEmojiSelect(suggestions[selectedIndex])
+        { event.preventDefault()
+          const selectedEmoji = suggestions[selectedIndex]
+          if (selectedEmoji) {
+            handleEmojiSelect(selectedEmoji)
           }
-          break
+          break }
         case 'Escape':
           event.preventDefault()
-          setIsVisible(false)
+          resetSuggestions()
+          break
+        case 'Tab':
+          // Allow tab to close suggestions for better accessibility
+          resetSuggestions()
           break
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isVisible, suggestions, selectedIndex, handleEmojiSelect])
+    if (isVisible) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isVisible, suggestions, selectedIndex, handleEmojiSelect, resetSuggestions])
 
-  // Click outside to close
+  // Click outside handler with improved performance
   React.useEffect(() => {
+    if (!isVisible)
+      return
+
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsVisible(false)
+        resetSuggestions()
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [isVisible, resetSuggestions])
 
-  // Show loading state
+  // Loading state component
   if (loading) {
     return (
       <div
-        className="absolute left-0 top-full mt-2 flex items-center gap-2 rounded-md border bg-card p-3 shadow-sm z-20"
-        data-slot="emoji-suggestions"
+        aria-live="polite"
+        className="absolute left-0 top-full mt-2 flex items-center gap-2 rounded-md border bg-card p-3 shadow-lg z-20 animate-in fade-in-0 slide-in-from-top-2"
+        data-testid="emoji-suggestions-loading"
         ref={containerRef}
+        role="status"
       >
-        <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         <span className="text-sm text-muted-foreground">Finding emojis...</span>
       </div>
     )
   }
 
-  // Show error state
+  // Error state component with better styling
   if (error) {
     return (
       <div
-        className="absolute left-0 top-full mt-2 flex items-center gap-2 rounded-md border bg-card p-3 shadow-sm z-20 text-destructive"
-        data-slot="emoji-suggestions"
+        className="absolute left-0 top-full mt-2 flex items-center gap-2 rounded-md border border-destructive/20 bg-card p-3 shadow-lg z-20 animate-in fade-in-0 slide-in-from-top-2"
+        data-testid="emoji-suggestions-error"
         ref={containerRef}
+        role="alert"
       >
-        <span className="text-sm">
-          ⚠️
+        <span className="text-sm text-destructive flex items-center gap-1">
+          <span aria-label="Warning" role="img">⚠️</span>
           {error}
         </span>
         <Button
-          className="h-6 px-2 text-xs"
-          onClick={() => fetchSuggestions(text)}
+          className="h-6 px-2 text-xs hover:bg-destructive/10"
+          onClick={handleRetry}
           size="sm"
           variant="ghost"
         >
@@ -192,34 +224,43 @@ export const EmojiSuggestions: React.FC<EmojiSuggestionsProps> = ({ onEmojiClick
 
   return (
     <div
-      className="absolute left-0 top-full mt-2 flex flex-wrap gap-1 rounded-md border bg-card p-2 shadow-lg z-20 max-w-xs"
-      data-slot="emoji-suggestions"
+      aria-label="Emoji suggestions"
+      className="absolute left-0 top-full mt-2 flex flex-wrap gap-1 rounded-md border bg-card p-3 shadow-lg z-20 animate-in fade-in-0 slide-in-from-top-2"
+      data-testid="emoji-suggestions"
       ref={containerRef}
-      style={{ minHeight: 40 }}
+      role="listbox"
+      style={{ maxWidth: MAX_SUGGESTIONS_WIDTH, minHeight: 60 }}
     >
-      <div className="w-full mb-1">
+      <div className="w-full mb-2 border-b border-border pb-2">
         <span className="text-xs text-muted-foreground">
-          Press ↑↓ to navigate, Enter to select, Esc to close
+          Use ↑↓ to navigate • Enter to select • Esc to close
         </span>
       </div>
-      {suggestions.map((emoji, index) => (
-        <Button
-          aria-label={`Insert emoji ${emoji}`}
-          className={`transition-colors ${
-            index === selectedIndex
-              ? 'bg-primary text-primary-foreground'
-              : 'hover:bg-muted'
-          }`}
-          key={`${emoji}-${index}`}
-          onClick={() => handleEmojiSelect(emoji)}
-          onMouseEnter={() => setSelectedIndex(index)}
-          size="sm"
-          type="button"
-          variant={index === selectedIndex ? 'default' : 'ghost'}
-        >
-          {emoji}
-        </Button>
-      ))}
+
+      <div className="flex flex-wrap gap-1 w-full">
+        {suggestions.map((emoji, index) => (
+          <Button
+            aria-label={`Insert emoji ${emoji}`}
+            aria-selected={index === selectedIndex}
+            className={`
+              text-base transition-all duration-150 hover:scale-105 focus:scale-105
+              ${index === selectedIndex
+            ? 'bg-primary text-primary-foreground shadow-sm ring-2 ring-primary/20'
+            : 'hover:bg-muted'
+          }
+            `}
+            key={`${emoji}-${index}`}
+            onClick={() => handleEmojiSelect(emoji)}
+            onMouseEnter={() => setSelectedIndex(index)}
+            role="option"
+            size="sm"
+            type="button"
+            variant={index === selectedIndex ? 'default' : 'ghost'}
+          >
+            {emoji}
+          </Button>
+        ))}
+      </div>
     </div>
   )
 }
