@@ -18,9 +18,11 @@ import {
   FileChartLine,
   LayoutDashboard,
   LifeBuoy,
+  MessageSquare,
   PieChart,
   Settings2,
   Users2,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { type ComponentProps } from "react";
@@ -40,6 +42,16 @@ const data = {
       url: "/dashboard/hashtag-generator",
       icon: Command,
     },
+            {
+          title: "Thread Generator",
+          url: "/dashboard/thread-generator",
+          icon: MessageSquare,
+        },
+        {
+          title: "Video Script Generator",
+          url: "/dashboard/video-script-generator",
+          icon: Video,
+        },
     {
       title: "Reports",
       url: "/dashboard/reports",
