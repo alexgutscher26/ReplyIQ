@@ -1,14 +1,12 @@
-# 🚀 AI Social Replier - Complete SaaS Platform
+# 🚀 ReplyIQ - Complete SaaS Platform
 
-> **AI-powered social media reply generator with browser extension integration**
+> **ReplyIQ is an intelligent SaaS platform that empowers users to create engaging, contextually-appropriate responses for social media platforms using advanced AI technology. Designed for social media managers, content creators, and businesses, ReplyIQ streamlines social media engagement across multiple platforms.**
 
-[![License](https://img.shields.io/badge/license-UNLICENSED-red.svg)](LICENSE)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![tRPC](https://img.shields.io/badge/tRPC-2596BE?logo=trpc&logoColor=white)](https://trpc.io/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-
-A complete SaaS solution for AI-powered social media engagement with intelligent reply generation, emoji suggestions, and comprehensive analytics.
 
 ## 📋 Table of Contents
 
@@ -431,7 +429,7 @@ const result = await trpc.generate.mutate({
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these steps:
+We welcome contributions! By contributing, you agree to license your contributions under the CC BY-NC-SA 4.0 license. Please follow these steps:
 
 ### 1. Fork the Repository
 ```bash
@@ -468,7 +466,31 @@ bun run test
 
 ## 📄 License
 
-This project is licensed under a proprietary license. See the [LICENSE](LICENSE) file for details.
+This work is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+### What this means:
+
+✅ **You CAN:**
+- View, download, and study the source code
+- Contribute improvements via pull requests
+- Fork for personal, educational, or research purposes
+- Share and redistribute under the same license terms
+- Modify the code for non-commercial purposes
+
+❌ **You CANNOT:**
+- Use this software for commercial purposes
+- Sell this software or modified versions
+- Use this software in commercial products or services
+- Remove or modify license notices
+- Distribute without providing source code and maintaining the same license
+
+### Contributing
+By contributing to this project, you agree that your contributions will be licensed under the same CC BY-NC-SA 4.0 license.
+
+### Commercial Use
+If you're interested in commercial licensing, please contact us at [contact@example.com](mailto:contact@example.com) to discuss commercial licensing options.
+
+**Attribution Required:** If you use or redistribute this work, you must provide appropriate credit and indicate if changes were made.
 
 ---
 
