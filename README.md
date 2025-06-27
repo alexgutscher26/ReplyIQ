@@ -428,7 +428,7 @@ We welcome contributions! By contributing, you agree to license your contributio
 
 ### 1. Fork the Repository
 ```bash
-git clone https://github.com/your-username/ai-social-replier.git
+git clone https://github.com/your-username/ReplyIQ.git
 ```
 
 ### 2. Create a Feature Branch
@@ -491,7 +491,7 @@ If you're interested in commercial licensing, please contact us at [contact@exam
 
 ## 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=WaitListNow/ai-social-replier&type=Date)](https://star-history.com/#WaitListNow/ai-social-replier&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=alexgutscher26/ReplyIQ.git&type=Date)](https://www.star-history.com/#alexgutscher26/ReplyIQ.git&Date)
 
 ## 🎉 Acknowledgments
 
@@ -503,5 +503,5 @@ If you're interested in commercial licensing, please contact us at [contact@exam
 ---
 
 <div align="center">
-  <strong>Built with ❤️ by WaitListNow</strong>
+  <strong>Built with ❤️ by ReplyIQ</strong>
 </div> 
