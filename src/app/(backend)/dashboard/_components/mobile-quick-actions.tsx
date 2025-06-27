@@ -8,9 +8,7 @@ import {
   Download, 
   BarChart3, 
   Settings,
-  Zap,
-  TrendingUp 
-} from "lucide-react";
+  Zap} from "lucide-react";
 import Link from "next/link";
 
 export function MobileQuickActions() {
