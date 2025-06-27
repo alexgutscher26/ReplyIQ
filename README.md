@@ -76,8 +76,9 @@ graph TB
 ### Prerequisites
 - Node.js 18+ or Bun 1.0+
 - PostgreSQL database
-- API keys for AI services
 - Stripe/PayPal accounts (for payments)
+
+> **Note:** API keys for AI services are configured through the admin panel after installation, not through environment variables.
 
 ### 1. Clone the Repository
 ```bash
@@ -121,6 +122,13 @@ bun run dev
 cd extension-v6.0.0
 bun run dev
 ```
+
+### 6. Configure AI Services
+1. Open `http://localhost:3000` in your browser
+2. Sign in as admin (first user becomes admin)
+3. Navigate to **Dashboard → Settings → AI Model Provider**
+4. Add your AI service API keys (OpenAI, Claude, etc.)
+5. Test connections and save configuration
 
 ## 📦 Installation
 
@@ -191,29 +199,46 @@ DATABASE_URL="postgresql://user:password@localhost:5432/replier"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key"
 
-# AI Services
-OPENAI_API_KEY="your-openai-key"
-CLAUDE_API_KEY="your-claude-key"
-
-# Payment Providers
+# Payment Providers (for Stripe webhooks and PayPal callbacks)
 STRIPE_SECRET_KEY="your-stripe-secret"
+STRIPE_WEBHOOK_SECRET="your-stripe-webhook-secret"
 PAYPAL_CLIENT_ID="your-paypal-client-id"
+PAYPAL_CLIENT_SECRET="your-paypal-client-secret"
 
-# Email
+# Email Service
 RESEND_API_KEY="your-resend-key"
 ```
 
+> **Important:** AI service API keys (OpenAI, Claude, etc.) are configured through the admin dashboard, not environment variables. This allows for secure key management and easy updates without server restarts.
+
 #### Extension (.env)
 ```env
+# Web application URL for API communication
 WXT_SITE_URL="http://localhost:3000"
+
+# Optional: Custom extension settings
+WXT_DEBUG="true"  # Enable debug logging
 ```
+
+> **Note:** The extension connects to your web application for AI services. No direct API keys are needed in the extension environment.
 
 ### AI Model Configuration
 
-Configure AI models in the admin dashboard:
-- **OpenAI GPT-4** - Primary model for reply generation
-- **Claude 3** - Alternative model option
-- **Custom Models** - Support for custom API endpoints
+All AI service configurations are managed through the **Admin Dashboard** (`/dashboard/settings/general`):
+
+#### Supported AI Providers:
+- **OpenAI** - GPT-4, GPT-3.5 Turbo models
+- **Claude** - Claude 3 Opus, Sonnet, Haiku models  
+- **Custom API Endpoints** - Support for custom AI services
+
+#### Configuration Steps:
+1. Navigate to Admin Dashboard → Settings → AI Model Provider
+2. Enter your API keys for desired services
+3. Select default models for each service type
+4. Test connections to verify API keys
+5. Save configuration
+
+> **Security Note:** API keys are encrypted at rest and never exposed in client-side code or environment variables.
 
 ## 🌐 Browser Extension
 
