@@ -38,7 +38,6 @@
 - **Subscription Management** - Tiered pricing with Stripe/PayPal integration
 - **Usage Tracking** - Monitor API usage and billing
 - **Admin Dashboard** - Comprehensive management interface
-- **Team Collaboration** - Multi-user workspace support
 
 ### 🌐 Browser Extension
 - **Cross-Browser Support** - Chrome, Firefox, Edge compatibility
@@ -52,23 +51,23 @@
 ```mermaid
 graph TB
     subgraph "Frontend"
-        A[Next.js Web App] --> B[tRPC Client]
-        C[Browser Extension] --> D[Extension Background Script]
+        A["Next.js Web App"] --> B["tRPC Client"]
+        C["Browser Extension"] --> D["Extension Background Script"]
     end
     
     subgraph "Backend"
-        B --> E[tRPC API Routes]
+        B --> E["tRPC API Routes"]
         D --> E
-        E --> F[Database (Drizzle ORM)]
-        E --> G[AI Services]
-        E --> H[Payment Providers]
+        E --> F["Database - Drizzle ORM"]
+        E --> G["AI Services"]
+        E --> H["Payment Providers"]
     end
     
     subgraph "External Services"
-        G --> I[OpenAI/Claude]
-        H --> J[Stripe]
-        H --> K[PayPal]
-        L[Social Platforms] --> C
+        G --> I["OpenAI/Claude"]
+        H --> J["Stripe"]
+        H --> K["PayPal"]
+        L["Social Platforms"] --> C
     end
 ```
 
