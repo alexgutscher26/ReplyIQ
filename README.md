@@ -90,18 +90,12 @@ cd ai-social-replier
 ```bash
 # Using bun (recommended)
 bun install
-
-# Or using npm
-npm install
 ```
 
 ### 3. Environment Setup
 ```bash
 # Copy environment file
 cp .env.example .env.local
-
-# Edit with your configuration
-nano .env.local
 ```
 
 ### 4. Database Setup
@@ -185,29 +179,6 @@ bun run dev
    - Chrome: Load unpacked extension from `.output/chrome-mv3`
    - Firefox: Load temporary add-on from `.output/firefox-mv2`
    - Edge: Load unpacked extension from `.output/edge-mv3`
-
-## 🔧 Configuration
-
-### Environment Variables
-
-#### Web Application (.env.local)
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/replier"
-
-# Authentication
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key"
-
-# Payment Providers (for Stripe webhooks and PayPal callbacks)
-STRIPE_SECRET_KEY="your-stripe-secret"
-STRIPE_WEBHOOK_SECRET="your-stripe-webhook-secret"
-PAYPAL_CLIENT_ID="your-paypal-client-id"
-PAYPAL_CLIENT_SECRET="your-paypal-client-secret"
-
-# Email Service
-RESEND_API_KEY="your-resend-key"
-```
 
 > **Important:** AI service API keys (OpenAI, Claude, etc.) are configured through the admin dashboard, not environment variables. This allows for secure key management and easy updates without server restarts.
 
