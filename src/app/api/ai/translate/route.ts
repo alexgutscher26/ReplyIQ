@@ -52,6 +52,17 @@ const SUPPORTED_LANGUAGES = {
   'ca': 'Catalan',
 } as const;
 
+/**
+ * Handles translation requests from the client.
+ *
+ * This function processes incoming JSON data, validates it against a schema,
+ * and translates text using an AI instance based on specified parameters like source
+ * and target languages, style, context, and tone. It also tracks usage analytics
+ * and handles errors gracefully by returning appropriate HTTP responses.
+ *
+ * @param req - The NextRequest object containing the request data.
+ * @returns A JSON response containing the translation result or an error message.
+ */
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   
