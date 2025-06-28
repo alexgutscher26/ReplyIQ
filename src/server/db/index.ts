@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as authSchema from "./schema/auth-schema";
 import * as billingSchema from "./schema/billing-schema";
+import * as brandVoiceSchema from "./schema/brand-voice-schema";
 import * as generationsSchema from "./schema/generations-schema";
 import * as postSchema from "./schema/post-schema";
 import * as productsSchema from "./schema/products-schema";
@@ -31,5 +32,6 @@ export const db = drizzle(conn, {
     ...usageSchema,
     ...generationsSchema,
     ...toolAnalyticsSchema,
+    ...brandVoiceSchema,
   },
 });

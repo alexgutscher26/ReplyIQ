@@ -15,6 +15,13 @@
       "when": 1751135673478,
       "tag": "0001_pale_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751140159549,
+      "tag": "0002_glorious_molecule_man",
+      "breakpoints": true
     }
   ]
 }

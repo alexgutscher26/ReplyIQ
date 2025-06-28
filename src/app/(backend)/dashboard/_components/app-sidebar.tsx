@@ -32,6 +32,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
+  Mic,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -89,6 +90,12 @@ const data = {
       url: "/dashboard/sentiment-analysis",
       icon: Brain,
       description: "Analyze emotional tone before responding",
+    },
+    {
+      title: "Brand Voice Training",
+      url: "/dashboard/brand-voice-training",
+      icon: Mic,
+      description: "Train AI on your unique brand voice",
     },
     {
       title: "Reports",

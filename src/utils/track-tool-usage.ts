@@ -68,13 +68,13 @@ export function withUsageTracking<T extends any[], R>(
   handler: (...args: T) => Promise<R>
 ) {
   return async (...args: T): Promise<R> => {
-    const startTime = Date.now();
+    // const startTime = Date.now();
     
     try {
       const result = await handler(...args);
       
       // Track successful usage
-      const duration = Date.now() - startTime;
+      // const duration = Date.now() - startTime;
       
       // Note: Tracking would be done in the API route handlers with metadata like:
       // { success: true, responseTime: duration }

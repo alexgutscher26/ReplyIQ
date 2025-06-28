@@ -1,4 +1,5 @@
 import { billingsRouter } from "@/server/api/routers/billings";
+import { brandVoiceRouter } from "@/server/api/routers/brand-voice";
 import { generationRouter } from "@/server/api/routers/generations";
 import { paymentsRouter } from "@/server/api/routers/payments";
 import { productsRouter } from "@/server/api/routers/products";
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   usage: usageRouter,
   generations: generationRouter,
   toolAnalytics: toolAnalyticsRouter,
+  brandVoice: brandVoiceRouter,
 });
 
 // export type definition of API

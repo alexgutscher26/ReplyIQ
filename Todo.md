@@ -22,7 +22,7 @@ run next build and fix all errors and then run it again and fix those and keep d
 - [X] **Emoji Suggestions** - Context-aware emoji recommendations
 - [X] **Language Translation** - Multi-language reply generation
 - [X] **Sentiment Analysis** - Analyze post sentiment before replying
-- [ ] **Brand Voice Training** - Custom AI models trained on brand voice
+- [X] **Brand Voice Training** - Custom AI models trained on brand voice
 
 ### Browser Extension Enhancements
 - [ ] **Safari Extension** - Support for Safari browser
