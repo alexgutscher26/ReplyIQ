@@ -104,6 +104,17 @@ const TONE_OPTIONS = [
   { value: 'neutral', label: 'Neutral', description: 'Balanced and objective' },
 ];
 
+/**
+ * A React component representing a language translation page with advanced settings and features.
+ *
+ * This component manages state for loading, results, copied texts, and character count. It uses a form to collect user input,
+ * including text to translate and various translation options such as source and target languages, style, context, tone,
+ * and whether to include alternative translations. The component handles form submission by sending the data to an API
+ * endpoint for processing and displaying the results. It also includes functionality to copy translated text to the clipboard,
+ * swap language directions, and reset the form.
+ *
+ * @returns A React JSX element representing the Language Translator page.
+ */
 export default function LanguageTranslatorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<TranslationResult | null>(null);
@@ -129,6 +140,16 @@ export default function LanguageTranslatorPage() {
     setCharCount(watchedText?.length ?? 0);
   }, [watchedText]);
 
+  /**
+   * Handles form submission by translating text using an API and updating the UI with the results.
+   *
+   * It first sets loading state, then sends a POST request to the translation API with the form values.
+   * If the response is successful, it processes the translated data and updates the results state.
+   * On failure, it logs the error and shows an error notification.
+   * Finally, it resets the loading state regardless of the outcome.
+   *
+   * @param values - An object containing the form values to be translated.
+   */
   const onSubmit = async (values: TranslationFormValues) => {
     setIsLoading(true);
     try {
@@ -162,6 +183,9 @@ export default function LanguageTranslatorPage() {
     }
   };
 
+  /**
+   * Copies text to clipboard and updates copied texts set with a timeout.
+   */
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -182,6 +206,9 @@ export default function LanguageTranslatorPage() {
     }
   };
 
+  /**
+   * Swaps the values of targetLanguage and sourceLanguage in the form if both are set and sourceLanguage is not "auto".
+   */
   const swapLanguages = () => {
     const currentTarget = form.getValues("targetLanguage");
     const currentSource = form.getValues("sourceLanguage");
@@ -192,6 +219,9 @@ export default function LanguageTranslatorPage() {
     }
   };
 
+  /**
+   * Resets the form and clears results and character count.
+   */
   const resetForm = () => {
     form.reset();
     setResults(null);

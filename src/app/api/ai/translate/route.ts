@@ -51,6 +51,20 @@ const SUPPORTED_LANGUAGES = {
   'ca': 'Catalan',
 } as const;
 
+/**
+ * Handles POST requests to translate text from one language to another with specific styling and context.
+ *
+ * This function parses incoming request data, retrieves settings from the database, initializes an AI instance,
+ * constructs a translation prompt based on provided parameters, generates a translation using the AI model,
+ * and extracts primary translations, alternatives, and notes from the response. It also handles errors
+ * related to invalid input or internal server issues.
+ *
+ * @param req - An object representing the incoming request with JSON data containing text to translate,
+ *              source language, target language, style, context, tone, and an option to include alternatives.
+ * @returns A JSON response containing the translated text, detected source language, translation notes,
+ *          full response from the AI model, original text, character count, and word count.
+ * @throws Error if there is a Zod error in parsing request data or other internal server errors.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body: unknown = await req.json();
@@ -183,6 +197,9 @@ ${includeAlternatives ? '**Alternative 1:** [Alternative translation]\n**Alterna
   }
 }
 
+/**
+ * Returns a JSON response with supported languages and their count.
+ */
 export async function GET() {
   return NextResponse.json({
     supportedLanguages: SUPPORTED_LANGUAGES,
