@@ -10,12 +10,16 @@ const schema = z.object({
   duration: z.number().min(1).max(60).default(5), // Duration in minutes
   tone: z.enum(['professional', 'casual', 'energetic', 'calm', 'humorous']).default('professional'),
   platform: z.enum(['youtube', 'tiktok', 'instagram', 'general']).default('youtube'),
+  targetAudience: z.string().optional(),
+  keywords: z.string().optional(),
+  includeHook: z.boolean().default(true),
+  includeCTA: z.boolean().default(true),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body: unknown = await req.json();
-    const { topic, videoType, duration, tone, platform } = schema.parse(body);
+    const { topic, videoType, duration, tone, platform, targetAudience, keywords, includeHook, includeCTA } = schema.parse(body);
 
     // Fetch AI settings from DB
     const settings = await db.query.settings.findFirst();
@@ -29,73 +33,237 @@ export async function POST(req: NextRequest) {
     });
 
     const platformSpecificInstructions = {
-      youtube: 'Format for YouTube with clear intro, main content sections, and call-to-action. Include timestamps and scene descriptions.',
-      tiktok: 'Short, punchy script for TikTok. Focus on hooks, quick transitions, and trending elements. Keep it under 60 seconds.',
-      instagram: 'Instagram-optimized script with visual cues and hashtag suggestions. Good for Reels or IGTV.',
-      general: 'Versatile script suitable for multiple platforms with clear structure and engaging content.'
+      youtube: `YouTube Optimization:
+- Create a compelling hook in the first 15 seconds to beat the algorithm
+- Structure for 8-second attention spans with pattern interrupts every 30 seconds
+- Include clear verbal and visual CTAs throughout
+- Use the "PPP" framework (Preview, Proof, Payoff)
+- Add timestamp suggestions for chapters
+- Include scene descriptions with visual elements
+- Optimize for watch time and engagement metrics
+- Suggest thumbnail-worthy moments`,
+
+      tiktok: `TikTok Optimization:
+- Start with a pattern interrupt or hook within 3 seconds
+- Use trending audio/music suggestions when relevant
+- Include jump cuts and quick transitions (every 2-3 seconds)
+- Leverage current trends and hashtag opportunities
+- Create scroll-stopping moments throughout
+- Include text overlay suggestions for key points
+- Use the "Problem-Agitation-Solution" structure
+- End with a strong hook for the next video`,
+
+      instagram: `Instagram Optimization:
+- Design for vertical viewing with strong visual storytelling
+- Include caption-worthy quotes and key takeaways
+- Suggest relevant hashtags and emoji usage
+- Create shareable moments for Stories
+- Use the "AIDA" framework (Attention, Interest, Desire, Action)
+- Include interactive elements (polls, questions, challenges)
+- Optimize for saves and shares
+- Create aesthetically pleasing visual sequences`,
+
+      general: `Multi-Platform Optimization:
+- Create adaptable content that works across platforms
+- Focus on universal engagement principles
+- Include flexible timing for different formats
+- Use platform-agnostic storytelling techniques
+- Provide format variations and adaptation notes`
     };
 
     const videoTypeInstructions = {
-      educational: 'Structure as a clear learning experience with introduction, key points, examples, and summary.',
-      promotional: 'Focus on benefits, features, and strong call-to-action. Include persuasive elements.',
-      entertainment: 'Emphasize humor, storytelling, and engagement. Keep audience entertained throughout.',
-      tutorial: 'Step-by-step instructions with clear explanations and actionable advice.',
-      explainer: 'Break down complex topics into simple, digestible segments with clear explanations.'
+      educational: `Educational Content Framework:
+- Use the "LEARN" model: Lead with curiosity, Explain simply, Apply examples, Reinforce key points, Next steps
+- Include "aha moments" and knowledge gaps
+- Use analogies and metaphors for complex concepts
+- Add interactive elements and knowledge checks
+- Create memorable acronyms or frameworks
+- Include common misconceptions to address`,
+
+      promotional: `Promotional Content Framework:
+- Use the "PASTOR" framework: Problem, Amplify, Story/Solution, Transformation, Offer, Response
+- Include social proof and credibility markers
+- Create urgency and scarcity when appropriate
+- Use emotional triggers and benefits-focused language
+- Include objection handling and risk reversal
+- Add testimonial integration opportunities`,
+
+      entertainment: `Entertainment Content Framework:
+- Use story arcs with setup, conflict, and resolution
+- Include comedic timing and punchline placement
+- Create relatable situations and characters
+- Use surprise elements and plot twists
+- Include callback references and running gags
+- Focus on emotional connection and shareability`,
+
+      tutorial: `Tutorial Content Framework:
+- Use the "SHOW" method: Setup, How-to steps, Outcome demonstration, Wrap-up
+- Include progress indicators and milestone celebrations
+- Add troubleshooting sections for common issues
+- Use clear, actionable language with specific steps
+- Include before/after comparisons
+- Provide alternative methods when relevant`,
+
+      explainer: `Explainer Content Framework:
+- Use the "SIMPLE" approach: Scenario, Issue, Method, Process, Logic, Evaluation
+- Break complex topics into digestible chunks
+- Use visual metaphors and real-world examples
+- Include "why this matters" moments
+- Add perspective from different viewpoints
+- Connect to broader implications and applications`
     };
 
-    const prompt = `Create a ${duration}-minute ${videoType} video script about "${topic}" for ${platform}.
+    const toneInstructions = {
+      professional: `Professional Tone Guidelines:
+- Use authoritative but approachable language
+- Include industry-specific terminology when appropriate
+- Maintain credibility with fact-based statements
+- Use confident, declarative sentences
+- Include expertise indicators and credentials mentions
+- Balance formality with accessibility`,
 
-Video Type Guidelines:
+      casual: `Casual Tone Guidelines:
+- Use conversational, friend-to-friend language
+- Include personal anecdotes and relatable examples
+- Use contractions and everyday expressions
+- Create an intimate, one-on-one feeling
+- Include humor and personality quirks
+- Make complex topics feel approachable`,
+
+      energetic: `Energetic Tone Guidelines:
+- Use dynamic, action-oriented language
+- Include excitement markers and power words
+- Create momentum with short, punchy sentences
+- Use superlatives and intensity modifiers
+- Include motivational elements and calls to action
+- Maintain high energy throughout without overwhelming`,
+
+      calm: `Calm Tone Guidelines:
+- Use soothing, reassuring language
+- Include mindful pauses and breathing moments
+- Create a peaceful, stress-free atmosphere
+- Use gentle, flowing sentence structures
+- Include grounding elements and comfort words
+- Maintain steady pacing without rushing`,
+
+      humorous: `Humorous Tone Guidelines:
+- Include well-timed jokes and witty observations
+- Use playful language and unexpected comparisons
+- Create comedic relief at strategic points
+- Include self-deprecating humor when appropriate
+- Use observational comedy and relatable situations
+- Balance humor with valuable content delivery`
+    };
+
+    const audienceString = targetAudience ? `\nTarget Audience: ${targetAudience}` : '';
+    const keywordsString = keywords ? `\nFocus Keywords: ${keywords}` : '';
+
+    const prompt = `Create a highly engaging ${duration}-minute ${videoType} video script about "${topic}" for ${platform}.
+    
+${audienceString}${keywordsString}
+
+CONTENT FRAMEWORK:
 ${videoTypeInstructions[videoType]}
 
-Platform Guidelines:
+PLATFORM STRATEGY:
 ${platformSpecificInstructions[platform]}
 
-Tone: ${tone}
+TONE EXECUTION:
+${toneInstructions[tone]}
 
-Format your response with clear structure including:
+ENGAGEMENT TECHNIQUES TO INCLUDE:
+- Pattern interrupts every 20-30 seconds
+- Open loops and curiosity gaps
+- Social proof and authority markers
+- Emotional triggers and storytelling elements
+- Interactive moments and audience engagement
+- Memorable quotes and key takeaways
+- Visual and auditory cues for emphasis
 
-**TITLE:** [Engaging video title]
+PSYCHOLOGICAL TRIGGERS:
+- Reciprocity (give value first)
+- Social proof (others are doing this)
+- Authority (credible sources/expertise)
+- Consistency (align with audience values)
+- Liking (relatable and personable)
+- Scarcity (limited time/availability when relevant)
 
-**HOOK:** [First 5-10 seconds to grab attention]
+FORMAT REQUIREMENTS:
 
-**INTRODUCTION:** [Brief intro and what viewers will learn/gain]
+**TITLE:** [Create 3 title options with power words and emotional triggers]
+
+${includeHook ? `**HOOK:** [First 3-15 seconds - create immediate curiosity, pattern interrupt, or bold statement. Include specific timing and visual cues]` : ''}
+
+**INTRODUCTION:** [Establish credibility, preview value, and create investment in watching. Include audience connection points]
 
 **MAIN CONTENT:**
-[Scene 1: Description]
-- Key point or instruction
-- Visual cues or actions needed
+[Scene 1: Opening Engagement]
+- Content: [Specific talking points with emotional hooks]
+- Visual: [Detailed visual descriptions and camera movements]
+- Audio: [Music, sound effects, or audio cues]
+- Timing: [0:XX - X:XX]
+- Engagement: [Interactive elements, questions, or calls to engage]
+
+[Scene 2: Value Delivery]
+- Content: [Core teaching/entertainment with memorable elements]
+- Visual: [Graphics, demonstrations, or visual storytelling]
+- Audio: [Emphasis techniques and pacing notes]
 - Timing: [X:XX - X:XX]
+- Engagement: [Knowledge checks, reactions, or participation prompts]
 
-[Scene 2: Description]
-- Key point or instruction  
-- Visual cues or actions needed
-- Timing: [X:XX - X:XX]
+[Continue with additional scenes based on duration, each building momentum]
 
-[Continue with more scenes as needed]
+**CONCLUSION:** [Powerful summary with key takeaways and emotional resonance]
 
-**CONCLUSION:** [Wrap-up and key takeaways]
-
-**CALL TO ACTION:** [What you want viewers to do next]
+${includeCTA ? `**CALL TO ACTION:** [Specific, clear action with urgency and benefit. Include multiple CTA options for different engagement levels]` : ''}
 
 **TECHNICAL NOTES:**
-- Estimated total duration: ${duration} minutes
-- Key visual elements needed
-- Any special equipment or setup requirements
+- Total estimated duration: ${duration} minutes
+- Key visual elements and prop requirements
+- Suggested music/audio style and energy level
+- Editing notes for transitions and emphasis
+- Platform-specific optimization notes
+- Engagement prediction and virality potential
 
-Make sure to include proper line breaks, clear scene transitions, and actionable content that matches the ${tone} tone.`;
+**ENGAGEMENT OPTIMIZATION:**
+- Hook strength: [Rate and explain the opening impact]
+- Retention tactics: [List specific elements that maintain attention]
+- Shareability factors: [Identify most quotable/shareable moments]
+- Platform algorithm considerations: [Specific optimization notes]
+
+Create content that maximizes ${platform} algorithm performance while delivering genuine value in a ${tone} manner. Focus on creating "scroll-stopping" moments and ensuring every 10-15 seconds provides new value or intrigue.`;
+
+    const systemPrompt = `You are an elite video scriptwriter and content strategist with expertise in viral content creation, platform algorithms, and audience psychology. 
+
+Your specialties include:
+- YouTube monetization and algorithm optimization
+- TikTok viral content patterns and trending strategies  
+- Instagram engagement and aesthetic storytelling
+- Audience psychology and behavioral triggers
+- Conversion copywriting and persuasion techniques
+- Entertainment industry storytelling methods
+
+Create scripts that are:
+- Algorithmically optimized for ${platform}
+- Psychologically engaging with ${tone} tone
+- Strategically structured for ${videoType} content
+- Designed for maximum retention and engagement
+- Rich in visual storytelling and production value
+- Optimized for the target audience's preferences
+
+Always include specific production notes, timing cues, and engagement optimization strategies. Your scripts should be ready for immediate production while incorporating cutting-edge content strategies.`;
 
     const result = await generateText({
       model: instance,
       prompt,
-      maxTokens: 2000,
+      maxTokens: 3000,
       temperature: 0.8,
-      system: `You are an expert video scriptwriter specializing in creating engaging ${platform} content. Create scripts that are ${tone}, well-structured, and optimized for the ${videoType} format. Always include proper formatting with line breaks and clear sections.`
+      system: systemPrompt
     });
 
     const messageContent = typeof result.text === 'string' ? result.text : '';
 
-    // Parse the script sections
+    // Parse the script sections with improved regex patterns
     const scriptSections = {
       title: '',
       hook: '',
@@ -108,32 +276,32 @@ Make sure to include proper line breaks, clear scene transitions, and actionable
     };
 
     if (messageContent) {
-      // Extract title
-      const titleMatch = /\*\*TITLE:\*\*\s*(.+?)(?=\n|$)/i.exec(messageContent);
+      // Extract title (handle multiple title options)
+      const titleMatch = /\*\*TITLE:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (titleMatch?.[1]) scriptSections.title = titleMatch[1].trim();
 
       // Extract hook
-      const hookMatch = /\*\*HOOK:\*\*\s*(.*?)(?=\*\*[A-Z]+:|$)/s.exec(messageContent);
+      const hookMatch = /\*\*HOOK:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (hookMatch?.[1]) scriptSections.hook = hookMatch[1].trim();
 
       // Extract introduction
-      const introMatch = /\*\*INTRODUCTION:\*\*\s*(.*?)(?=\*\*[A-Z\s]+:|$)/s.exec(messageContent);
+      const introMatch = /\*\*INTRODUCTION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (introMatch?.[1]) scriptSections.introduction = introMatch[1].trim();
 
       // Extract main content
-      const mainMatch = /\*\*MAIN CONTENT:\*\*\s*(.*?)(?=\*\*[A-Z\s]+:|$)/s.exec(messageContent);
+      const mainMatch = /\*\*MAIN CONTENT:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (mainMatch?.[1]) scriptSections.mainContent = mainMatch[1].trim();
 
       // Extract conclusion
-      const conclusionMatch = /\*\*CONCLUSION:\*\*\s*(.*?)(?=\*\*[A-Z\s]+:|$)/s.exec(messageContent);
+      const conclusionMatch = /\*\*CONCLUSION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (conclusionMatch?.[1]) scriptSections.conclusion = conclusionMatch[1].trim();
 
       // Extract call to action
-      const ctaMatch = /\*\*CALL TO ACTION:\*\*\s*(.*?)(?=\*\*[A-Z\s]+:|$)/s.exec(messageContent);
+      const ctaMatch = /\*\*CALL TO ACTION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (ctaMatch?.[1]) scriptSections.callToAction = ctaMatch[1].trim();
 
       // Extract technical notes
-      const notesMatch = /\*\*TECHNICAL NOTES:\*\*\s*(.*?)(?=\*\*[A-Z\s]+:|$)/s.exec(messageContent);
+      const notesMatch = /\*\*TECHNICAL NOTES:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
       if (notesMatch?.[1]) scriptSections.technicalNotes = notesMatch[1].trim();
     }
 
@@ -144,6 +312,8 @@ Make sure to include proper line breaks, clear scene transitions, and actionable
       duration,
       tone,
       platform,
+      targetAudience,
+      keywords,
       estimatedReadingTime: Math.ceil(messageContent.length / 200) // Rough estimate: 200 chars per minute
     });
   } catch (error: unknown) {
@@ -156,4 +326,4 @@ Make sure to include proper line breaks, clear scene transitions, and actionable
     }
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
-} 
+}
