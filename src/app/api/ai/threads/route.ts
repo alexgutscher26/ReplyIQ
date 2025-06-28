@@ -4,25 +4,25 @@ import { generateText } from 'ai';
 import { getAIInstance } from '@/server/utils';
 import { db } from '@/server/db';
 
-const schema = z.object({
-  topic: z.string().min(3, 'Topic is too short'),
-  platform: z.enum(['twitter', 'linkedin']),
-  threadLength: z.number().min(2).max(20).default(5),
-  postLength: z.enum(['short', 'medium', 'long', 'x-pro']).default('short'),
-  tone: z.enum(['professional', 'casual', 'informative', 'engaging', 'humorous']).default('engaging'),
+const threadSchema = z.object({
+  platform: z.enum(['twitter', 'linkedin', 'instagram', 'youtube']),
+  postLength: z.enum(['short', 'medium', 'long', 'x-pro']),
+  threadLength: z.number().min(2).max(15),
+  tone: z.enum(['casual', 'professional', 'humorous', 'engaging', 'informative']),
+  topic: z.string().min(1),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body: unknown = await req.json();
-    const { topic, platform, threadLength, postLength, tone } = schema.parse(body);
+    const { topic, platform, threadLength, postLength, tone } = threadSchema.parse(body);
 
     console.log('Thread generation request:', { topic, platform, threadLength, postLength, tone });
 
     // Fetch AI settings from DB
     const settings = await db.query.settings.findFirst();
     const ai = settings?.general?.ai;
-    const enabledModels = ai?.enabledModels ?? ['gpt-3.5-turbo'];
+    const enabledModels = ai?.enabledModels ?? ['gpt-4o-mini'];
     const apiKey = ai?.apiKey ?? process.env.OPENAI_API_KEY ?? '';
 
     const { instance } = await getAIInstance({
@@ -37,9 +37,16 @@ export async function POST(req: NextRequest) {
       'x-pro': platform === 'twitter' ? '500+ words (X Pro: 25,000 chars)' : '500+ words'
     };
 
-    const platformSpecificInstructions = platform === 'twitter' 
-      ? `Create posts for Twitter/X with ${postLengthInstructions[postLength]}. Use engaging language and appropriate emojis. ${postLength !== 'short' ? 'This is for X Pro users with extended character limits.' : 'Standard Twitter character limits apply.'}`
-      : `Write professional posts for LinkedIn with ${postLengthInstructions[postLength]}. Focus on value and insights. Use appropriate formatting.`;
+    let platformSpecificInstructions: string;
+    if (platform === 'twitter') {
+      platformSpecificInstructions = `Create posts for Twitter/X with ${postLengthInstructions[postLength]}. Use engaging language and appropriate emojis. ${postLength !== 'short' ? 'This is for X Pro users with extended character limits.' : 'Standard Twitter character limits apply.'}`;
+    } else if (platform === 'instagram') {
+      platformSpecificInstructions = `Create posts for Instagram with ${postLengthInstructions[postLength]}. Use engaging, visual-focused language with relevant hashtags and emojis. Focus on storytelling and community engagement.`;
+    } else if (platform === 'youtube') {
+      platformSpecificInstructions = `Create YouTube video descriptions/comments with ${postLengthInstructions[postLength]}. Focus on video SEO, engaging descriptions, call-to-actions for likes/subscribes/comments, and relevant tags. Optimize for YouTube's algorithm.`;
+    } else {
+      platformSpecificInstructions = `Write professional posts for LinkedIn with ${postLengthInstructions[postLength]}. Focus on value and insights. Use appropriate formatting.`;
+    }
 
     const prompt = `Create EXACTLY ${threadLength} posts for a thread about "${topic}" for ${platform}. 
 

@@ -1,0 +1,133 @@
+/* YouTube Content Script Styles */
+
+form {
+  position: relative;
+}
+
+form button {
+  margin-left: 8px;
+}
+
+select {
+  appearance: none;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  color: #030303;
+  cursor: pointer;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  outline: none;
+  padding: 8px 12px;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #065fd4;
+  box-shadow: 0 0 0 2px rgba(6, 95, 212, 0.2);
+}
+
+select:hover {
+  border-color: #909090;
+}
+
+textarea, input {
+  appearance: none;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  color: #030303;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  outline: none;
+  padding: 8px 12px;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+textarea:focus, input:focus {
+  border-color: #065fd4;
+  box-shadow: 0 0 0 2px rgba(6, 95, 212, 0.2);
+}
+
+textarea:hover, input:hover {
+  border-color: #909090;
+}
+
+textarea::placeholder, input::placeholder {
+  color: #606060;
+  font-weight: 400;
+}
+
+/* Dark mode styles for YouTube */
+[data-theme-type="dark"] {
+  select,
+  textarea,
+  input {
+    background-color: #0f0f0f;
+    border-color: #303030;
+    color: #f1f1f1;
+  }
+
+  select:hover,
+  textarea:hover,
+  input:hover {
+    border-color: #555555;
+  }
+
+  select:focus,
+  textarea:focus,
+  input:focus {
+    border-color: #3ea6ff;
+    box-shadow: 0 0 0 2px rgba(62, 166, 255, 0.2);
+  }
+
+  textarea::placeholder,
+  input::placeholder {
+    color: #aaaaaa;
+  }
+}
+
+/* YouTube specific adjustments */
+ytd-comment-simplebox-renderer select,
+ytd-comment-simplebox-renderer textarea,
+ytd-comment-simplebox-renderer input,
+#placeholder-area select,
+#placeholder-area textarea,
+#placeholder-area input {
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 13px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  select,
+  textarea,
+  input {
+    font-size: 16px; /* Prevent zoom on mobile */
+  }
+}
+
+/* Integration with YouTube's comment system */
+.ytd-commentbox select,
+.ytd-commentbox textarea,
+.ytd-commentbox input {
+  border-radius: 2px;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+/* Shorts page specific styling */
+ytd-reel-video-renderer select,
+ytd-reel-video-renderer textarea,
+ytd-reel-video-renderer input {
+  border-radius: 12px;
+}
+
+/* Community tab styling */
+ytd-backstage-post-renderer select,
+ytd-backstage-post-renderer textarea,
+ytd-backstage-post-renderer input {
+  border-radius: 8px;
+} 

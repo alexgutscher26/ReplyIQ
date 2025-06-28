@@ -66,6 +66,29 @@ export default function SeedGeneralForm() {
     },
   });
 
+  const cleanupAIModels = api.settings.cleanupInvalidAIModels.useMutation({
+    onSuccess: async (data) => {
+      // Force refetch
+      await utils.settings.general.refetch();
+
+      toast.success("Success", {
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast.error("Uh oh! Something went wrong.", {
+        description:
+          error.message || "Failed to cleanup AI models. Please try again.",
+        action: {
+          label: "Try again",
+          onClick: () => {
+            cleanupAIModels.mutate();
+          },
+        },
+      });
+    },
+  });
+
   const form = useForm<DevFormValues>({
     resolver: zodResolver(devFormSchema),
   });
@@ -77,6 +100,12 @@ export default function SeedGeneralForm() {
   async function handleSeed() {
     seed.mutate();
   }
+
+  async function handleCleanupAIModels() {
+    cleanupAIModels.mutate();
+  }
+
+  const isLoading = reset.isPending || seed.isPending || cleanupAIModels.isPending;
 
   return (
     <Form {...form}>
@@ -94,7 +123,7 @@ export default function SeedGeneralForm() {
                   size={"sm"}
                   className="w-fit"
                   onClick={handleReset}
-                  disabled={reset.isPending || seed.isPending}
+                  disabled={isLoading}
                 >
                   {reset.isPending ? (
                     <Loader2 className="animate-spin" />
@@ -123,7 +152,7 @@ export default function SeedGeneralForm() {
                   size={"sm"}
                   className="w-fit"
                   onClick={handleSeed}
-                  disabled={reset.isPending || seed.isPending}
+                  disabled={isLoading}
                 >
                   {seed.isPending ? (
                     <Loader2 className="animate-spin" />
@@ -134,6 +163,35 @@ export default function SeedGeneralForm() {
               </FormControl>
               <FormDescription>
                 Seed the user database with dummy data.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="seed"
+          render={() => (
+            <FormItem className="flex flex-col">
+              <FormLabel>AI Model Cleanup</FormLabel>
+              <FormControl>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size={"sm"}
+                  className="w-fit"
+                  onClick={handleCleanupAIModels}
+                  disabled={isLoading}
+                >
+                  {cleanupAIModels.isPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Cleanup Invalid AI Models"
+                  )}
+                </Button>
+              </FormControl>
+              <FormDescription>
+                Remove invalid AI models and replace with valid defaults.
               </FormDescription>
               <FormMessage />
             </FormItem>

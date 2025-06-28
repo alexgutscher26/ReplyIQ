@@ -8,6 +8,7 @@ import {
   Copy,
   ExternalLink,
   Eye,
+  Instagram,
   Lightbulb,
   Linkedin,
   Loader2,
@@ -16,6 +17,7 @@ import {
   Sparkles,
   TrendingUp,
   Twitter,
+  Youtube,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -32,7 +34,7 @@ interface ThreadTemplate {
   icon: React.ReactNode
   id: string
   name: string
-  platform: 'linkedin' | 'twitter'
+  platform: 'instagram' | 'linkedin' | 'twitter' | 'youtube'
   postLength: 'long' | 'medium' | 'short' | 'x-pro'
   threadLength: number
   tone: 'casual' | 'engaging' | 'humorous' | 'informative' | 'professional'
@@ -84,16 +86,40 @@ const THREAD_TEMPLATES: ThreadTemplate[] = [
     tone: 'engaging',
     topic: 'The moment that changed my career perspective',
   },
+  {
+    description: 'Visual storytelling with hooks',
+    icon: <Instagram className="h-3 w-3" />,
+    id: 'instagram-story',
+    name: 'Instagram Story',
+    platform: 'instagram',
+    postLength: 'medium',
+    threadLength: 6,
+    tone: 'engaging',
+    topic: 'Behind the scenes of my creative process',
+  },
+  {
+    description: 'Video content outline',
+    icon: <Youtube className="h-3 w-3" />,
+    id: 'youtube-content',
+    name: 'YouTube Content',
+    platform: 'youtube',
+    postLength: 'long',
+    threadLength: 4,
+    tone: 'informative',
+    topic: 'Creating engaging video content that converts viewers',
+  },
 ]
 
 const PLATFORM_LIMITS = {
+  instagram: { 'long': 2200, 'medium': 1500, 'short': 1000, 'x-pro': 2200 },
   linkedin: { 'long': 3000, 'medium': 2000, 'short': 1300, 'x-pro': 3000 },
   twitter: { 'long': 280, 'medium': 280, 'short': 280, 'x-pro': 25000 },
+  youtube: { 'long': 5000, 'medium': 3000, 'short': 2000, 'x-pro': 5000 },
 }
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState('')
-  const [platform, setPlatform] = useState<'linkedin' | 'twitter'>('twitter')
+  const [platform, setPlatform] = useState<'instagram' | 'linkedin' | 'twitter' | 'youtube'>('twitter')
   const [tone, setTone] = useState<'casual' | 'engaging' | 'humorous' | 'informative' | 'professional'>('engaging')
   const [threadLength, setThreadLength] = useState(5)
   const [postLength, setPostLength] = useState<'long' | 'medium' | 'short' | 'x-pro'>('short')
@@ -402,7 +428,9 @@ export function ThreadGenerator() {
               value={platform}
             >
               <option value="twitter">🐦 Twitter/X</option>
+              <option value="instagram">📸 Instagram</option>
               <option value="linkedin">💼 LinkedIn</option>
+              <option value="youtube">📺 YouTube</option>
             </select>
           </div>
 
@@ -490,13 +518,21 @@ export function ThreadGenerator() {
             ? (
                 <Twitter className="h-3 w-3 text-blue-500" />
               )
-            : (
-                <Linkedin className="h-3 w-3 text-blue-600" />
-              )}
+            : platform === 'instagram'
+              ? (
+                  <Instagram className="h-3 w-3 text-pink-500" />
+                )
+              : platform === 'youtube'
+                ? (
+                    <Youtube className="h-3 w-3 text-red-500" />
+                  )
+                : (
+                    <Linkedin className="h-3 w-3 text-blue-600" />
+                  )}
           <div className="text-xs text-muted-foreground">
             Optimized for
             {' '}
-            {platform === 'twitter' ? 'Twitter/X' : 'LinkedIn'}
+            {platform === 'twitter' ? 'Twitter/X' : platform === 'instagram' ? 'Instagram' : platform === 'youtube' ? 'YouTube' : 'LinkedIn'}
             {' '}
             • Max
             {' '}
@@ -546,7 +582,7 @@ export function ThreadGenerator() {
               {(previewMode ? thread : thread.slice(0, 3)).map((post, index) => (
                 <div
                   className={`bg-muted/50 rounded p-3 text-xs border-l-2 ${
-                    platform === 'twitter' ? 'border-l-blue-500' : 'border-l-blue-600'
+                    platform === 'twitter' ? 'border-l-blue-500' : platform === 'instagram' ? 'border-l-pink-500' : platform === 'youtube' ? 'border-l-red-500' : 'border-l-blue-600'
                   }`}
                   key={index}
                 >

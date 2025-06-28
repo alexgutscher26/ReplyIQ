@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     // Fetch AI settings from DB
     const settings = await db.query.settings.findFirst()
     const ai = settings?.general?.ai
-    const enabledModels = ai?.enabledModels ?? ['gpt-3.5-turbo']
+    const enabledModels = ai?.enabledModels ?? ['gpt-4o-mini']
     const apiKey = ai?.apiKey ?? process.env.OPENAI_API_KEY ?? ''
 
     if (!apiKey) {

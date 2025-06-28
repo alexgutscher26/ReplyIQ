@@ -330,6 +330,7 @@ Custom Prompt: ${customPrompt}`;
     const monthlyData = Array.from({ length: 12 }, (_, i) => ({
       name: new Date(0, i).toLocaleString("default", { month: "short" }),
       facebook: 0,
+      instagram: 0,
       twitter: 0,
       linkedin: 0,
       total: 0,
@@ -341,6 +342,7 @@ Custom Prompt: ${customPrompt}`;
         const month = row.createdAt.getMonth();
         if (month >= 0 && month < 12) {
           if (row.source === "facebook") monthlyData[month]!.facebook++;
+          if (row.source === "instagram") monthlyData[month]!.instagram++;
           if (row.source === "twitter") monthlyData[month]!.twitter++;
           if (row.source === "linkedin") monthlyData[month]!.linkedin++;
           monthlyData[month]!.total++;
@@ -478,11 +480,20 @@ Custom Prompt: ${customPrompt}`;
         .where(input?.isSiteWide ? undefined : eq(generations.userId, userId))
         .groupBy(generations.source);
 
+      const sources = results.map((result) => ({
+        source: result.source,
+        total: Number(result.total ?? 0),
+      }));
+
+      // Ensure all platforms are represented
+      const allPlatforms = ['x', 'facebook', 'linkedin', 'instagram', 'youtube'] as const
+      const completeData = allPlatforms.map(platform => {
+        const existing = sources.find(item => item.source === platform)
+        return existing ?? { source: platform, total: 0 }
+      })
+
       return {
-        sources: results.map((result) => ({
-          source: result.source,
-          total: Number(result.total ?? 0),
-        })),
+        sources: completeData,
         planLimit: activeBilling?.product?.limit ?? 0,
         currentMonthTotal,
         currentMonth: now.toLocaleString("default", { month: "long" }),

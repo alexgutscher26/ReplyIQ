@@ -19,6 +19,10 @@ export const chartConfig = {
     color: 'var(--chart-1)',
     label: 'Facebook',
   },
+  instagram: {
+    color: 'var(--chart-2)',
+    label: 'Instagram',
+  },
   linkedin: {
     color: 'var(--chart-3)',
     label: 'LinkedIn',
@@ -28,8 +32,12 @@ export const chartConfig = {
     label: 'Generations',
   },
   twitter: {
-    color: 'var(--chart-2)',
+    color: 'var(--chart-4)',
     label: 'Twitter',
+  },
+  youtube: {
+    color: 'var(--chart-5)',
+    label: 'YouTube',
   },
 } satisfies ChartConfig
 

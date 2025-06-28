@@ -14,6 +14,7 @@ import { getBaseUrl } from "@/utils";
 import {
   accountSettingsSchema,
   type AIModel,
+  AI_MODEL_LIST,
   aiModelProviderSettingsSchema,
   authSettingsSchema,
   contactFormSchema,
@@ -545,5 +546,53 @@ export const settingsRouter = createTRPCRouter({
   }),
   seed: adminProcedure.mutation(async () => {
     await seed(db, [user], { count: 20 });
+  }),
+  cleanupInvalidAIModels: adminProcedure.mutation(async ({ ctx }) => {
+    // Get all valid AI model keys
+    const validModels = AI_MODEL_LIST.map(model => model.key);
+    
+    // Find existing settings
+    const existingSettings = await ctx.db.query.settings.findFirst();
+    
+    if (!existingSettings?.general?.ai?.enabledModels) {
+      return { message: "No AI models to clean up", cleanedModels: [] };
+    }
+    
+    // Filter out invalid models and keep only valid ones
+    const currentModels = existingSettings.general.ai.enabledModels;
+    const cleanedModels = currentModels.filter((model: string) => 
+      validModels.includes(model as AIModel)
+    );
+    
+    // If any invalid models were found, update the settings
+    if (cleanedModels.length !== currentModels.length) {
+      const invalidModels = currentModels.filter((model: string) => 
+        !validModels.includes(model as AIModel)
+      );
+      
+      // If no valid models remain, set a default
+      const finalModels = cleanedModels.length > 0 ? cleanedModels : ['gpt-4o-mini'];
+      
+      await ctx.db
+        .update(settings)
+        .set({
+          general: {
+            ...existingSettings.general,
+            ai: {
+              ...existingSettings.general.ai,
+              enabledModels: finalModels,
+            },
+          },
+        })
+        .where(eq(settings.id, existingSettings.id));
+      
+      return { 
+        message: `Cleaned up ${invalidModels.length} invalid AI models`, 
+        cleanedModels: invalidModels,
+        newModels: finalModels
+      };
+    }
+    
+    return { message: "All AI models are valid", cleanedModels: [] };
   }),
 });

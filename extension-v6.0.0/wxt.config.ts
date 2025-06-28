@@ -23,6 +23,14 @@ const CONTENT_SCRIPTS = [
     js: ['content-scripts/facebook.js'],
     matches: ['*://*.facebook.com/*'],
   },
+  {
+    js: ['content-scripts/instagram.js'],
+    matches: ['*://*.instagram.com/*'],
+  },
+  {
+    js: ['content-scripts/youtube.js'],
+    matches: ['*://*.youtube.com/*'],
+  },
 ]
 
 // See https://wxt.dev/api/config.html
@@ -115,6 +123,8 @@ export default defineConfig({
       '*://x.com/*',
       '*://*.linkedin.com/*',
       '*://*.facebook.com/*',
+      '*://*.instagram.com/*',
+      '*://*.youtube.com/*',
     ],
 
     // Manifest version

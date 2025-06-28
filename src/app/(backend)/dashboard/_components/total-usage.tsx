@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
-import { 
-  MessagesSquare, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  MessagesSquare,
+  TrendingUp,
+  TrendingDown,
   Minus,
   RefreshCw,
   BarChart3,
@@ -47,35 +47,30 @@ const TotalUsage = memo(function TotalUsage({
   className,
 }: TotalUsageProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
-  const { 
-    data, 
-    refetch, 
-    isStale,
-    error,
-    isLoading 
-  } = api.usage.getTotalUsage.useQuery(
-    { isSiteWide },
-    {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-      suspense: false, // Disable suspense for better error handling
-    }
-  );
+
+  const { data, refetch, isStale, error, isLoading } =
+    api.usage.getTotalUsage.useQuery(
+      { isSiteWide },
+      {
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        refetchOnWindowFocus: false,
+        suspense: false, // Disable suspense for better error handling
+      },
+    );
 
   // Handle manual refresh
   const handleRefresh = useCallback(async () => {
     if (isRefreshing) return;
-    
+
     setIsRefreshing(true);
     try {
       await refetch();
       toast.success("Usage data refreshed", {
         icon: <CheckCircle2 className="size-4 text-green-500" />,
       });
-    } catch (error) {
+    } catch {
       toast.error("Failed to refresh data", {
-        icon: <AlertCircle className="size-4 text-destructive" />,
+        icon: <AlertCircle className="text-destructive size-4" />,
       });
     } finally {
       setIsRefreshing(false);
@@ -164,7 +159,13 @@ const TotalUsage = memo(function TotalUsage({
   // Loading state
   if (isLoading) {
     return (
-      <Card className={cn("transition-all duration-200", sizeStyles.card, className)}>
+      <Card
+        className={cn(
+          "transition-all duration-200",
+          sizeStyles.card,
+          className,
+        )}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <Skeleton className="h-5 w-24" />
           <Skeleton className="size-5 rounded" />
@@ -180,11 +181,13 @@ const TotalUsage = memo(function TotalUsage({
   // Error state
   if (error || !data) {
     return (
-      <Card className={cn(
-        "transition-all duration-200 border-destructive/20",
-        sizeStyles.card,
-        className
-      )}>
+      <Card
+        className={cn(
+          "border-destructive/20 transition-all duration-200",
+          sizeStyles.card,
+          className,
+        )}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className={sizeStyles.title}>
             {isSiteWide ? "Site Usage" : "Your Usage"}
@@ -200,7 +203,9 @@ const TotalUsage = memo(function TotalUsage({
             disabled={isRefreshing}
             className="h-7 text-xs"
           >
-            <RefreshCw className={cn("mr-1 size-3", isRefreshing && "animate-spin")} />
+            <RefreshCw
+              className={cn("mr-1 size-3", isRefreshing && "animate-spin")}
+            />
             Retry
           </Button>
         </CardContent>
@@ -209,14 +214,15 @@ const TotalUsage = memo(function TotalUsage({
   }
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group relative overflow-hidden transition-all duration-300",
-        "hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5",
-        interactive && "cursor-pointer hover:border-primary/20",
-        metrics?.isGrowing && "bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/10",
+        "hover:shadow-primary/5 hover:-translate-y-0.5 hover:shadow-lg",
+        interactive && "hover:border-primary/20 cursor-pointer",
+        metrics?.isGrowing &&
+          "bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/10",
         sizeStyles.card,
-        className
+        className,
       )}
       onClick={interactive ? onClick : undefined}
       role={interactive ? "button" : undefined}
@@ -224,27 +230,27 @@ const TotalUsage = memo(function TotalUsage({
       aria-label={`Total usage: ${metrics?.formattedTotal} generations`}
     >
       {/* Background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+      <div className="from-primary/5 absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
       <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className={cn(
-          "transition-colors group-hover:text-foreground",
-          sizeStyles.title
-        )}>
+        <CardTitle
+          className={cn(
+            "group-hover:text-foreground transition-colors",
+            sizeStyles.title,
+          )}
+        >
           {isSiteWide ? "Total Site Usage" : "Your Usage"}
         </CardTitle>
-        
+
         <div className="flex items-center gap-2">
           {/* Status indicators */}
           {showDetails && (
             <>
-              {isStale && (
-                <Clock className="size-3 text-yellow-500" />
-              )}
+              {isStale && <Clock className="size-3 text-yellow-500" />}
               <CheckCircle2 className="size-3 text-green-500" />
             </>
           )}
-          
+
           {/* Refresh button */}
           {showRefresh && (
             <Button
@@ -255,79 +261,89 @@ const TotalUsage = memo(function TotalUsage({
                 void handleRefresh();
               }}
               disabled={isRefreshing}
-              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="h-6 w-6 p-0 opacity-0 transition-opacity group-hover:opacity-100"
             >
-              <RefreshCw className={cn("size-3", isRefreshing && "animate-spin")} />
+              <RefreshCw
+                className={cn("size-3", isRefreshing && "animate-spin")}
+              />
             </Button>
           )}
-          
-          <MessagesSquare className={cn(
-            "text-muted-foreground transition-all group-hover:text-primary group-hover:scale-110",
-            sizeStyles.icon
-          )} />
+
+          <MessagesSquare
+            className={cn(
+              "text-muted-foreground group-hover:text-primary transition-all group-hover:scale-110",
+              sizeStyles.icon,
+            )}
+          />
         </div>
       </CardHeader>
-      
+
       <CardContent className="relative space-y-3">
         {/* Main metric */}
         <div className="flex items-end gap-2">
-          <div className={cn(
-            "transition-all group-hover:text-primary",
-            sizeStyles.value
-          )}>
+          <div
+            className={cn(
+              "group-hover:text-primary transition-all",
+              sizeStyles.value,
+            )}
+          >
             {metrics?.formattedTotal}
           </div>
-          {metrics?.total !== undefined && metrics.total !== parseFloat(metrics.formattedTotal.replace(/[^\d.-]/g, '')) && (
-            <div className="text-xs text-muted-foreground mb-1 font-mono">
-              {metrics.total.toLocaleString()}
-            </div>
-          )}
+          {metrics?.total !== undefined &&
+            metrics.total !==
+              parseFloat(metrics.formattedTotal.replace(/[^\d.-]/g, "")) && (
+              <div className="text-muted-foreground mb-1 font-mono text-xs">
+                {metrics.total.toLocaleString()}
+              </div>
+            )}
         </div>
 
         {/* Change indicator */}
         {showDetails && metrics && (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all",
-                metrics.trendBg,
-                metrics.trendColor
-              )}>
+              <div
+                className={cn(
+                  "flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-all",
+                  metrics.trendBg,
+                  metrics.trendColor,
+                )}
+              >
                 <metrics.TrendIcon className="size-3" />
                 <span>
                   {metrics.percentageChange > 0 ? "+" : ""}
                   {metrics.percentageChange.toFixed(1)}%
                 </span>
               </div>
-              
+
               {metrics.isSignificantChange && (
-                <Badge 
+                <Badge
                   variant={metrics.isGrowing ? "default" : "secondary"}
-                  className="text-xs px-1.5 py-0.5"
+                  className="px-1.5 py-0.5 text-xs"
                 >
                   {metrics.growthLabel}
                 </Badge>
               )}
             </div>
-            
+
             {interactive && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-6 px-2 text-xs opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={(e) => {
                   e.stopPropagation();
                   // Could open detailed analytics
                 }}
               >
-                <BarChart3 className="size-3 mr-1" />
+                <BarChart3 className="mr-1 size-3" />
                 Details
               </Button>
             )}
           </div>
         )}
 
-        <p className="text-muted-foreground text-xs transition-colors group-hover:text-muted-foreground/80">
+        <p className="text-muted-foreground group-hover:text-muted-foreground/80 text-xs transition-colors">
           from last month
         </p>
       </CardContent>

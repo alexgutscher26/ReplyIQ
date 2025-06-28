@@ -5,9 +5,9 @@ run next build and fix all errors and then run it again and fix those and keep d
 ## 🚀 New Features
 
 ### Social Media Platform Expansion
-- [ ] **Instagram Integration** - Add support for Instagram comments and DMs
+- [X] **Instagram Integration** - Add support for Instagram comments and DMs
 - [ ] **TikTok Support** - Enable AI replies for TikTok comments
-- [ ] **YouTube Integration** - Support for YouTube comment replies
+- [X] **YouTube Integration** - Support for YouTube comment replies
 - [ ] **Reddit Support** - AI-powered Reddit comment and post replies
 - [ ] **Discord Bot Integration** - Create Discord bot for server management
 - [ ] **Telegram Bot** - AI assistant for Telegram groups and channels

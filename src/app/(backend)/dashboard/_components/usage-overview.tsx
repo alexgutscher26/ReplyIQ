@@ -23,18 +23,26 @@ import {
   XAxis,
 } from "recharts";
 
-const chartConfig = {
+export const chartConfig = {
   facebook: {
-    label: "Facebook",
-    color: "hsl(var(--chart-1))",
+    color: 'hsl(var(--chart-1))',
+    label: 'Facebook',
+  },
+  instagram: {
+    color: 'hsl(var(--chart-2))',
+    label: 'Instagram',
   },
   linkedin: {
-    label: "LinkedIn", 
-    color: "hsl(var(--chart-2))",
+    color: 'hsl(var(--chart-3))',
+    label: 'LinkedIn',
   },
   twitter: {
-    label: "Twitter",
-    color: "hsl(var(--chart-3))",
+    color: 'hsl(var(--chart-4))',
+    label: 'Twitter',
+  },
+  youtube: {
+    color: 'hsl(var(--chart-5))',
+    label: 'YouTube',
   },
 } satisfies ChartConfig;
 

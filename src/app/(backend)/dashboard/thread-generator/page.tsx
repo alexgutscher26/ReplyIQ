@@ -25,10 +25,12 @@ interface ThreadResponse {
   totalPosts: number;
 }
 
+type Platform = 'instagram' | 'linkedin' | 'twitter' | 'youtube'
+
 export default function ThreadGeneratorPage() {
   const searchParams = useSearchParams();
   const [topic, setTopic] = useState("");
-  const [platform, setPlatform] = useState<"twitter" | "linkedin">("twitter");
+  const [platform, setPlatform] = useState<Platform>("twitter");
   const [threadLength, setThreadLength] = useState(5);
   const [postLength, setPostLength] = useState<"short" | "medium" | "long" | "x-pro">("short");
   const [tone, setTone] = useState<"professional" | "casual" | "informative" | "engaging" | "humorous">("engaging");
@@ -55,7 +57,7 @@ export default function ThreadGeneratorPage() {
         if (topicParam) {
           setTopic(topicParam);
         }
-        if (platformParam === 'twitter' || platformParam === 'linkedin') {
+        if (platformParam === 'twitter' || platformParam === 'instagram' || platformParam === 'linkedin' || platformParam === 'youtube') {
           setPlatform(platformParam);
         }
         if (toneParam === 'professional' || toneParam === 'casual' || 
@@ -191,13 +193,15 @@ export default function ThreadGeneratorPage() {
                 <Label htmlFor="platform" className="text-sm font-medium">
                   Platform
                 </Label>
-                <Select value={platform} onValueChange={(value: "twitter" | "linkedin") => setPlatform(value)}>
+                <Select value={platform} onValueChange={(value: Platform) => setPlatform(value)}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select platform" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="twitter">Twitter/X</SelectItem>
+                    <SelectItem value="instagram">Instagram</SelectItem>
                     <SelectItem value="linkedin">LinkedIn</SelectItem>
+                    <SelectItem value="youtube">YouTube</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -328,6 +332,21 @@ export default function ThreadGeneratorPage() {
                               postLength === 'medium' ? `${post.length}/2,200 chars` :
                               postLength === 'long' ? `${post.length}/4,000 chars` :
                               `${post.length}/25,000 chars (X Pro)`
+                            ) : platform === 'instagram' ? (
+                              postLength === 'short' ? `${post.length}/1,000 chars` :
+                              postLength === 'medium' ? `${post.length}/1,500 chars` :
+                              postLength === 'long' ? `${post.length}/2,200 chars` :
+                              `${post.length}/2,200 chars (X Pro)`
+                            ) : platform === 'linkedin' ? (
+                              postLength === 'short' ? `${post.length}/1,300 chars` :
+                              postLength === 'medium' ? `${post.length}/2,000 chars` :
+                              postLength === 'long' ? `${post.length}/3,000 chars` :
+                              `${post.length}/3,000 chars (X Pro)`
+                            ) : platform === 'youtube' ? (
+                              postLength === 'short' ? `${post.length}/2,000 chars` :
+                              postLength === 'medium' ? `${post.length}/3,000 chars` :
+                              postLength === 'long' ? `${post.length}/5,000 chars` :
+                              `${post.length}/5,000 chars (X Pro)`
                             ) : `${post.length} chars`}
                           </span>
                         </div>
