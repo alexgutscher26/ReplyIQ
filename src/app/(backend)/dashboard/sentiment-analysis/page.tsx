@@ -85,6 +85,14 @@ const ANALYSIS_OPTIONS = [
   { value: 'comprehensive', label: 'Comprehensive', description: 'In-depth analysis with cultural context' },
 ];
 
+/**
+ * Determines and returns an icon based on the sentiment provided.
+ *
+ * This function takes a string input `sentiment`, converts it to lowercase,
+ * and checks if it includes keywords 'positive', 'negative', or neither.
+ * It returns corresponding icons: TrendingUp for positive, TrendingDown for negative,
+ * and Minus for neutral sentiments.
+ */
 const getSentimentIcon = (sentiment: string) => {
   const lowerSentiment = sentiment.toLowerCase();
   if (lowerSentiment.includes('positive')) return <TrendingUp className="size-5 text-green-600" />;
@@ -92,6 +100,15 @@ const getSentimentIcon = (sentiment: string) => {
   return <Minus className="size-5 text-gray-600" />;
 };
 
+/**
+ * Determines the color classes based on the sentiment input.
+ *
+ * This function converts the sentiment string to lowercase and checks if it includes
+ * 'positive', 'negative', or neither. It returns corresponding Tailwind CSS color
+ * class strings for positive, negative, or neutral sentiments respectively.
+ *
+ * @param sentiment - The sentiment string to evaluate.
+ */
 const getSentimentColor = (sentiment: string) => {
   const lowerSentiment = sentiment.toLowerCase();
   if (lowerSentiment.includes('positive')) return 'text-green-600 bg-green-50 border-green-200';
@@ -99,6 +116,15 @@ const getSentimentColor = (sentiment: string) => {
   return 'text-gray-600 bg-gray-50 border-gray-200';
 };
 
+/**
+ * Determine the appropriate emotion icon based on the input emotion string.
+ *
+ * The function converts the input emotion to lowercase and checks if it includes certain keywords associated with different emotions.
+ * Depending on the matched emotion, it returns a corresponding React component representing the emotion icon.
+ *
+ * @param emotion - A string describing an emotion.
+ * @returns A React component representing the emotion icon.
+ */
 const getEmotionIcon = (emotion: string) => {
   const lowerEmotion = emotion.toLowerCase();
   if (lowerEmotion.includes('joy') || lowerEmotion.includes('happy')) return <Heart className="size-4 text-pink-500" />;
@@ -108,6 +134,17 @@ const getEmotionIcon = (emotion: string) => {
   return <Eye className="size-4 text-gray-500" />;
 };
 
+/**
+ * Determines the intensity color based on a given score.
+ *
+ * This function evaluates the provided score and returns a corresponding CSS class name
+ * that represents the intensity level. Scores of 8 or above are classified as 'high' and
+ * return 'bg-red-500'. Scores between 6 and 7 (inclusive) are 'medium' and return 'bg-orange-500'.
+ * Scores between 4 and 5 (inclusive) are 'low' and return 'bg-yellow-500'. Any score below 4
+ * is considered 'very low' and returns 'bg-green-500'.
+ *
+ * @param score - A numeric value representing the intensity level.
+ */
 const getIntensityColor = (score: number) => {
   if (score >= 8) return 'bg-red-500';
   if (score >= 6) return 'bg-orange-500';
@@ -115,6 +152,12 @@ const getIntensityColor = (score: number) => {
   return 'bg-green-500';
 };
 
+/**
+ * This React component renders a sentiment analysis interface, allowing users to input text and view detailed sentiment analysis results.
+ *
+ * @function SentimentAnalysis
+ * @returns {JSX.Element} - The rendered sentiment analysis interface.
+ */
 export default function SentimentAnalysisPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<SentimentResult | null>(null);
@@ -138,6 +181,16 @@ export default function SentimentAnalysisPage() {
     setCharCount(watchedText?.length ?? 0);
   }, [watchedText]);
 
+  /**
+   * Handle form submission for sentiment analysis.
+   *
+   * This function sends the provided form values to the server for sentiment analysis,
+   * tracks the result, and updates the UI accordingly. It handles both successful
+   * and failed responses, updating the loading state and displaying appropriate toast
+   * messages.
+   *
+   * @param values - An object containing form values for sentiment analysis.
+   */
   const onSubmit = async (values: SentimentFormValues) => {
     const startTime = Date.now();
     setIsLoading(true);
@@ -195,6 +248,9 @@ export default function SentimentAnalysisPage() {
     }
   };
 
+  /**
+   * Copies text to clipboard and shows a success message, then clears the copied text after 2 seconds.
+   */
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -215,6 +271,9 @@ export default function SentimentAnalysisPage() {
     }
   };
 
+  /**
+   * Resets the form and clears results and character count.
+   */
   const resetForm = () => {
     form.reset();
     setResults(null);
