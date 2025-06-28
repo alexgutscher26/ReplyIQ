@@ -18,6 +18,7 @@ import {
   ChartArea,
   Command,
   FileChartLine,
+  Image,
   LayoutDashboard,
   LifeBuoy,
   MessageSquare,
@@ -61,6 +62,12 @@ const data = {
       url: "/dashboard/video-script-generator",
       icon: Video,
       description: "AI-powered video scripts",
+    },
+    {
+      title: "Image Caption Generator",
+      url: "/dashboard/image-caption-generator", 
+      icon: Image,
+      description: "AI captions for uploaded images",
     },
     {
       title: "Reports",

@@ -16,7 +16,7 @@ run next build and fix all errors and then run it again and fix those and keep d
 ### AI & Content Generation
 - [ ] **Content Scheduling** - Schedule AI-generated posts across platforms
 - [X] **Hashtag Generator** - AI-powered hashtag suggestions
-- [ ] **Image Caption Generator** - AI captions for uploaded images
+- [X] **Image Caption Generator** - AI captions for uploaded images
 - [X] **Thread Generator** - Create Twitter/LinkedIn thread content
 - [ ] **Story Generator** - AI-generated Instagram/Facebook stories
 - [X] **Video Script Generator** - AI scripts for video content
