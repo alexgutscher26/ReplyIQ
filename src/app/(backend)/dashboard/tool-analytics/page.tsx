@@ -76,6 +76,15 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 // Tool icon mapping
+/**
+ * Returns an icon component based on the provided tool name.
+ *
+ * This function uses a switch statement to map each tool name to its corresponding icon component.
+ * If the tool name does not match any of the predefined cases, it defaults to returning an Activity icon.
+ *
+ * @param toolName - The name of the tool for which to retrieve the icon.
+ * @returns An icon component based on the tool name.
+ */
 const getToolIcon = (toolName: string) => {
   switch (toolName) {
     case 'hashtag-generator':
@@ -100,6 +109,16 @@ const getToolIcon = (toolName: string) => {
 };
 
 // Get trend indicator
+/**
+ * Determines and returns a trend indicator based on growth value.
+ *
+ * This function checks the growth parameter to decide which trend indicator
+ * component to render. If growth is positive, it renders a TrendingUp icon with
+ * green color; if negative, it renders a TrendingDown icon with red color. For
+ * no growth (zero), it returns a neutral div element.
+ *
+ * @param {number} growth - The growth value indicating the trend direction.
+ */
 const getTrendIndicator = (growth: number) => {
   if (growth > 0) {
     return <TrendingUp className="h-4 w-4 text-green-500" />;
@@ -110,6 +129,15 @@ const getTrendIndicator = (growth: number) => {
 };
 
 // Overview stats cards
+/**
+ * Render a grid of overview cards displaying analytics data.
+ *
+ * This function fetches tool analytics data using `api.toolAnalytics.getOverviewStats.useQuery`.
+ * It conditionally renders loading skeletons or the actual card content based on the loading state.
+ *
+ * Each card represents different metrics such as Total Usage, Active Users, Usage This Week, and Most Popular Tool.
+ * The cards are displayed in a grid layout with responsive column configurations for medium and large screens.
+ */
 function OverviewCards() {
   const { data: overview, isLoading } = api.toolAnalytics.getOverviewStats.useQuery();
 
@@ -192,6 +220,17 @@ function OverviewCards() {
 }
 
 // Tool usage statistics chart
+/**
+ * A React component that renders a tool usage chart based on the specified period.
+ *
+ * The component fetches tool usage statistics using the `api.toolAnalytics.getToolUsageStats.useQuery` hook.
+ * It displays a loading state with skeletons while fetching data. Once the data is available, it renders a bar chart
+ * showing usage breakdown by AI tool for the given period. The chart includes tooltips that display detailed information
+ * about each tool's usage, unique users, and average duration if applicable.
+ *
+ * @param {Object} props - The component props.
+ * @param {"7d" | "30d" | "90d" | "1y"} props.period - The time period for which to display the tool usage statistics.
+ */
 function ToolUsageChart({ period }: { period: "7d" | "30d" | "90d" | "1y" }) {
   const { data: stats, isLoading } = api.toolAnalytics.getToolUsageStats.useQuery({ period });
 
@@ -272,6 +311,16 @@ function ToolUsageChart({ period }: { period: "7d" | "30d" | "90d" | "1y" }) {
 }
 
 // Category breakdown pie chart
+/**
+ * Renders a category breakdown card displaying tool usage statistics in a pie chart format.
+ *
+ * The component fetches tool usage stats based on the provided period and renders a loading state while data is being fetched.
+ * Upon receiving the data, it displays a pie chart showing the usage by tool category. Each slice of the pie chart is colored
+ * using predefined color themes. A custom tooltip is implemented to show detailed information when hovering over each slice.
+ *
+ * @param period - The time period for which to fetch the tool usage stats, one of "7d", "30d", "90d", or "1y".
+ * @returns A React component rendering the category breakdown card.
+ */
 function CategoryBreakdown({ period }: { period: "7d" | "30d" | "90d" | "1y" }) {
   const { data: stats, isLoading } = api.toolAnalytics.getToolUsageStats.useQuery({ period });
 
@@ -352,6 +401,17 @@ function CategoryBreakdown({ period }: { period: "7d" | "30d" | "90d" | "1y" }) 
 }
 
 // Performance metrics
+/**
+ * Renders performance metrics for a specified period using API data.
+ *
+ * This function fetches tool performance data based on the provided period
+ * and displays it in a card format. If data is loading, it shows skeleton
+ * loaders. Once data is available, it maps over the top 8 tools to display
+ * their names, usage statistics, and growth trends with color-coded indicators.
+ *
+ * @param {Object} params - The configuration object for the function.
+ * @param {"7d" | "30d" | "90d"} params.period - The time period for which to fetch performance metrics.
+ */
 function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
   const { data: performance, isLoading } = api.toolAnalytics.getToolPerformance.useQuery({ period });
 
@@ -414,6 +474,18 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
 }
 
 // Top users table
+/**
+ * Renders a card displaying top users based on specified period.
+ *
+ * This component fetches tool usage statistics and displays the top users
+ * in a structured format. If data is loading, it shows skeleton loaders.
+ * The component uses the `api.toolAnalytics.getToolUsageStats.useQuery`
+ * hook to fetch the necessary data.
+ *
+ * @param {Object} props - The component props.
+ * @param {"7d" | "30d" | "90d" | "1y"} props.period - The time period for which
+ *   to display top users. Can be one of "7d", "30d", "90d", or "1y".
+ */
 function TopUsers({ period }: { period: "7d" | "30d" | "90d" | "1y" }) {
   const { data: stats, isLoading } = api.toolAnalytics.getToolUsageStats.useQuery({ period });
 
@@ -478,6 +550,9 @@ function TopUsers({ period }: { period: "7d" | "30d" | "90d" | "1y" }) {
   );
 }
 
+/**
+ * Renders a page with tool analytics, including usage charts and user statistics.
+ */
 export default function ToolAnalyticsPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "1y">("30d");
 
