@@ -25,6 +25,16 @@ interface CaptionResponse {
   includeHashtags: boolean;
 }
 
+/**
+ * ImageCaptionGeneratorPage component for generating image captions using AI.
+ *
+ * This component manages the state of an image upload, caption generation process,
+ * and provides UI controls for selecting image styles, platforms, and options to include hashtags.
+ * It handles file uploads, form submissions, API requests for caption generation,
+ * clipboard operations for copying generated captions, and form resets.
+ *
+ * @returns A React functional component rendering the Image Caption Generator page.
+ */
 export default function ImageCaptionGeneratorPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -53,6 +63,14 @@ export default function ImageCaptionGeneratorPage() {
     },
   });
 
+  /**
+   * Handles image selection from an input event.
+   *
+   * This function processes a file selected by the user, sets it as the selected image,
+   * clears any existing error, and creates a data URL preview of the image.
+   *
+   * @param event - The React change event triggered by the file input.
+   */
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -68,6 +86,13 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Handles the image upload process.
+   *
+   * This function checks if an image is selected, sets the uploading state to true,
+   * and initiates the upload process. If an error occurs during the upload,
+   * it captures the error message and updates the error state accordingly.
+   */
   const handleUpload = async () => {
     if (!selectedImage) return;
     
@@ -81,6 +106,16 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Handles the generation of an image caption based on uploaded image details.
+   *
+   * This function first checks if an imageUrl is provided. If not, it sets an error message and exits.
+   * It then sends a POST request to the `/api/ai/image-captions` endpoint with the image details including style, platform, and includeHashtags.
+   * Upon receiving a response, it processes the data to extract the caption or error message accordingly.
+   * If any network error occurs during the fetch operation, it sets an appropriate error message.
+   *
+   * @returns void
+   */
   const handleGenerate = async () => {
     if (!imageUrl) {
       setError("Please upload an image first");
@@ -117,6 +152,9 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Copies caption text to clipboard and sets copied state.
+   */
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(caption);
@@ -127,6 +165,9 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Resets form fields and state variables to their initial values.
+   */
   const resetForm = () => {
     setSelectedImage(null);
     setImageUrl("");
