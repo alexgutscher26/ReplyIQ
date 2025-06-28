@@ -19,6 +19,8 @@ import {
   Command,
   FileChartLine,
   Image,
+  Instagram,
+  Languages,
   LayoutDashboard,
   LifeBuoy,
   MessageSquare,
@@ -68,6 +70,18 @@ const data = {
       url: "/dashboard/image-caption-generator", 
       icon: Image,
       description: "AI captions for uploaded images",
+    },
+    {
+      title: "Story Generator",
+      url: "/dashboard/story-generator",
+      icon: Instagram,
+      description: "AI-generated Instagram/Facebook stories",
+    },
+    {
+      title: "Language Translator",
+      url: "/dashboard/language-translator",
+      icon: Languages,
+      description: "Multi-language translation with AI context",
     },
     {
       title: "Reports",

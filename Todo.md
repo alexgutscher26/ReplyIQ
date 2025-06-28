@@ -14,14 +14,13 @@ run next build and fix all errors and then run it again and fix those and keep d
 - [ ] **WhatsApp Business Integration** - Automated customer service replies
 
 ### AI & Content Generation
-- [ ] **Content Scheduling** - Schedule AI-generated posts across platforms
 - [X] **Hashtag Generator** - AI-powered hashtag suggestions
 - [X] **Image Caption Generator** - AI captions for uploaded images
 - [X] **Thread Generator** - Create Twitter/LinkedIn thread content
-- [ ] **Story Generator** - AI-generated Instagram/Facebook stories
+- [X] **Story Generator** - AI-generated Instagram/Facebook stories
 - [X] **Video Script Generator** - AI scripts for video content
 - [X] **Emoji Suggestions** - Context-aware emoji recommendations
-- [ ] **Language Translation** - Multi-language reply generation
+- [X] **Language Translation** - Multi-language reply generation
 - [ ] **Sentiment Analysis** - Analyze post sentiment before replying
 - [ ] **Brand Voice Training** - Custom AI models trained on brand voice
 
