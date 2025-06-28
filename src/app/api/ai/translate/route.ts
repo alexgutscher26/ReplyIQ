@@ -1,8 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { generateText } from 'ai';
-import { getAIInstance } from '@/server/utils';
+import { getAIInstance, getSession } from '@/server/utils';
 import { db } from '@/server/db';
+import { trackToolUsageServer } from '@/utils/track-tool-usage';
 
 const translateSchema = z.object({
   text: z.string().min(1, 'Text is required'),
@@ -52,11 +53,16 @@ const SUPPORTED_LANGUAGES = {
 } as const;
 
 export async function POST(req: NextRequest) {
+  const startTime = Date.now();
+  
   try {
     const body: unknown = await req.json();
     const { text, sourceLanguage, targetLanguage, style, context, tone, includeAlternatives } = translateSchema.parse(body);
 
     console.log('Translation request:', { sourceLanguage, targetLanguage, style, context, tone });
+
+    // Get the session for tracking
+    const session = await getSession();
 
     const settings = await db.query.settings.findFirst();
     const ai = settings?.general?.ai;
@@ -154,7 +160,7 @@ ${includeAlternatives ? '**Alternative 1:** [Alternative translation]\n**Alterna
       }
     }
 
-    return NextResponse.json({ 
+    const responseData = { 
       ...translationData,
       originalText: text,
       sourceLanguage,
@@ -166,7 +172,31 @@ ${includeAlternatives ? '**Alternative 1:** [Alternative translation]\n**Alterna
       includeAlternatives,
       characterCount: translationData.primaryTranslation.length,
       wordCount: translationData.primaryTranslation.split(/\s+/).length
-    });
+    };
+
+    // Track usage analytics
+    if (session?.user?.id) {
+      const duration = Date.now() - startTime;
+      await trackToolUsageServer(
+        db,
+        session.user.id,
+        'language-translator',
+        {
+          sourceLanguage,
+          targetLanguage,
+          style,
+          context,
+          tone,
+          textLength: text.length,
+          hasAlternatives: includeAlternatives,
+          success: true,
+        },
+        duration,
+        result.usage?.totalTokens
+      );
+    }
+
+    return NextResponse.json(responseData);
   } catch (error: unknown) {
     console.error('Translation error:', error);
     

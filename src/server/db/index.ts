@@ -7,6 +7,7 @@ import * as generationsSchema from "./schema/generations-schema";
 import * as postSchema from "./schema/post-schema";
 import * as productsSchema from "./schema/products-schema";
 import * as settingsSchema from "./schema/settings-schema";
+import * as toolAnalyticsSchema from "./schema/tool-analytics-schema";
 import * as usageSchema from "./schema/usage-schema";
 
 /**
@@ -29,5 +30,6 @@ export const db = drizzle(conn, {
     ...billingSchema,
     ...usageSchema,
     ...generationsSchema,
+    ...toolAnalyticsSchema,
   },
 });

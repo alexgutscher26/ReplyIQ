@@ -15,6 +15,7 @@ import { useSession } from "@/hooks/use-auth-hooks";
 import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
 import {
+  Brain,
   ChartArea,
   Command,
   FileChartLine,
@@ -84,6 +85,12 @@ const data = {
       description: "Multi-language translation with AI context",
     },
     {
+      title: "Sentiment Analysis",
+      url: "/dashboard/sentiment-analysis",
+      icon: Brain,
+      description: "Analyze emotional tone before responding",
+    },
+    {
       title: "Reports",
       url: "/dashboard/reports",
       icon: ChartArea,
@@ -96,6 +103,13 @@ const data = {
       icon: FileChartLine,
       requireAdmin: true,
       description: "Performance insights",
+    },
+    {
+      title: "Tool Analytics",
+      url: "/dashboard/tool-analytics",
+      icon: PieChart,
+      requireAdmin: true,
+      description: "AI tool usage analytics",
     },
     {
       title: "Products",

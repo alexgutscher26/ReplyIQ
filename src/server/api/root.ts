@@ -3,6 +3,7 @@ import { generationRouter } from "@/server/api/routers/generations";
 import { paymentsRouter } from "@/server/api/routers/payments";
 import { productsRouter } from "@/server/api/routers/products";
 import { settingsRouter } from "@/server/api/routers/settings";
+import { toolAnalyticsRouter } from "@/server/api/routers/tool-analytics";
 import { usageRouter } from "@/server/api/routers/usage";
 import { userRouter } from "@/server/api/routers/user";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   billings: billingsRouter,
   usage: usageRouter,
   generations: generationRouter,
+  toolAnalytics: toolAnalyticsRouter,
 });
 
 // export type definition of API
