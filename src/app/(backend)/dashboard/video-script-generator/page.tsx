@@ -101,6 +101,14 @@ const SCRIPT_TEMPLATES = [
   }
 ];
 
+/**
+ * VideoScriptGenerator component
+ *
+ * This component provides a user interface for generating, customizing, and managing video scripts.
+ * Users can configure script parameters, select templates, view advanced settings, and access saved scripts.
+ *
+ * @component
+ */
 export default function VideoScriptGeneratorPage() {
   const [topic, setTopic] = useState("");
   const [videoType, setVideoType] = useState<"educational" | "promotional" | "entertainment" | "tutorial" | "explainer">("educational");
@@ -121,6 +129,14 @@ export default function VideoScriptGeneratorPage() {
   const [savedScripts, setSavedScripts] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("generate");
 
+  /**
+   * Analyzes a script to provide metrics and suggestions for improvement.
+   *
+   * This function calculates the word count, reading time, average words per sentence,
+   * and engagement score based on various factors such as presence of questions, direct address,
+   * sentence length, and punctuation. It also generates suggestions for enhancing the script's
+   * readability and engagement.
+   */
   const analyzeScript = (scriptText: string): ScriptAnalysis => {
     const words = scriptText.trim().split(/\s+/).length;
     const readingTime = Math.ceil(words / 150); // Average reading speed
@@ -149,6 +165,16 @@ export default function VideoScriptGeneratorPage() {
     };
   };
 
+  /**
+   * Handles the generation of a video script by sending a request to the server and updating the UI based on the response.
+   *
+   * This function sets loading state, clears previous errors, and resets script data before initiating a network request.
+   * It simulates progress by incrementally updating the progress bar. Upon successful response, it processes the script
+   * data and updates the UI accordingly. In case of an error, it sets an appropriate error message. Finally, it ensures
+   * the loading state is reset regardless of the outcome.
+   *
+   * @returns A promise that resolves when the network request completes.
+   */
   const handleGenerate = async () => {
     setLoading(true);
     setError(null);
@@ -212,6 +238,9 @@ export default function VideoScriptGeneratorPage() {
     }
   };
 
+  /**
+   * Copies the given text to the clipboard and sets a copied state.
+   */
   const copyToClipboard = async (text: string = script) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -222,12 +251,18 @@ export default function VideoScriptGeneratorPage() {
     }
   };
 
+  /**
+   * Saves the current script to the saved scripts list if it exists and is not already saved.
+   */
   const saveScript = () => {
     if (script && !savedScripts.includes(script)) {
       setSavedScripts([...savedScripts, script]);
     }
   };
 
+  /**
+   * Downloads the script in either 'txt' or 'json' format.
+   */
   const downloadScript = (format: 'txt' | 'json') => {
     if (!script) return;
     
@@ -264,11 +299,23 @@ export default function VideoScriptGeneratorPage() {
     URL.revokeObjectURL(url);
   };
 
+  /**
+   * Sets topic and video type based on the provided template.
+   */
   const loadTemplate = (template: typeof SCRIPT_TEMPLATES[0]) => {
     setTopic(template.example);
     setVideoType(template.id === "tutorial" ? "tutorial" : template.id === "review" ? "educational" : "educational");
   };
 
+  /**
+   * Retrieves the icon associated with a given platform.
+   *
+   * This function uses a switch statement to match the input platform string
+   * against predefined cases and returns the corresponding icon emoji.
+   * If the platform does not match any known case, it defaults to returning "📱".
+   *
+   * @param platform - The name of the platform for which to retrieve the icon.
+   */
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case "youtube": return "🎥";
