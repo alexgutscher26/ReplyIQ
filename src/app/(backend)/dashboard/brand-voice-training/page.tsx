@@ -79,6 +79,22 @@ const TONE_ATTRIBUTES = [
   'Playful', 'Direct', 'Warm', 'Expert', 'Approachable'
 ];
 
+/**
+ * A component that displays a brand voice card with various details and actions.
+ *
+ * This component renders a card containing information about a brand voice, including its name,
+ * industry, training status, progress, tone attributes, statistics, and actionable buttons for
+ * training, generating, editing, viewing analytics, and deleting the voice. The card also displays
+ * appropriate icons and colors based on the training status.
+ *
+ * @param {object} props - The component's props.
+ * @param {BrandVoice} props.voice - The brand voice data to be displayed.
+ * @param {function} props.onTrain - A function to handle the training action of the voice.
+ * @param {function} props.onGenerate - A function to handle the generation action of the voice.
+ * @param {function} props.onEdit - A function to handle the edit action of the voice.
+ * @param {function} props.onDelete - A function to handle the delete action of the voice.
+ * @param {function} props.onViewAnalytics - A function to handle the view analytics action of the voice.
+ */
 function BrandVoiceCard({ voice, onTrain, onGenerate, onEdit, onDelete, onViewAnalytics }: {
   voice: BrandVoice;
   onTrain: (id: string) => void;
@@ -87,6 +103,14 @@ function BrandVoiceCard({ voice, onTrain, onGenerate, onEdit, onDelete, onViewAn
   onDelete: (id: string) => void;
   onViewAnalytics: (voice: BrandVoice) => void;
 }) {
+  /**
+   * Determines the background color based on the provided status.
+   *
+   * This function uses a switch statement to map specific statuses to their corresponding CSS class names
+   * representing different colors. If the status does not match any predefined cases, it defaults to a gray color.
+   *
+   * @param status - The status string that determines the color. It can be 'trained', 'analyzing', 'error', or null.
+   */
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'trained': return 'bg-green-500';
@@ -96,6 +120,16 @@ function BrandVoiceCard({ voice, onTrain, onGenerate, onEdit, onDelete, onViewAn
     }
   };
 
+  /**
+   * Determines and returns the appropriate icon component based on the provided status.
+   *
+   * This function uses a switch statement to map different status values to specific icon components.
+   * If the status is 'trained', it returns a CheckCircle2 icon. For 'analyzing', it returns a Loader2
+   * icon with an animation. An 'error' status results in an AlertCircle icon. Any other status defaults
+   * to a Clock icon.
+   *
+   * @param {string | null} status - The current status value that determines which icon to display.
+   */
   const getStatusIcon = (status: string | null) => {
     switch (status) {
       case 'trained': return <CheckCircle2 className="h-4 w-4" />;
@@ -225,6 +259,19 @@ function BrandVoiceCard({ voice, onTrain, onGenerate, onEdit, onDelete, onViewAn
   );
 }
 
+/**
+ * A dialog component for creating a brand voice profile.
+ *
+ * This function renders a modal dialog that allows users to input details
+ * about a new brand voice, including its name, description, industry,
+ * and tone attributes. It uses React Hook Form for form handling and validation,
+ * and TanStack Query for fetching industry options. Upon successful creation of the
+ * brand voice, it displays a success message and resets the form.
+ *
+ * @param open - A boolean indicating whether the dialog is open or closed.
+ * @param onOpenChange - A function to handle changes in the dialog's open state.
+ * @param onSuccess - A callback function to be executed upon successful creation of the brand voice.
+ */
 function CreateBrandVoiceDialog({ open, onOpenChange, onSuccess }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -258,6 +305,9 @@ function CreateBrandVoiceDialog({ open, onOpenChange, onSuccess }: {
     },
   });
 
+  /**
+   * Submits form data with selected tones to create a brand voice.
+   */
   const onSubmit = (data: CreateBrandVoiceForm) => {
     createMutation.mutate({
       ...data,
@@ -265,6 +315,9 @@ function CreateBrandVoiceDialog({ open, onOpenChange, onSuccess }: {
     });
   };
 
+  /**
+   * Toggles a specified tone in the selected tones list.
+   */
   const toggleTone = (tone: string) => {
     setSelectedTones(prev => 
       prev.includes(tone) 
@@ -380,6 +433,13 @@ function CreateBrandVoiceDialog({ open, onOpenChange, onSuccess }: {
   );
 }
 
+/**
+ * A dialog component for adding training data to a brand voice.
+ *
+ * This component uses a form to collect training data details such as content type, title,
+ * content, and platform. It integrates with the API to add training data and handles
+ * success and error notifications. The form is reset upon successful submission.
+ */
 function TrainingDataDialog({ voice, open, onOpenChange, onSuccess }: {
   voice: BrandVoice;
   open: boolean;
@@ -411,6 +471,9 @@ function TrainingDataDialog({ voice, open, onOpenChange, onSuccess }: {
     },
   });
 
+  /**
+   * Submits training data by adding it with a specific brand voice ID.
+   */
   const onSubmit = (data: AddTrainingDataForm) => {
     addDataMutation.mutate({
       ...data,
@@ -520,6 +583,17 @@ function TrainingDataDialog({ voice, open, onOpenChange, onSuccess }: {
   );
 }
 
+/**
+ * Render the Brand Voice Training page component.
+ *
+ * This component manages the display and interaction logic for brand voice training, including fetching brand voices,
+ * handling training and deletion operations, and rendering UI elements such as cards and dialogs.
+ *
+ * It uses React hooks to manage state and mutations for API calls. The component also conditionally renders
+ * different UI states based on whether data is loading or if there are no brand voices available.
+ *
+ * @returns JSX representing the Brand Voice Training page.
+ */
 export default function BrandVoiceTrainingPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [trainingDialogOpen, setTrainingDialogOpen] = useState(false);
@@ -555,27 +629,42 @@ export default function BrandVoiceTrainingPage() {
     },
   });
 
+  /**
+   * Triggers a mutation to handle the train with the specified ID.
+   */
   const handleTrain = (id: string) => {
     trainMutation.mutate({ brandVoiceId: id });
   };
 
+  /**
+   * Sets the selected voice and prepares for content generation.
+   */
   const handleGenerate = (voice: BrandVoice) => {
     // Navigate to generation interface or open dialog
     setSelectedVoice(voice);
     // Implementation for content generation would go here
   };
 
+  /**
+   * Sets the selected voice to the provided BrandVoice.
+   */
   const handleEdit = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     // Implementation for editing would go here
   };
 
+  /**
+   * Deletes a brand voice after user confirmation.
+   */
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this brand voice? This action cannot be undone.")) {
       deleteMutation.mutate({ id });
     }
   };
 
+  /**
+   * Sets the selected voice and handles analytics view.
+   */
   const handleViewAnalytics = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     // Implementation for analytics view would go here
