@@ -12,6 +12,17 @@ const sentimentSchema = z.object({
   includeRecommendations: z.boolean().default(true),
 });
 
+/**
+ * Handles sentiment analysis requests and returns a comprehensive analysis of the input text.
+ *
+ * The function processes the request body, validates it against a schema, and constructs a prompt for an AI model to analyze the sentiment.
+ * It then parses the AI-generated response to extract various sentiment-related data points such as overall sentiment, primary emotion,
+ * tone indicators, and risk flags. Usage analytics are tracked if a user session is available. The function handles errors gracefully,
+ * returning appropriate error messages and status codes.
+ *
+ * @param req - The NextRequest object containing the request body with text to analyze.
+ * @returns A JSON response containing the sentiment analysis results or an error message.
+ */
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   
@@ -242,6 +253,9 @@ Consider:
   }
 }
 
+/**
+ * Returns a JSON response with supported platforms, analysis types, emotions, and tones.
+ */
 export async function GET() {
   return NextResponse.json({
     supportedPlatforms: ['twitter', 'facebook', 'instagram', 'linkedin', 'general'],

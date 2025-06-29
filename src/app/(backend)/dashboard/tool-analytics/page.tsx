@@ -106,6 +106,15 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 // Enhanced tool icon mapping with more visual variety
+/**
+ * Returns an icon component based on the tool name provided.
+ *
+ * The function maps a given tool name to its corresponding icon component.
+ * If the tool name does not match any predefined cases, it defaults to returning an Activity icon.
+ *
+ * @param toolName - A string representing the name of the tool.
+ * @returns An icon component associated with the tool name.
+ */
 const getToolIcon = (toolName: string) => {
   const iconClass = "h-4 w-4";
   switch (toolName) {
@@ -131,6 +140,22 @@ const getToolIcon = (toolName: string) => {
 };
 
 // Enhanced trend indicator with more detailed analysis
+/**
+ * Determines and returns a trend indicator based on growth value and size.
+ *
+ * The function selects an appropriate icon component based on the growth value:
+ * - ArrowUpRight for growth > 10, colored green.
+ * - TrendingUp for 0 < growth <= 10, colored light green.
+ * - ArrowDownRight for growth < -10, colored red.
+ * - TrendingDown for -10 <= growth < 0, colored light red.
+ * - Minus for growth === 0, colored gray.
+ *
+ * The size of the icon is determined by the 'size' parameter and defaults to "sm".
+ *
+ * @param growth - The numeric value indicating the trend growth.
+ * @param size - The size of the icon, which can be "sm", "md", or "lg". Defaults to "sm".
+ * @returns A React component representing the trend indicator.
+ */
 const getTrendIndicator = (growth: number, size: "sm" | "md" | "lg" = "sm") => {
   const iconSize = size === "sm" ? "h-4 w-4" : size === "md" ? "h-5 w-5" : "h-6 w-6";
   
@@ -147,6 +172,19 @@ const getTrendIndicator = (growth: number, size: "sm" | "md" | "lg" = "sm") => {
 };
 
 // Get performance status
+/**
+ * Determines the performance status based on the success rate.
+ *
+ * This function evaluates the provided success rate and returns an object containing
+ * an icon, a color class, and a label that reflects the performance status. The criteria
+ * for categorization are as follows:
+ * - Excellent: 95% and above
+ * - Good: 85% to 94%
+ * - Warning: 70% to 84%
+ * - Critical: Below 70%
+ *
+ * @param successRate - A number representing the success rate percentage.
+ */
 const getPerformanceStatus = (successRate: number) => {
   if (successRate >= 95) return { icon: CheckCircle2, color: "text-green-500", label: "Excellent" };
   if (successRate >= 85) return { icon: CheckCircle2, color: "text-blue-500", label: "Good" };
@@ -155,6 +193,14 @@ const getPerformanceStatus = (successRate: number) => {
 };
 
 // Real-time status indicator
+/**
+ * Renders a real-time status component with an indicator and toggle switch.
+ *
+ * This component displays a circular indicator that changes color based on the
+ * `isEnabled` and `isRefreshing` states. It also includes a label and a toggle
+ * switch to enable or disable the real-time feature. The switch is disabled when
+ * `isRefreshing` is true.
+ */
 function RealTimeStatus({ 
   isEnabled, 
   onToggle, 
@@ -189,6 +235,16 @@ function RealTimeStatus({
 }
 
 // Enhanced overview cards with more detailed metrics
+/**
+ * Renders a grid of overview cards displaying various analytics metrics.
+ *
+ * This component fetches tool analytics data using `api.toolAnalytics.getOverviewStats.useQuery`.
+ * If the data is loading, it displays skeleton loaders instead of actual card content.
+ * Once the data is available, it maps over predefined card configurations to render each card with relevant stats and trends.
+ * The cards include sections for title, value, description, icon, trend indicator, and conditional styling based on refresh state.
+ *
+ * @param isRefreshing - An optional boolean indicating whether the component should display a refresh animation.
+ */
 function OverviewCards({ isRefreshing }: { isRefreshing?: boolean }) {
   const { data: overview, isLoading } = api.toolAnalytics.getOverviewStats.useQuery();
 
@@ -289,6 +345,18 @@ function OverviewCards({ isRefreshing }: { isRefreshing?: boolean }) {
 }
 
 // Enhanced tool usage chart with multiple visualization options
+/**
+ * Renders a tool usage chart based on the provided period and chart type.
+ *
+ * It fetches tool usage statistics using the `api.toolAnalytics.getToolUsageStats.useQuery` hook.
+ * If data is loading, it displays skeleton placeholders. Once data is available,
+ * it renders different types of charts (line, area, or bar) based on the selected chart type.
+ * The component also includes a dropdown to switch between chart types and a download button.
+ *
+ * @param period - The time period for which to fetch tool usage statistics ("7d", "30d", "90d", "1y").
+ * @param chartType - The type of chart to render ("bar", "line", "area").
+ * @param onChartTypeChange - A callback function to handle changes in the selected chart type.
+ */
 function ToolUsageChart({ 
   period, 
   chartType, 
@@ -314,6 +382,13 @@ function ToolUsageChart({
     );
   }
 
+  /**
+   * Renders a chart based on the specified chart type.
+   *
+   * This function determines the type of chart to render (line, area, or bar) and returns the corresponding
+   * React component with predefined configurations such as axes, grid, tooltip, and data visualization elements.
+   * The data for the chart is derived from `stats.toolUsageCounts`, defaulting to an empty array if not available.
+   */
   const renderChart = () => {
     const data = stats?.toolUsageCounts ?? [];
     
@@ -407,6 +482,15 @@ interface TooltipProps {
   label?: string;
 }
 
+/**
+ * Renders a custom tooltip component based on provided props.
+ *
+ * This function checks if the tooltip is active and has payload data. If so, it extracts the relevant data
+ * and renders a styled div containing various metrics such as usage count, users, average duration, and success rate.
+ * Each metric is conditionally rendered based on the presence of corresponding data in the payload.
+ *
+ * @param {TooltipProps} props - The props object containing active status, payload data, and label.
+ */
 function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (active && payload?.[0]?.payload) {
     const data = payload[0].payload;
@@ -442,6 +526,17 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
 }
 
 // Enhanced performance metrics with detailed insights
+/**
+ * Renders performance metrics based on a specified period.
+ *
+ * This function fetches tool performance data using the provided period and displays it in a card format.
+ * If data is loading, it shows skeletons; otherwise, it maps through the performance data to render individual tool insights,
+ * including success rates, growth trends, and usage statistics. The function leverages helper functions like `getPerformanceStatus`,
+ * `getToolIcon`, and `getTrendIndicator` to enhance the display of each tool's performance metrics.
+ *
+ * @param {Object} props - The component props.
+ * @param {"7d" | "30d" | "90d"} props.period - The period for which to fetch performance data.
+ */
 function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
   const { data: performance, isLoading } = api.toolAnalytics.getToolPerformance.useQuery({ period });
 
@@ -534,6 +629,16 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
 }
 
 // Main analytics dashboard component
+/**
+ * Main component for the Tool Analytics Dashboard page.
+ *
+ * This component manages various states such as period, chart type, real-time enabled status,
+ * active tab, refreshing state, and last updated time. It fetches analytics data using tRPC
+ * queries and refreshes it based on user actions or real-time settings. The component also handles
+ * local storage for persisting the real-time preference across sessions.
+ *
+ * @returns JSX.Element representing the Tool Analytics Dashboard page.
+ */
 export default function ToolAnalyticsPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "1y">("30d");
   const [chartType, setChartType] = useState<"bar" | "line" | "area">("bar");

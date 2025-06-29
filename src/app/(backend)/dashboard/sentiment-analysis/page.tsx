@@ -85,6 +85,17 @@ const ANALYSIS_OPTIONS = [
   { value: 'comprehensive', label: 'Comprehensive', description: 'In-depth analysis with cultural context' },
 ];
 
+/**
+ * Determines the sentiment icon based on the provided sentiment string.
+ *
+ * This function converts the input sentiment to lowercase and checks if it includes
+ * keywords like 'positive', 'negative', or neither, returning corresponding icons:
+ * - `TrendingUp` for positive sentiments.
+ * - `TrendingDown` for negative sentiments.
+ * - `Minus` for neutral sentiments.
+ *
+ * @param sentiment - The string representing the sentiment to be evaluated.
+ */
 const getSentimentIcon = (sentiment: string) => {
   const lowerSentiment = sentiment.toLowerCase();
   if (lowerSentiment.includes('positive')) return <TrendingUp className="size-5 text-green-600" />;
@@ -92,6 +103,15 @@ const getSentimentIcon = (sentiment: string) => {
   return <Minus className="size-5 text-gray-600" />;
 };
 
+/**
+ * Determines the color class based on the sentiment.
+ *
+ * This function converts the input sentiment to lowercase and checks if it includes
+ * keywords like 'positive', 'negative'. It returns corresponding color classes
+ * for positive, negative sentiments, or a neutral class if no specific keyword is found.
+ *
+ * @param sentiment - The sentiment string to evaluate.
+ */
 const getSentimentColor = (sentiment: string) => {
   const lowerSentiment = sentiment.toLowerCase();
   if (lowerSentiment.includes('positive')) return 'text-green-600 bg-green-50 border-green-200';
@@ -99,6 +119,16 @@ const getSentimentColor = (sentiment: string) => {
   return 'text-gray-600 bg-gray-50 border-gray-200';
 };
 
+/**
+ * Determines the emotion icon based on the input emotion string.
+ *
+ * This function converts the input emotion to lowercase and checks for specific keywords
+ * to determine which emotion icon to return. If no matching keyword is found, it defaults
+ * to a neutral eye icon.
+ *
+ * @param emotion - A string representing the emotion.
+ * @returns A React component representing the appropriate emotion icon.
+ */
 const getEmotionIcon = (emotion: string) => {
   const lowerEmotion = emotion.toLowerCase();
   if (lowerEmotion.includes('joy') || lowerEmotion.includes('happy')) return <Heart className="size-4 text-pink-500" />;
@@ -108,6 +138,19 @@ const getEmotionIcon = (emotion: string) => {
   return <Eye className="size-4 text-gray-500" />;
 };
 
+/**
+ * Determines the color based on the intensity score provided.
+ *
+ * This function evaluates the given score and returns a corresponding CSS class
+ * string representing different colors of intensity levels. The function uses
+ * a series of conditional checks to map scores to specific color classes:
+ * - 'bg-red-500' for scores 8 and above,
+ * - 'bg-orange-500' for scores between 6 and 7,
+ * - 'bg-yellow-500' for scores between 4 and 5,
+ * - 'bg-green-500' for scores below 4.
+ *
+ * @param score - A numeric value representing the intensity level.
+ */
 const getIntensityColor = (score: number) => {
   if (score >= 8) return 'bg-red-500';
   if (score >= 6) return 'bg-orange-500';
@@ -115,6 +158,27 @@ const getIntensityColor = (score: number) => {
   return 'bg-green-500';
 };
 
+/**
+ * A React component that provides a user interface for sentiment analysis of text input.
+ * It allows users to enter text, configure analysis settings, and view detailed results including
+ * overall sentiment, emotions, intensity level, tone indicators, context clues, potential triggers,
+ * response recommendations, additional insights, and metadata about the analysis.
+ *
+ * Features:
+ * - Text input field for user to provide the text to be analyzed.
+ * - Settings for selecting platform and type of analysis.
+ * - Display of detailed sentiment analysis results including primary emotion, secondary emotions,
+ *   intensity level, tone indicators, context clues, potential triggers, recommended response tone
+ *   and strategy, key points to address, what to avoid, additional insights, and metadata.
+ * - Button to copy the full analysis results.
+ *
+ * Dependencies:
+ * - React for building the UI component.
+ * - Various icons from a library (e.g., Brain, Shield) used in the UI.
+ * - Components like Card, Progress, Badge, Separator, etc., for structuring the UI.
+ * - Utility functions for getting emotion and intensity colors, as well as other helper functions
+ *   related to displaying analysis results.
+ */
 export default function SentimentAnalysisPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<SentimentResult | null>(null);
@@ -138,6 +202,15 @@ export default function SentimentAnalysisPage() {
     setCharCount(watchedText?.length ?? 0);
   }, [watchedText]);
 
+  /**
+   * Handles submission of sentiment analysis form values.
+   *
+   * This function performs a POST request to the "/api/ai/sentiment" endpoint with the provided form values.
+   * It tracks the duration and success/failure status of the request, updates the results state on success,
+   * and logs errors on failure. It also manages loading states and displays appropriate toast notifications.
+   *
+   * @param values - An object containing form values for sentiment analysis.
+   */
   const onSubmit = async (values: SentimentFormValues) => {
     const startTime = Date.now();
     setIsLoading(true);
@@ -195,6 +268,9 @@ export default function SentimentAnalysisPage() {
     }
   };
 
+  /**
+   * Copies text to clipboard and shows a success message, then clears the copied text after 2 seconds.
+   */
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -215,6 +291,9 @@ export default function SentimentAnalysisPage() {
     }
   };
 
+  /**
+   * Resets the form and clears results and character count.
+   */
   const resetForm = () => {
     form.reset();
     setResults(null);
