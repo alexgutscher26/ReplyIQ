@@ -41,6 +41,16 @@ interface StoryResponse {
   fullContent: string;
 }
 
+/**
+ * StoryGeneratorPage component for generating social media stories using AI assistance.
+ *
+ * This component manages user inputs for story generation parameters such as topic, platform,
+ * story type, tone, and target audience. It handles the generation of stories through an API call
+ * and displays the generated stories with options to copy individual or all stories to the clipboard.
+ *
+ * The component uses React state management to handle various UI states including loading,
+ * error handling, and visual feedback for copied content.
+ */
 export default function StoryGeneratorPage() {
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState<"instagram" | "facebook" | "both">("instagram");
@@ -54,6 +64,14 @@ export default function StoryGeneratorPage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
+  /**
+   * Handles the generation of stories based on user input and API response.
+   *
+   * This function sets loading state, sends a POST request to the AI API with specified parameters,
+   * processes the response, updates the stories or error state accordingly, and finally resets the loading state.
+   *
+   * @returns void
+   */
   const handleGenerate = async () => {
     setLoading(true);
     setError(null);
@@ -93,6 +111,9 @@ export default function StoryGeneratorPage() {
     }
   };
 
+  /**
+   * Copies content to the clipboard and updates the copied index state.
+   */
   const copyToClipboard = async (content: string, index: number) => {
     try {
       await navigator.clipboard.writeText(content);
@@ -103,6 +124,9 @@ export default function StoryGeneratorPage() {
     }
   };
 
+  /**
+   * Copies all stories to the clipboard and updates the copied index state.
+   */
   const copyAllStories = async () => {
     try {
       const allStoriesText = stories.map((story, index) => 
@@ -117,6 +141,9 @@ export default function StoryGeneratorPage() {
     }
   };
 
+  /**
+   * Returns the display name for a given story type, defaulting to the original type if unknown.
+   */
   const getStoryTypeDisplay = (type: string) => {
     const types = {
       'promotional': 'Promotional',
@@ -130,6 +157,16 @@ export default function StoryGeneratorPage() {
     return types[type as keyof typeof types] || type;
   };
 
+  /**
+   * Retrieves the platform icon based on the given platform type.
+   *
+   * This function uses a switch statement to determine which icon component
+   * to return based on the input platform string. It handles specific cases for
+   * 'instagram', 'facebook', and 'both'. For any other platform, it defaults
+   * to returning an Instagram icon. The icons are styled using Tailwind CSS classes.
+   *
+   * @param {string} platform - The type of platform for which to retrieve the icon.
+   */
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case 'instagram':

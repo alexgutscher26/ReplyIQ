@@ -52,6 +52,17 @@ const SUPPORTED_LANGUAGES = {
   'ca': 'Catalan',
 } as const;
 
+/**
+ * Handles a POST request to translate text from one language to another with specific style and context.
+ *
+ * This function processes the incoming request, validates the input data, generates a translation prompt,
+ * calls an AI model to generate the translation, parses the response, and returns structured translation data.
+ * It also tracks usage analytics if a session is available. Error handling is included for validation and
+ * unexpected errors, returning appropriate JSON responses with error details.
+ *
+ * @param req - The NextRequest object containing the request body.
+ * @returns A JSON response containing the translated text, alternatives (if requested), notes, and other metadata.
+ */
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   

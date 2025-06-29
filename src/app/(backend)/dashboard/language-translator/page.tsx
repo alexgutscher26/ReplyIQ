@@ -104,6 +104,16 @@ const TONE_OPTIONS = [
   { value: 'neutral', label: 'Neutral', description: 'Balanced and objective' },
 ];
 
+/**
+ * Language Translator Page component.
+ *
+ * This component renders a language translation page with form controls for input text,
+ * source and target languages, translation style, context, tone, and an option to include alternatives.
+ * It handles form submission to translate text using an API call and displays the results.
+ * Users can copy translated text to clipboard, swap languages, and reset the form.
+ *
+ * @returns A JSX element representing the Language Translator page.
+ */
 export default function LanguageTranslatorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<TranslationResult | null>(null);
@@ -129,6 +139,15 @@ export default function LanguageTranslatorPage() {
     setCharCount(watchedText?.length ?? 0);
   }, [watchedText]);
 
+  /**
+   * Handles form submission for text translation.
+   *
+   * It sends a POST request to the "/api/ai/translate" endpoint with the provided translation values.
+   * If the response is successful, it updates the results and shows a success toast notification.
+   * If there's an error, it logs the error, shows an error toast notification, and reverts the loading state.
+   *
+   * @param values - The form values containing text to be translated and other necessary parameters.
+   */
   const onSubmit = async (values: TranslationFormValues) => {
     setIsLoading(true);
     try {
@@ -162,6 +181,9 @@ export default function LanguageTranslatorPage() {
     }
   };
 
+  /**
+   * Copies text to clipboard and shows a success message.
+   */
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -182,6 +204,9 @@ export default function LanguageTranslatorPage() {
     }
   };
 
+  /**
+   * Swaps the values of targetLanguage and sourceLanguage if sourceLanguage is not "auto".
+   */
   const swapLanguages = () => {
     const currentTarget = form.getValues("targetLanguage");
     const currentSource = form.getValues("sourceLanguage");
@@ -192,6 +217,9 @@ export default function LanguageTranslatorPage() {
     }
   };
 
+  /**
+   * Resets the form and clears results and character count.
+   */
   const resetForm = () => {
     form.reset();
     setResults(null);
