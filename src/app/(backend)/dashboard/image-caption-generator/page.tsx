@@ -25,6 +25,15 @@ interface CaptionResponse {
   includeHashtags: boolean;
 }
 
+/**
+ * ImageCaptionGeneratorPage component
+ *
+ * This component provides a user interface for uploading an image and generating AI-powered captions.
+ * It includes options to select different styles, platforms, and whether to include hashtags in the caption.
+ * The component handles state management for selected image, generated caption, loading status, errors, and more.
+ *
+ * @returns A React functional component rendering the Image Caption Generator interface.
+ */
 export default function ImageCaptionGeneratorPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -53,6 +62,14 @@ export default function ImageCaptionGeneratorPage() {
     },
   });
 
+  /**
+   * Handles image selection from an input element and sets up a preview.
+   *
+   * This function is triggered when a user selects an image file via an input element.
+   * It updates the selected image state, clears any error messages, and creates a
+   * data URL preview of the image using a FileReader. The preview is then set in the
+   * component's state for display.
+   */
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -68,6 +85,12 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Handles the image upload process.
+   * This function checks if an image is selected, sets the uploading state,
+   * and attempts to start the upload. If an error occurs during the upload,
+   * it sets the error message and resets the uploading state.
+   */
   const handleUpload = async () => {
     if (!selectedImage) return;
     
@@ -81,6 +104,14 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Handles the generation of image captions based on user input and API response.
+   *
+   * It first checks if an imageUrl is provided, otherwise sets an error message.
+   * If valid, it proceeds to send a POST request to the `/api/ai/image-captions` endpoint with necessary parameters.
+   * Depending on the API response, it updates the state with either the generated caption or an appropriate error message.
+   * It manages loading states and ensures that errors are handled gracefully.
+   */
   const handleGenerate = async () => {
     if (!imageUrl) {
       setError("Please upload an image first");
@@ -117,6 +148,9 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Copies the caption text to the clipboard and sets copied state for feedback.
+   */
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(caption);
@@ -127,6 +161,9 @@ export default function ImageCaptionGeneratorPage() {
     }
   };
 
+  /**
+   * Resets form fields to their initial state.
+   */
   const resetForm = () => {
     setSelectedImage(null);
     setImageUrl("");
