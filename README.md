@@ -82,8 +82,8 @@ graph TB
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/WaitListNow/ai-social-replier.git
-cd ai-social-replier
+git clone https://github.com/alexgutscher26/ReplyIQ.git
+cd replyiq
 ```
 
 ### 2. Install Dependencies
