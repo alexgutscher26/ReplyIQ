@@ -11,6 +11,18 @@ const schema = z.object({
   includeHashtags: z.boolean().default(false),
 });
 
+/**
+ * Handles POST requests to generate an image caption based on provided specifications.
+ *
+ * This function processes a request containing an image URL, style, platform, and hashtag inclusion preference.
+ * It fetches AI settings from the database, constructs a detailed prompt for caption generation,
+ * and utilizes an AI model to generate the caption. The function returns the generated caption along with
+ * the input parameters or an error message if something goes wrong.
+ *
+ * @param req - NextRequest object containing the request data.
+ * @returns A JSON response containing the generated caption, image URL, style, platform, and hashtag inclusion status,
+ *          or an error message with a corresponding HTTP status code.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body: unknown = await req.json();
