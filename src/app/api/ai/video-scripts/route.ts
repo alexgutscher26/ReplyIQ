@@ -16,6 +16,25 @@ const schema = z.object({
   includeCTA: z.boolean().default(true),
 });
 
+/**
+ * Generates a highly engaging video script based on provided parameters.
+ *
+ * The function processes input from the request body, validates it using a schema,
+ * and fetches AI settings from the database. It then constructs a detailed prompt
+ * tailored to the specified topic, video type, duration, tone, platform, target audience,
+ * keywords, and engagement elements. This prompt is used to generate a script that is
+ * optimized for the specified platform's algorithm, designed with the target audience in mind,
+ * and delivered in the desired tone.
+ *
+ * The script includes sections such as titles, hooks, introductions, main content,
+ * conclusions, call-to-actions, technical notes, and engagement strategies. The function
+ * also handles parsing of the generated script into structured sections for easy access
+ * and production planning.
+ *
+ * @param req - An instance of NextRequest containing the request body with video creation parameters.
+ * @returns A JSON response containing the parsed script sections and metadata about the video.
+ * @throws Error if the request body is invalid or if there are issues fetching AI settings from the database.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body: unknown = await req.json();
