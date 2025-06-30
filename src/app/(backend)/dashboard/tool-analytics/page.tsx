@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
@@ -733,20 +735,146 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
 }
 
 // Enhanced export functionality  
-function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf' | 'json'>('csv');
+function ExportModal({ 
+  isOpen, 
+  onClose, 
+  period 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  period: "7d" | "30d" | "90d" | "1y";
+}) {
+  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf' | 'json'>(() => {
+    try {
+      const savedSettings = localStorage.getItem('analytics-settings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        return settings.exportFormat ?? 'csv';
+      }
+    } catch (error) {
+      console.warn('Failed to load export format setting:', error);
+    }
+    return 'csv';
+  });
   const [isExporting, setIsExporting] = useState(false);
+  
+  // Get the actual data for export
+  const { data: stats } = api.toolAnalytics.getToolUsageStats.useQuery({ period });
+  const { data: overview } = api.toolAnalytics.getOverviewStats.useQuery();
+  const { data: performance } = api.toolAnalytics.getToolPerformance.useQuery({ period: period === "1y" ? "90d" : period });
+
+  // Reset format to saved default when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const savedSettings = localStorage.getItem('analytics-settings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          if (settings.exportFormat) {
+            setExportFormat(settings.exportFormat);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load export format setting:', error);
+      }
+    }
+  }, [isOpen]);
+
+  const generateCSV = () => {
+    if (!stats?.toolUsageCounts) return '';
+    
+    const headers = ['Tool Name', 'Display Name', 'Usage Count', 'Percentage', 'Unique Users', 'Total Duration'];
+    const rows = stats.toolUsageCounts.map(tool => [
+      tool.toolName,
+      tool.toolDisplayName,
+      tool.count.toString(),
+      tool.percentage,
+      tool.uniqueUsers.toString(),
+      tool.totalDuration?.toString() || '0'
+    ]);
+    
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
+  };
+
+  const generateJSON = () => {
+    return JSON.stringify({
+      period,
+      exportDate: new Date().toISOString(),
+      overview,
+      toolUsage: stats?.toolUsageCounts ?? [],
+      categoryBreakdown: stats?.categoryBreakdown ?? [],
+      topUsers: stats?.topUsers ?? [],
+      performance: performance?.performance ?? []
+    }, null, 2);
+  };
+
+  const generatePDF = () => {
+    // For PDF, we'll create a formatted text content
+    let content = `Analytics Report - ${period}\n`;
+    content += `Generated: ${new Date().toLocaleString()}\n\n`;
+    
+    content += `OVERVIEW\n`;
+    content += `Total Usage: ${overview?.totalUsage ?? 0}\n`;
+    content += `Active Users (7d): ${overview?.activeUsers7d ?? 0}\n`;
+    content += `Usage (7d): ${overview?.usage7d ?? 0}\n\n`;
+    
+    content += `TOOL USAGE\n`;
+    stats?.toolUsageCounts?.forEach((tool, index) => {
+      content += `${index + 1}. ${tool.toolDisplayName}: ${tool.count} uses (${tool.percentage}%)\n`;
+    });
+    
+    return content;
+  };
+
+  const downloadFile = (content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      // Simulate export process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const timestamp = new Date().toISOString().split('T')[0];
+      let content = '';
+      let filename = '';
+      let mimeType = '';
+
+      switch (exportFormat) {
+        case 'csv':
+          content = generateCSV();
+          filename = `analytics-${period}-${timestamp}.csv`;
+          mimeType = 'text/csv';
+          break;
+        case 'json':
+          content = generateJSON();
+          filename = `analytics-${period}-${timestamp}.json`;
+          mimeType = 'application/json';
+          break;
+        case 'pdf':
+          content = generatePDF();
+          filename = `analytics-${period}-${timestamp}.txt`;
+          mimeType = 'text/plain';
+          break;
+      }
+
+      // Small delay to show the loading state
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      downloadFile(content, filename, mimeType);
+      
       toast.success(`Data exported as ${exportFormat.toUpperCase()}`, {
-        description: "Your analytics data has been downloaded successfully"
+        description: `File downloaded: ${filename}`
       });
       onClose();
-    } catch {
+    } catch (error) {
+      console.error('Export failed:', error);
       toast.error("Export failed", {
         description: "Please try again or contact support"
       });
@@ -763,7 +891,7 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
         <CardHeader>
           <CardTitle>Export Analytics Data</CardTitle>
           <CardDescription>
-            Choose your preferred format for the analytics export
+            Export data for period: {period}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -775,10 +903,16 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="csv">CSV - Spreadsheet Data</SelectItem>
-                <SelectItem value="pdf">PDF - Formatted Report</SelectItem>
                 <SelectItem value="json">JSON - Raw Data</SelectItem>
+                <SelectItem value="pdf">TXT - Formatted Report</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            {exportFormat === 'csv' && 'Tool usage data in CSV format for spreadsheet analysis'}
+            {exportFormat === 'json' && 'Complete data in JSON format including all metrics'}
+            {exportFormat === 'pdf' && 'Human-readable report in text format'}
           </div>
 
           <div className="flex gap-2">
@@ -797,6 +931,279 @@ function ExportModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   Export
                 </>
               )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Settings Modal Component
+function SettingsModal({ 
+  isOpen, 
+  onClose,
+  dashboardLayout,
+  setDashboardLayout,
+  chartType,
+  setChartType,
+  applyTheme
+}: { 
+  isOpen: boolean; 
+  onClose: () => void;
+  dashboardLayout: string;
+  setDashboardLayout: (layout: string) => void;
+  chartType: "bar" | "line" | "area";
+  setChartType: (type: "bar" | "line" | "area") => void;
+  applyTheme: (theme: string) => void;
+}) {
+  const [settings, setSettings] = useState(() => {
+    try {
+      const savedSettings = localStorage.getItem('analytics-settings');
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings);
+        return {
+          autoRefresh: parsed.autoRefresh ?? false,
+          showAnimations: parsed.showAnimations ?? true,
+          compactMode: parsed.compactMode ?? (dashboardLayout === 'compact'),
+          showTooltips: parsed.showTooltips ?? true,
+          defaultPeriod: parsed.defaultPeriod ?? '30d',
+          exportFormat: parsed.exportFormat ?? 'csv',
+          theme: parsed.theme ?? 'system'
+        };
+      }
+    } catch (error) {
+      console.warn('Failed to load settings:', error);
+    }
+    return {
+      autoRefresh: false,
+      showAnimations: true,
+      compactMode: dashboardLayout === 'compact',
+      showTooltips: true,
+      defaultPeriod: '30d',
+      exportFormat: 'csv',
+      theme: 'system'
+    };
+  });
+
+  const handleSaveSettings = () => {
+    try {
+      // Save to localStorage
+      localStorage.setItem('analytics-settings', JSON.stringify(settings));
+      
+      // Apply layout changes
+      setDashboardLayout(settings.compactMode ? 'compact' : 'default');
+      
+      // Apply theme changes
+      applyTheme(settings.theme);
+      
+      toast.success('Settings saved successfully', {
+        description: 'Your preferences have been updated'
+      });
+      onClose();
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast.error('Failed to save settings', {
+        description: 'Please try again'
+      });
+    }
+  };
+
+  const handleResetSettings = () => {
+    const defaultSettings = {
+      autoRefresh: false,
+      showAnimations: true,
+      compactMode: false,
+      showTooltips: true,
+      defaultPeriod: '30d',
+      exportFormat: 'csv',
+      theme: 'system'
+    };
+    setSettings(defaultSettings);
+    setDashboardLayout('default');
+    localStorage.removeItem('analytics-settings');
+    
+    // Apply default theme
+    applyTheme('system');
+    
+    toast.success('Settings reset to defaults');
+  };
+
+  // Apply theme when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      applyTheme(settings.theme);
+    }
+  }, [isOpen, settings.theme]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <Card className="w-[500px] max-h-[80vh] overflow-y-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Dashboard Settings
+          </CardTitle>
+          <CardDescription>
+            Configure your analytics dashboard preferences
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Layout Settings */}
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <Grid3X3 className="h-4 w-4" />
+              Layout & Display
+            </h4>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm">Compact Mode</Label>
+                  <p className="text-xs text-muted-foreground">Use a more condensed layout</p>
+                </div>
+                <Button
+                  variant={settings.compactMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSettings({...settings, compactMode: !settings.compactMode})}
+                >
+                  {settings.compactMode ? 'On' : 'Off'}
+                </Button>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm">Show Animations</Label>
+                  <p className="text-xs text-muted-foreground">Enable smooth transitions and effects</p>
+                </div>
+                <Button
+                  variant={settings.showAnimations ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSettings({...settings, showAnimations: !settings.showAnimations})}
+                >
+                  {settings.showAnimations ? 'On' : 'Off'}
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm">Show Tooltips</Label>
+                  <p className="text-xs text-muted-foreground">Display helpful tooltips on hover</p>
+                </div>
+                <Button
+                  variant={settings.showTooltips ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSettings({...settings, showTooltips: !settings.showTooltips})}
+                >
+                  {settings.showTooltips ? 'On' : 'Off'}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Chart Settings */}
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Chart Preferences
+            </h4>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label className="text-sm">Default Chart Type</Label>
+                <Select value={chartType} onValueChange={(value: "bar" | "line" | "area") => setChartType(value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bar">Bar Chart</SelectItem>
+                    <SelectItem value="line">Line Chart</SelectItem>
+                    <SelectItem value="area">Area Chart</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm">Default Time Period</Label>
+                <Select value={settings.defaultPeriod} onValueChange={(value) => setSettings({...settings, defaultPeriod: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7d">Last 7 days</SelectItem>
+                    <SelectItem value="30d">Last 30 days</SelectItem>
+                    <SelectItem value="90d">Last 90 days</SelectItem>
+                    <SelectItem value="1y">Last year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Data & Export Settings */}
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Data & Export
+            </h4>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label className="text-sm">Default Export Format</Label>
+                <Select value={settings.exportFormat} onValueChange={(value) => setSettings({...settings, exportFormat: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="csv">CSV - Spreadsheet</SelectItem>
+                    <SelectItem value="json">JSON - Raw Data</SelectItem>
+                    <SelectItem value="pdf">TXT - Report</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Theme Settings */}
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              Appearance
+            </h4>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label className="text-sm">Theme</Label>
+                <Select value={settings.theme} onValueChange={(value) => setSettings({...settings, theme: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-4">
+            <Button variant="outline" onClick={handleResetSettings} className="flex-1">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Reset to Defaults
+            </Button>
+            <Button variant="outline" onClick={onClose} className="flex-1">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveSettings} className="flex-1">
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              Save Settings
             </Button>
           </div>
         </CardContent>
@@ -854,6 +1261,47 @@ export default function ToolAnalyticsPage() {
   const [showExportModal, setShowExportModal] = useState(false);
   const [dashboardLayout, setDashboardLayout] = useState('default');
 
+  // Apply theme helper function
+  const applyTheme = useCallback((theme: string) => {
+    const root = document.documentElement;
+    
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else if (theme === 'light') {
+      root.classList.remove('dark');
+    } else if (theme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+  }, []);
+
+  // Load saved settings on mount
+  useEffect(() => {
+    try {
+      const savedSettings = localStorage.getItem('analytics-settings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        if (settings.compactMode) {
+          setDashboardLayout('compact');
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        if (settings.defaultPeriod && ['7d', '30d', '90d', '1y'].includes(settings.defaultPeriod)) {
+          setPeriod(settings.defaultPeriod as "7d" | "30d" | "90d" | "1y");
+        }
+        // Apply saved theme
+        if (settings.theme) {
+          applyTheme(settings.theme);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load saved settings:', error);
+    }
+  }, [applyTheme]);
+
 
 
   // Get tRPC utils for data invalidation
@@ -894,13 +1342,30 @@ export default function ToolAnalyticsPage() {
 
 
 
-  // Keyboard shortcut for manual refresh (R key)
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Manual refresh (R key)
       if (event.key === 'r' || event.key === 'R') {
         if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
           event.preventDefault();
           void refreshData();
+        }
+      }
+      
+      // Settings panel (S key)
+      if (event.key === 's' || event.key === 'S') {
+        if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
+          event.preventDefault();
+          setShowSettingsModal(true);
+        }
+      }
+      
+      // Export modal (E key)
+      if (event.key === 'e' || event.key === 'E') {
+        if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
+          event.preventDefault();
+          setShowExportModal(true);
         }
       }
     };
@@ -955,10 +1420,9 @@ export default function ToolAnalyticsPage() {
   }, [period]);
 
   // Settings functionality
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const handleSettings = useCallback(() => {
-    toast.info('Settings panel coming soon', {
-      description: 'Configure dashboard preferences, alerts, and data export options'
-    });
+    setShowSettingsModal(true);
   }, []);
 
   return (
@@ -986,9 +1450,18 @@ export default function ToolAnalyticsPage() {
                 <Grid3X3 className="h-4 w-4 mr-2" />
                 {dashboardLayout === 'default' ? 'Compact' : 'Default'}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSettings()}>
-                <Settings className="h-4 w-4" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="sm" onClick={() => handleSettings()}>
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open settings (Press S)</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
 
@@ -1062,7 +1535,7 @@ export default function ToolAnalyticsPage() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Export analytics data</p>
+                    <p>Export analytics data (Press E)</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -1075,7 +1548,16 @@ export default function ToolAnalyticsPage() {
           </div>
         </div>
 
-        <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} />
+        <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} period={period} />
+        <SettingsModal 
+          isOpen={showSettingsModal} 
+          onClose={() => setShowSettingsModal(false)}
+          dashboardLayout={dashboardLayout}
+          setDashboardLayout={setDashboardLayout}
+          chartType={chartType}
+          setChartType={setChartType}
+          applyTheme={applyTheme}
+        />
 
         <Separator />
 
@@ -1287,7 +1769,7 @@ export default function ToolAnalyticsPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="h-3 w-3" />
-                    Keyboard shortcuts (Press R)
+                    Keyboard shortcuts (R, S, E)
                   </li>
                 </ul>
               </div>
