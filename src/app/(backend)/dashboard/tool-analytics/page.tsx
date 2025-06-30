@@ -242,7 +242,7 @@ function OverviewCards() {
       value: overview?.totalUsage?.toLocaleString() ?? 0,
       description: "All time tool interactions",
       icon: Activity,
-      trend: 12.5,
+      trend: overview?.trends?.totalUsage ?? 0,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
@@ -251,7 +251,7 @@ function OverviewCards() {
       value: overview?.activeUsers7d ?? 0,
       description: `Last 7 days (${overview?.totalUsers} total)`,
       icon: Users,
-      trend: 8.2,
+      trend: overview?.trends?.activeUsers7d ?? 0,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
@@ -260,16 +260,16 @@ function OverviewCards() {
       value: overview?.usage7d ?? 0,
       description: "Last 7 days activity",
       icon: CalendarIcon,
-      trend: -3.1,
+      trend: overview?.trends?.usage7d ?? 0,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
     },
     {
       title: "Success Rate",
-      value: "94.2%",
+      value: `${overview?.successRate?.toFixed(1) ?? 0}%`,
       description: "Average completion rate",
       icon: Target,
-      trend: 2.8,
+      trend: overview?.trends?.successRate ?? 0,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
     }
@@ -1034,7 +1034,7 @@ function SettingsModal({
     if (isOpen) {
       applyTheme(settings.theme);
     }
-  }, [isOpen, settings.theme]);
+  }, [isOpen, settings.theme, applyTheme]);
 
   if (!isOpen) return null;
 

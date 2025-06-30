@@ -276,6 +276,18 @@ export const toolAnalyticsRouter = createTRPCRouter({
     const last30d = new Date();
     last30d.setDate(last30d.getDate() - 30);
 
+    // Previous period dates for comparison
+    const prev24h = new Date();
+    prev24h.setHours(prev24h.getHours() - 48);
+    const prev24hStart = new Date();
+    prev24hStart.setHours(prev24hStart.getHours() - 24);
+
+    const prev7d = new Date();
+    prev7d.setDate(prev7d.getDate() - 14);
+
+    const prev30d = new Date();
+    prev30d.setDate(prev30d.getDate() - 60);
+
     // Get basic counts
     const [
       totalUsageCount,
@@ -284,6 +296,11 @@ export const toolAnalyticsRouter = createTRPCRouter({
       last30dCount,
       totalUsersCount,
       activeUsersLast7d,
+      // Previous period counts for comparison
+      prev24hCount,
+      prev7dCount,
+      prev30dCount,
+      prevActiveUsers7d,
     ] = await Promise.all([
       ctx.db.select({ count: count() }).from(toolAnalytics),
       ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last24h)),
@@ -291,7 +308,57 @@ export const toolAnalyticsRouter = createTRPCRouter({
       ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last30d)),
       ctx.db.select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` }).from(toolAnalytics),
       ctx.db.select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last7d)),
+      // Previous periods
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev24h), lte(toolAnalytics.createdAt, prev24hStart))),
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev7d), lte(toolAnalytics.createdAt, last7d))),
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev30d), lte(toolAnalytics.createdAt, last30d))),
+      ctx.db.select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev7d), lte(toolAnalytics.createdAt, last7d))),
     ]);
+
+    // Calculate trend percentages with robust error handling
+    const calculateTrend = (current: number, previous: number): number => {
+      // Convert to numbers and handle null/undefined
+      const curr = Number(current) || 0;
+      const prev = Number(previous) || 0;
+      
+      // Handle edge cases
+      if (!isFinite(curr) || !isFinite(prev)) return 0;
+      if (isNaN(curr) || isNaN(prev)) return 0;
+      if (prev === 0 && curr === 0) return 0;
+      if (prev === 0 && curr > 0) return 100;
+      if (prev === 0 && curr < 0) return -100;
+      
+      // Calculate percentage change
+      const percentage = ((curr - prev) / prev) * 100;
+      
+      // Ensure result is finite and reasonable
+      if (!isFinite(percentage) || isNaN(percentage)) return 0;
+      
+      // Cap at reasonable limits to prevent display issues
+      const cappedPercentage = Math.max(-999, Math.min(999, percentage));
+      
+      return Math.round(cappedPercentage * 100) / 100;
+    };
+
+    // Get success rate (all actions vs error actions in last 30 days)
+    const [allActions, errorActions] = await Promise.all([
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last30d)),
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, last30d), eq(toolAnalytics.actionType, "error"))),
+    ]);
+
+    const totalCurrentActions = allActions[0]?.count ?? 0;
+    const errorCurrentActions = errorActions[0]?.count ?? 0;
+    const currentSuccessRate = totalCurrentActions > 0 ? ((totalCurrentActions - errorCurrentActions) / totalCurrentActions) * 100 : 95;
+
+    // Previous success rate for comparison
+    const [prevAllActions, prevErrorActions] = await Promise.all([
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev30d), lte(toolAnalytics.createdAt, last30d))),
+      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev30d), lte(toolAnalytics.createdAt, last30d), eq(toolAnalytics.actionType, "error"))),
+    ]);
+
+    const totalPrevActions = prevAllActions[0]?.count ?? 0;
+    const errorPrevActions = prevErrorActions[0]?.count ?? 0;
+    const prevSuccessRate = totalPrevActions > 0 ? ((totalPrevActions - errorPrevActions) / totalPrevActions) * 100 : 95;
 
     // Get most popular tool
     const popularTool = await ctx.db
@@ -305,13 +372,36 @@ export const toolAnalyticsRouter = createTRPCRouter({
       .orderBy(desc(count()))
       .limit(1);
 
+    // Current values with safety checks
+    const totalUsage = Number(totalUsageCount[0]?.count ?? 0);
+    const usage24h = Number(last24hCount[0]?.count ?? 0);
+    const usage7d = Number(last7dCount[0]?.count ?? 0);
+    const usage30d = Number(last30dCount[0]?.count ?? 0);
+    const totalUsers = Number(totalUsersCount[0]?.count ?? 0);
+    const activeUsers7d = Number(activeUsersLast7d[0]?.count ?? 0);
+
+    // Previous values with extra safety checks
+    const prevUsage24h = Number(prev24hCount[0]?.count ?? 0);
+    const prevUsage7d = Number(prev7dCount[0]?.count ?? 0);
+    const prevUsage30d = Number(prev30dCount[0]?.count ?? 0);
+    const prevActiveUsers7dCount = Number(prevActiveUsers7d[0]?.count ?? 0);
+
     return {
-      totalUsage: totalUsageCount[0]?.count ?? 0,
-      usage24h: last24hCount[0]?.count ?? 0,
-      usage7d: last7dCount[0]?.count ?? 0,
-      usage30d: last30dCount[0]?.count ?? 0,
-      totalUsers: totalUsersCount[0]?.count ?? 0,
-      activeUsers7d: activeUsersLast7d[0]?.count ?? 0,
+      totalUsage,
+      usage24h,
+      usage7d,
+      usage30d,
+      totalUsers,
+      activeUsers7d,
+      successRate: Math.round(currentSuccessRate * 100) / 100,
+      // Trend calculations
+      trends: {
+        totalUsage: calculateTrend(usage30d, prevUsage30d), // Last 30 days vs previous 30 days
+        activeUsers7d: calculateTrend(activeUsers7d, prevActiveUsers7dCount),
+        usage7d: calculateTrend(usage7d, prevUsage7d),
+        usage24h: calculateTrend(usage24h, prevUsage24h),
+        successRate: calculateTrend(currentSuccessRate, prevSuccessRate),
+      },
       mostPopularTool: popularTool[0] ? {
         name: popularTool[0].toolName,
         displayName: AI_TOOLS[popularTool[0].toolName as AIToolKey]?.name ?? popularTool[0].toolName,
