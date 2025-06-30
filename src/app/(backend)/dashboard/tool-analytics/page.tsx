@@ -735,6 +735,20 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
 }
 
 // Enhanced export functionality  
+/**
+ * Renders a modal for exporting analytics data in different formats (CSV, JSON, PDF).
+ *
+ * This component manages the export process, including fetching data, generating content,
+ * and handling user interactions. It uses React state to track the selected export format,
+ * export status, and dependencies like `isOpen` for visibility control.
+ *
+ * The modal fetches analytics data based on the selected period and provides options
+ * to download the data in CSV, JSON, or PDF (formatted as TXT) formats.
+ *
+ * @param isOpen - A boolean indicating whether the modal is open.
+ * @param onClose - A function to close the modal.
+ * @param period - The time period for which analytics are fetched, can be "7d", "30d", "90d", or "1y".
+ */
 function ExportModal({ 
   isOpen, 
   onClose, 
@@ -780,6 +794,14 @@ function ExportModal({
     }
   }, [isOpen]);
 
+  /**
+   * Generates a CSV string from tool usage statistics.
+   * This function checks if the `stats` object has `toolUsageCounts`.
+   * If it does, it maps each tool's data into an array of strings,
+   * combining headers and rows, and then joins them into a single CSV formatted string.
+   *
+   * @returns A CSV string representing tool usage statistics or an empty string if no data is available.
+   */
   const generateCSV = () => {
     if (!stats?.toolUsageCounts) return '';
     
@@ -796,6 +818,13 @@ function ExportModal({
     return [headers, ...rows].map(row => row.join(',')).join('\n');
   };
 
+  /**
+   * Generates a JSON string representing various statistics and data.
+   *
+   * This function constructs a JSON object containing information about a period,
+   * export date, overview, tool usage counts, category breakdown, top users, and performance metrics.
+   * It then converts this object into a formatted JSON string with indentation for readability.
+   */
   const generateJSON = () => {
     return JSON.stringify({
       period,
@@ -808,6 +837,13 @@ function ExportModal({
     }, null, 2);
   };
 
+  /**
+   * Generates a formatted text content for an analytics report in PDF format.
+   *
+   * This function constructs a string containing various statistics and metrics related to usage,
+   * including total usage, active users over the last 7 days, and detailed tool usage counts with percentages.
+   * The content is structured into sections such as OVERVIEW and TOOL USAGE.
+   */
   const generatePDF = () => {
     // For PDF, we'll create a formatted text content
     let content = `Analytics Report - ${period}\n`;
@@ -826,6 +862,9 @@ function ExportModal({
     return content;
   };
 
+  /**
+   * Initiates a file download with specified content, filename, and MIME type.
+   */
   const downloadFile = (content: string, filename: string, mimeType: string) => {
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
@@ -838,6 +877,15 @@ function ExportModal({
     URL.revokeObjectURL(url);
   };
 
+  /**
+   * Handles the export process of analytics data in different formats.
+   *
+   * This function sets the exporting state, generates content based on the selected format,
+   * creates a filename with a timestamp, and initiates a file download. It also handles any errors
+   * that occur during the export process and resets the exporting state after completion.
+   *
+   * @returns Promise<void>
+   */
   const handleExport = async () => {
     setIsExporting(true);
     try {
@@ -940,6 +988,22 @@ function ExportModal({
 }
 
 // Settings Modal Component
+/**
+ * Modal component for managing analytics dashboard settings.
+ *
+ * This component renders a modal dialog that allows users to customize various
+ * settings related to their analytics dashboard, including layout preferences,
+ * chart types, data export formats, and theme options. It also provides functionality
+ * to save and reset these settings. The settings are persisted using localStorage.
+ *
+ * @param isOpen - A boolean indicating whether the modal is currently open.
+ * @param onClose - A function to close the modal.
+ * @param dashboardLayout - The current layout of the dashboard ('compact' or 'default').
+ * @param setDashboardLayout - A function to update the dashboard layout in the parent component.
+ * @param chartType - The current type of chart being used ("bar", "line", or "area").
+ * @param setChartType - A function to update the chart type in the parent component.
+ * @param applyTheme - A function to apply a selected theme in the application.
+ */
 function SettingsModal({ 
   isOpen, 
   onClose,
@@ -986,6 +1050,9 @@ function SettingsModal({
     };
   });
 
+  /**
+   * Saves user settings, applies layout and theme changes, and displays a success message.
+   */
   const handleSaveSettings = () => {
     try {
       // Save to localStorage
@@ -1009,6 +1076,9 @@ function SettingsModal({
     }
   };
 
+  /**
+   * Resets settings to their default values and clears local storage.
+   */
   const handleResetSettings = () => {
     const defaultSettings = {
       autoRefresh: false,
@@ -1250,6 +1320,19 @@ function PerformanceAlerts() {
 }
 
 // Main analytics dashboard component
+/**
+ * An enhanced analytics dashboard component that provides real-time performance monitoring,
+ * advanced filtering and search, custom date range selection, comparative period analysis,
+ * automated performance insights, growth opportunity detection, smart recommendations, trend prediction algorithms,
+ * performance threshold alerts, multi-format data export, customizable dashboard layouts, and keyboard shortcuts.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Function} utils.useContext - A hook for accessing the context of the component.
+ * @param {Function} utils.useEffect - A hook for performing side effects in function components.
+ * @param {Function} utils.useState - A hook for adding React state to function components.
+ * @returns {JSX.Element} The enhanced analytics dashboard component.
+ */
 export default function ToolAnalyticsPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "1y">("30d");
   const [chartType, setChartType] = useState<"bar" | "line" | "area">("bar");
@@ -1344,6 +1427,14 @@ export default function ToolAnalyticsPage() {
 
   // Keyboard shortcuts
   useEffect(() => {
+    /**
+     * Handles keydown events to perform various actions based on the pressed key.
+     *
+     * It checks the pressed key and performs corresponding actions such as manual refresh, toggling settings panel, or opening export modal.
+     * The actions are triggered only if no modifier keys (Ctrl, Meta, Shift) are pressed.
+     *
+     * @param event - A KeyboardEvent object containing information about the keydown event.
+     */
     const handleKeyDown = (event: KeyboardEvent) => {
       // Manual refresh (R key)
       if (event.key === 'r' || event.key === 'R') {
