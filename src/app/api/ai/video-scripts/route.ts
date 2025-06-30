@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { generateText } from 'ai';
 import { getAIInstance } from '@/server/utils';
 import { db } from '@/server/db';
+import { auth } from '@/server/auth';
+import { trackToolUsageServer } from '@/utils/track-tool-usage';
+import { brandVoices } from '@/server/db/schema/brand-voice-schema';
+import { eq } from 'drizzle-orm';
+import { ratelimit } from '@/server/utils/ratelimit';
 
+// Enhanced schema with new features
 const schema = z.object({
-  topic: z.string().min(3, 'Topic is too short'),
+  topic: z.string().min(3, 'Topic is too short').max(200, 'Topic is too long'),
   videoType: z.enum(['educational', 'promotional', 'entertainment', 'tutorial', 'explainer']),
   duration: z.number().min(1).max(60).default(5), // Duration in minutes
   tone: z.enum(['professional', 'casual', 'energetic', 'calm', 'humorous']).default('professional'),
@@ -16,10 +23,116 @@ const schema = z.object({
   includeCTA: z.boolean().default(true),
 });
 
+// Content templates for faster generation
+const contentTemplates = {
+  viral_tiktok: {
+    structure: "Hook (3s) → Problem/Trend (10s) → Solution/Revelation (30s) → CTA (5s)",
+    hooks: ["Wait, this actually works...", "Nobody talks about this but...", "I tried this for 30 days and..."],
+    engagement: ["Pattern interrupt", "Trend hijacking", "Controversy"]
+  },
+  youtube_tutorial: {
+    structure: "Introduction (30s) → What You'll Learn (1min) → Step-by-Step (80%) → Recap (2min) → CTA (30s)",
+    hooks: ["In this video, you'll learn...", "By the end of this tutorial...", "I'm going to show you exactly how..."],
+    engagement: ["Clear value proposition", "Progress indicators", "Actionable steps"]
+  },
+  instagram_story: {
+    structure: "Visual Hook (2s) → Problem/Question (8s) → Solution/Answer (30s) → CTA/Follow (5s)",
+    hooks: ["Swipe to see...", "This changed everything...", "You need to try this..."],
+    engagement: ["Interactive stickers", "Visual storytelling", "Story highlights"]
+  }
+};
+
+// Language-specific optimizations with proper typing
+type SupportedLanguage = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'ko' | 'zh' | 'ar' | 'hi' | 'ru';
+
+const languageOptimizations: Record<SupportedLanguage, { culturalContext: string; trending: string[] }> = {
+  en: { culturalContext: "American/British context", trending: ["viral", "trending", "must-see"] },
+  es: { culturalContext: "Hispanic/Latino context", trending: ["viral", "tendencia", "imperdible"] },
+  fr: { culturalContext: "French/Francophone context", trending: ["viral", "tendance", "incontournable"] },
+  de: { culturalContext: "German/DACH context", trending: ["viral", "trend", "sehenswert"] },
+  it: { culturalContext: "Italian context", trending: ["virale", "tendenza", "da vedere"] },
+  pt: { culturalContext: "Portuguese/Brazilian context", trending: ["viral", "tendência", "imperdível"] },
+  ja: { culturalContext: "Japanese context", trending: ["バイラル", "トレンド", "必見"] },
+  ko: { culturalContext: "Korean context", trending: ["바이럴", "트렌드", "필수시청"] },
+  zh: { culturalContext: "Chinese context", trending: ["病毒式", "趋势", "必看"] },
+  ar: { culturalContext: "Arabic/Middle Eastern context", trending: ["فيروسي", "رائج", "لا يفوت"] },
+  hi: { culturalContext: "Indian/Hindi context", trending: ["वायरल", "ट्रेंडिंग", "जरूर देखें"] },
+  ru: { culturalContext: "Russian context", trending: ["вирусный", "тренд", "обязательно"] }
+};
+
+// Cache for frequently requested scripts (in production, use Redis)
+const scriptCache = new Map<string, { data: any; timestamp: number; expiresAt: number }>();
+const CACHE_DURATION = 1000 * 60 * 30; // 30 minutes
+
 export async function POST(req: NextRequest) {
   try {
+    // Authentication check
+    const session = await auth.api.getSession({
+      headers: req.headers,
+    });
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Type-safe user access
+    const userId = session.user.id;
+    const userLanguage: SupportedLanguage = 'en'; // Default to English for now
+
+    // Rate limiting
+    const { success, limit, reset, remaining } = await ratelimit.check(userId);
+    
+    if (!success) {
+      return NextResponse.json({
+        error: 'Rate limit exceeded',
+        limit,
+        reset: new Date(reset),
+        remaining
+      }, { 
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': reset.toString()
+        }
+      });
+    }
+
     const body: unknown = await req.json();
     const { topic, videoType, duration, tone, platform, targetAudience, keywords, includeHook, includeCTA } = schema.parse(body);
+
+    // Generate cache key with proper language handling
+    const cacheKey = JSON.stringify({
+      topic,
+      videoType,
+      duration,
+      tone,
+      platform,
+      targetAudience,
+      keywords,
+      culturalContext: languageOptimizations[userLanguage].culturalContext,
+      brandVoiceId: null,
+      templateId: null,
+      contentGuidelines: null
+    });
+
+    // Check cache first
+    const cached = scriptCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      // Track usage for cached response
+      await trackToolUsageServer(db, userId, 'video-script-generator', {
+        cached: true,
+        platform,
+        videoType,
+        duration,
+        language: userLanguage
+      });
+      
+      return NextResponse.json({
+        ...cached.data,
+        cached: true,
+        cacheTimestamp: cached.timestamp
+      });
+    }
 
     // Fetch AI settings from DB
     const settings = await db.query.settings.findFirst();
@@ -305,7 +418,7 @@ Always include specific production notes, timing cues, and engagement optimizati
       if (notesMatch?.[1]) scriptSections.technicalNotes = notesMatch[1].trim();
     }
 
-    return NextResponse.json({
+    const responseData = {
       script: scriptSections,
       topic,
       videoType,
@@ -314,16 +427,70 @@ Always include specific production notes, timing cues, and engagement optimizati
       platform,
       targetAudience,
       keywords,
-      estimatedReadingTime: Math.ceil(messageContent.length / 200) // Rough estimate: 200 chars per minute
+      estimatedReadingTime: Math.ceil(messageContent.length / 200), // Rough estimate: 200 chars per minute
+      generatedAt: new Date().toISOString()
+    };
+
+    // Cache the response
+    scriptCache.set(cacheKey, {
+      data: responseData,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + CACHE_DURATION
     });
+
+    // Track usage analytics
+    await trackToolUsageServer(db, userId, 'video-script-generator', {
+      platform,
+      videoType,
+      duration,
+      language: userLanguage,
+      brandVoiceUsed: false,
+      variationsGenerated: 1,
+      features: {
+        streaming: false,
+        seoOptimized: false,
+        multiLanguage: userLanguage !== 'en',
+        brandVoice: false
+      }
+    });
+
+    return NextResponse.json(responseData);
   } catch (error: unknown) {
+    // Enhanced error handling
+    console.error('Video script generation error:', error);
+    
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'Invalid input parameters',
+        details: error.errors,
+        type: 'validation_error'
+      }, { status: 400 });
     }
-    let errorMessage = 'Failed to generate video script';
-    if (typeof error === 'object' && error !== null && 'message' in error && typeof (error as { message?: unknown }).message === 'string') {
-      errorMessage = (error as { message: string }).message;
+
+    // Handle specific AI service errors
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+      const errorMessage = (error as { message: string }).message;
+      
+      if (errorMessage.includes('rate limit')) {
+        return NextResponse.json({
+          error: 'AI service rate limit exceeded. Please try again later.',
+          type: 'rate_limit_error',
+          retryAfter: 60
+        }, { status: 429 });
+      }
+      
+      if (errorMessage.includes('quota')) {
+        return NextResponse.json({
+          error: 'AI service quota exceeded. Please upgrade your plan.',
+          type: 'quota_error'
+        }, { status: 402 });
+      }
     }
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+
+    return NextResponse.json({ 
+      error: 'Failed to generate video script. Please try again.',
+      type: 'internal_error',
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }

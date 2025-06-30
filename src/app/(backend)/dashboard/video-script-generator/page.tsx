@@ -120,6 +120,7 @@ export default function VideoScriptGeneratorPage() {
   const [analysis, setAnalysis] = useState<ScriptAnalysis | null>(null);
   const [savedScripts, setSavedScripts] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("generate");
+  const [isCached, setIsCached] = useState(false);
 
   const analyzeScript = (scriptText: string): ScriptAnalysis => {
     const words = scriptText.trim().split(/\s+/).length;
@@ -150,11 +151,28 @@ export default function VideoScriptGeneratorPage() {
   };
 
   const handleGenerate = async () => {
+    // Client-side validation
+    if (!topic || topic.trim().length < 3) {
+      setError("Topic must be at least 3 characters long.");
+      return;
+    }
+    
+    if (topic.length > 200) {
+      setError("Topic must be 200 characters or less.");
+      return;
+    }
+    
+    if (duration < 1 || duration > 60) {
+      setError("Duration must be between 1 and 60 minutes.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setScript("");
     setScriptSections(null);
     setProgress(0);
+    setIsCached(false);
     
     // Simulate progress
     const progressInterval = setInterval(() => {
@@ -162,49 +180,78 @@ export default function VideoScriptGeneratorPage() {
     }, 200);
 
     try {
+      // Ensure proper data types
+      const requestBody = {
+        topic: topic.trim(),
+        videoType,
+        duration: Number(duration), // Ensure it's a number
+        tone,
+        platform,
+        targetAudience: targetAudience.trim() || undefined,
+        keywords: keywords.trim() || undefined,
+        includeHook,
+        includeCTA
+      };
+
+
+
       const res = await fetch("/api/ai/video-scripts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          topic, 
-          videoType, 
-          duration, 
-          tone, 
-          platform,
-          targetAudience,
-          keywords,
-          includeHook,
-          includeCTA
-        }),
+        body: JSON.stringify(requestBody),
       });
       
       clearInterval(progressInterval);
       setProgress(100);
       
       const data: unknown = await res.json();
-      if (res.ok && typeof data === "object" && data !== null && "script" in data) {
-        const scriptData = (data as ScriptResponse).script;
-        const fullScript = scriptData.fullScript || "No script generated";
+      
+      if (res.status === 429) {
+        // Handle rate limiting
+        const rateLimitData = data as { error: string; reset?: Date; remaining?: number };
+        const resetTime = rateLimitData.reset ? new Date(rateLimitData.reset).toLocaleTimeString() : "a few minutes";
+        setError(`Rate limit exceeded. Please try again after ${resetTime}. ${rateLimitData.remaining ?? 0} requests remaining.`);
+        return;
+      }
+      
+            if (res.ok && typeof data === "object" && data !== null && "script" in data) {
+        const responseData = data as ScriptResponse & { cached?: boolean };
+        const scriptData = responseData.script;
+        const fullScript = scriptData.fullScript ?? "No script generated";
         setScript(fullScript);
         setScriptSections({
-          title: scriptData.title || "",
-          hook: scriptData.hook || "",
-          introduction: scriptData.introduction || "",
-          mainContent: scriptData.mainContent || "",
-          conclusion: scriptData.conclusion || "",
-          callToAction: scriptData.callToAction || "",
-          technicalNotes: scriptData.technicalNotes || ""
+          title: scriptData.title ?? "",
+          hook: scriptData.hook ?? "",
+          introduction: scriptData.introduction ?? "",
+          mainContent: scriptData.mainContent ?? "",
+          conclusion: scriptData.conclusion ?? "",
+          callToAction: scriptData.callToAction ?? "",
+          technicalNotes: scriptData.technicalNotes ?? ""
         });
         setAnalysis(analyzeScript(fullScript));
+        setIsCached(responseData.cached ?? false);
       } else {
-        setError(
-          typeof data === "object" && data !== null && "error" in data
-            ? ((data as { error?: string }).error ?? "Failed to generate script")
-            : "Failed to generate script"
-        );
+        const errorData = data as { error?: string; type?: string; details?: Array<{ message: string; path: string[] }> };
+        let errorMessage = "Failed to generate script";
+        
+        if (errorData.type === "quota_error") {
+          errorMessage = "AI quota exceeded. Please upgrade your plan or try again later.";
+        } else if (errorData.type === "validation_error") {
+          if (errorData.details && errorData.details.length > 0) {
+            // Show specific validation errors
+            const validationErrors = errorData.details.map(detail => detail.message).join(", ");
+            errorMessage = `Validation error: ${validationErrors}`;
+          } else {
+            errorMessage = "Invalid input. Please check your parameters and try again.";
+          }
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+        
+        setError(errorMessage);
       }
     } catch {
-      setError("Network error");
+      setError("Network error. Please check your connection and try again.");
     } finally {
       clearInterval(progressInterval);
       setLoading(false);
@@ -269,232 +316,603 @@ export default function VideoScriptGeneratorPage() {
     setVideoType(template.id === "tutorial" ? "tutorial" : template.id === "review" ? "educational" : "educational");
   };
 
-  const getPlatformIcon = (platform: string) => {
-    switch (platform) {
-      case "youtube": return "🎥";
-      case "tiktok": return "🎵";
-      case "instagram": return "📸";
-      default: return "📱";
-    }
-  };
+
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2">
-            AI Video Script Generator
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-3 mb-4 p-2 rounded-full bg-primary/10 border border-primary/20">
+            <div className="p-2 rounded-full bg-primary/20">
+              <Video className="size-6 text-primary" />
+            </div>
+            <span className="text-sm font-medium text-primary">AI-Powered Script Generation</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent mb-4 tracking-tight">
+            Video Script Generator
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Create engaging, platform-optimized video scripts with advanced AI assistance
+          <p className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed">
+            Create engaging, platform-optimized video scripts with advanced AI assistance and professional storytelling frameworks
           </p>
+          <div className="flex items-center justify-center gap-8 mt-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              <span>AI-Powered</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              <span>Platform-Optimized</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+              <span>Professional Quality</span>
+            </div>
+          </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="generate" className="flex items-center gap-2">
-              <Sparkles className="size-4" />
-              Generate
-            </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2">
-              <BookOpen className="size-4" />
-              Templates
-            </TabsTrigger>
-            <TabsTrigger value="advanced" className="flex items-center gap-2">
-              <Settings className="size-4" />
-              Settings
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <History className="size-4" />
-              History
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="grid w-full max-w-2xl grid-cols-4 h-14 p-1 bg-muted/50 backdrop-blur-sm border border-border/50">
+              <TabsTrigger 
+                value="generate" 
+                className="flex items-center gap-2 h-full px-6 text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Sparkles className="size-4" />
+                <span className="hidden sm:inline">Generate</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="templates" 
+                className="flex items-center gap-2 h-full px-6 text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <BookOpen className="size-4" />
+                <span className="hidden sm:inline">Templates</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="advanced" 
+                className="flex items-center gap-2 h-full px-6 text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Settings className="size-4" />
+                <span className="hidden sm:inline">Settings</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history" 
+                className="flex items-center gap-2 h-full px-6 text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <History className="size-4" />
+                <span className="hidden sm:inline">History</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="generate" className="space-y-6">
             <div className="grid lg:grid-cols-3 gap-6">
               {/* Main Input Form */}
               <div className="lg:col-span-2">
-                <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <Video className="size-6 text-primary" />
+                <Card className="group shadow-xl border-0 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.01]">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20 group-hover:scale-110 transition-transform duration-300">
+                        <Video className="size-7 text-primary" />
                       </div>
-                      <div>
-                        <CardTitle className="text-xl">Script Configuration</CardTitle>
-                        <CardDescription>
+                      <div className="flex-1">
+                        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                          Script Configuration
+                        </CardTitle>
+                        <CardDescription className="text-base mt-2">
                           Customize your video script parameters for optimal results
                         </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="topic" className="text-sm font-medium flex items-center gap-2">
-                        <Target className="size-4" />
+                    <div className="space-y-3">
+                      <Label htmlFor="topic" className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                        <Target className="size-4 text-primary" />
                         Video Topic
                       </Label>
-                      <Textarea
-                        id="topic"
-                        value={topic}
-                        onChange={(e) => setTopic(e.target.value)}
-                        placeholder="Describe your video topic in detail. The more specific, the better the script!"
-                        rows={4}
-                        className="resize-none border-2 focus:border-primary/50 transition-colors"
-                        disabled={loading}
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{topic.length} characters</span>
-                        <span>{topic.length < 20 ? "Add more detail for better results" : "Good detail level"}</span>
+                      <div className="relative">
+                        <Textarea
+                          id="topic"
+                          value={topic}
+                          onChange={(e) => setTopic(e.target.value)}
+                          placeholder="Describe your video topic in detail. The more specific, the better the script!"
+                          rows={4}
+                          className="resize-none border-2 focus:border-primary transition-all duration-200 bg-background/50 backdrop-blur-sm focus:bg-background hover:border-primary/70"
+                          disabled={loading}
+                        />
+                        <div className="absolute bottom-3 right-3">
+                          <div className={`text-xs px-2 py-1 rounded-full transition-colors ${
+                            topic.length < 3 ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+                            topic.length < 20 ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                            topic.length > 180 ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' :
+                            'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
+                          }`}>
+                            {topic.length}/200
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full transition-colors ${
+                            topic.length < 3 ? 'bg-red-500' :
+                            topic.length < 20 ? 'bg-yellow-500' :
+                            topic.length > 180 ? 'bg-orange-500' :
+                            'bg-green-500'
+                          }`}></div>
+                          <span className="text-muted-foreground">
+                            {topic.length < 3 ? "Minimum 3 characters required" :
+                             topic.length < 20 ? "Add more detail for better results" :
+                             topic.length > 180 ? "Consider shortening for clarity" :
+                             "Perfect detail level"}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={(topic.length / 200) * 100} 
+                          className="w-20 h-1"
+                        />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium">Video Type</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold text-foreground">Video Type</Label>
                         <Select value={videoType} onValueChange={(value: typeof videoType) => setVideoType(value)}>
-                          <SelectTrigger className="border-2 focus:border-primary/50">
+                          <SelectTrigger className="border-2 focus:border-primary transition-all duration-200 bg-background/50 backdrop-blur-sm hover:border-primary/70 h-12">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="educational">📚 Educational</SelectItem>
-                            <SelectItem value="tutorial">🛠️ Tutorial</SelectItem>
-                            <SelectItem value="explainer">💡 Explainer</SelectItem>
-                            <SelectItem value="promotional">📢 Promotional</SelectItem>
-                            <SelectItem value="entertainment">🎭 Entertainment</SelectItem>
+                          <SelectContent className="backdrop-blur-sm">
+                            <SelectItem value="educational" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">📚</span>
+                                <div>
+                                  <div className="font-medium">Educational</div>
+                                  <div className="text-xs text-muted-foreground">Teaching & Learning</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="tutorial" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">🛠️</span>
+                                <div>
+                                  <div className="font-medium">Tutorial</div>
+                                  <div className="text-xs text-muted-foreground">Step-by-step guides</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="explainer" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">💡</span>
+                                <div>
+                                  <div className="font-medium">Explainer</div>
+                                  <div className="text-xs text-muted-foreground">Concept breakdown</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="promotional" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">📢</span>
+                                <div>
+                                  <div className="font-medium">Promotional</div>
+                                  <div className="text-xs text-muted-foreground">Marketing & Sales</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="entertainment" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">🎭</span>
+                                <div>
+                                  <div className="font-medium">Entertainment</div>
+                                  <div className="text-xs text-muted-foreground">Fun & Engaging</div>
+                                </div>
+                              </div>
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium">Platform</Label>
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold text-foreground">Platform</Label>
                         <Select value={platform} onValueChange={(value: typeof platform) => setPlatform(value)}>
-                          <SelectTrigger className="border-2 focus:border-primary/50">
+                          <SelectTrigger className="border-2 focus:border-primary transition-all duration-200 bg-background/50 backdrop-blur-sm hover:border-primary/70 h-12">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="youtube">{getPlatformIcon("youtube")} YouTube</SelectItem>
-                            <SelectItem value="tiktok">{getPlatformIcon("tiktok")} TikTok</SelectItem>
-                            <SelectItem value="instagram">{getPlatformIcon("instagram")} Instagram</SelectItem>
-                            <SelectItem value="general">{getPlatformIcon("general")} General</SelectItem>
+                          <SelectContent className="backdrop-blur-sm">
+                            <SelectItem value="youtube" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">🎥</span>
+                                <div>
+                                  <div className="font-medium">YouTube</div>
+                                  <div className="text-xs text-muted-foreground">Long-form content</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="tiktok" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">🎵</span>
+                                <div>
+                                  <div className="font-medium">TikTok</div>
+                                  <div className="text-xs text-muted-foreground">Short & viral</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="instagram" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">📸</span>
+                                <div>
+                                  <div className="font-medium">Instagram</div>
+                                  <div className="text-xs text-muted-foreground">Visual storytelling</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="general" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">📱</span>
+                                <div>
+                                  <div className="font-medium">General</div>
+                                  <div className="text-xs text-muted-foreground">Multi-platform</div>
+                                </div>
+                              </div>
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium flex items-center gap-2">
-                          <Clock className="size-4" />
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                          <Clock className="size-4 text-primary" />
                           Duration (minutes)
                         </Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={60}
-                          value={duration}
-                          onChange={(e) => setDuration(parseInt(e.target.value) || 5)}
-                          className="border-2 focus:border-primary/50"
-                          disabled={loading}
-                        />
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            min={1}
+                            max={60}
+                            value={duration}
+                            onChange={(e) => setDuration(parseInt(e.target.value) || 5)}
+                            className="border-2 focus:border-primary transition-all duration-200 bg-background/50 backdrop-blur-sm hover:border-primary/70 h-12 pr-16"
+                            disabled={loading}
+                          />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                            min
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Progress value={(duration / 60) * 100} className="flex-1 h-1" />
+                          <span>{duration}/60</span>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium">Tone</Label>
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold text-foreground">Tone</Label>
                         <Select value={tone} onValueChange={(value: typeof tone) => setTone(value)}>
-                          <SelectTrigger className="border-2 focus:border-primary/50">
+                          <SelectTrigger className="border-2 focus:border-primary transition-all duration-200 bg-background/50 backdrop-blur-sm hover:border-primary/70 h-12">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="professional">👔 Professional</SelectItem>
-                            <SelectItem value="casual">😊 Casual</SelectItem>
-                            <SelectItem value="energetic">⚡ Energetic</SelectItem>
-                            <SelectItem value="calm">😌 Calm</SelectItem>
-                            <SelectItem value="humorous">😄 Humorous</SelectItem>
+                          <SelectContent className="backdrop-blur-sm">
+                            <SelectItem value="professional" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">👔</span>
+                                <div>
+                                  <div className="font-medium">Professional</div>
+                                  <div className="text-xs text-muted-foreground">Authoritative & credible</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="casual" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">😊</span>
+                                <div>
+                                  <div className="font-medium">Casual</div>
+                                  <div className="text-xs text-muted-foreground">Friendly & approachable</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="energetic" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">⚡</span>
+                                <div>
+                                  <div className="font-medium">Energetic</div>
+                                  <div className="text-xs text-muted-foreground">Dynamic & exciting</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="calm" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">😌</span>
+                                <div>
+                                  <div className="font-medium">Calm</div>
+                                  <div className="text-xs text-muted-foreground">Soothing & peaceful</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="humorous" className="h-12 cursor-pointer">
+                              <div className="flex items-center gap-3">
+                                <span className="text-lg">😄</span>
+                                <div>
+                                  <div className="font-medium">Humorous</div>
+                                  <div className="text-xs text-muted-foreground">Fun & entertaining</div>
+                                </div>
+                              </div>
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
 
                     {loading && (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Generating your script...</span>
-                          <span>{progress}%</span>
+                      <div className="space-y-4 p-6 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/20">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-full bg-primary/20 animate-pulse">
+                            <Sparkles className="size-5 text-primary animate-spin" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between text-sm font-medium">
+                              <span className="text-primary">Generating your script...</span>
+                              <span className="text-primary font-bold">{progress}%</span>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {progress < 30 ? "Analyzing your topic..." :
+                               progress < 60 ? "Applying platform optimization..." :
+                               progress < 90 ? "Crafting engaging content..." :
+                               "Finalizing your script..."}
+                            </div>
+                          </div>
                         </div>
-                        <Progress value={progress} className="h-2" />
+                        <div className="space-y-2">
+                          <Progress value={progress} className="h-3 bg-primary/10" />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>Processing</span>
+                            <span>Almost ready</span>
+                          </div>
+                        </div>
                       </div>
                     )}
 
                     {error && (
-                      <div className="rounded-lg border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm flex items-center gap-2">
-                        <div className="flex-1">{error}</div>
-                        <Button variant="ghost" size="sm" onClick={handleGenerate}>
-                          <RefreshCw className="size-4" />
-                        </Button>
+                      <div className="rounded-lg border border-destructive bg-destructive/10 px-4 py-3 text-destructive text-sm">
+                        <div className="flex items-start gap-2">
+                          <div className="flex-1">
+                            <div className="font-medium mb-1">Generation Error</div>
+                            <div>{error}</div>
+                            {error.includes("validation") && (
+                              <div className="mt-2 text-xs">
+                                <strong>Common fixes:</strong>
+                                <ul className="list-disc list-inside mt-1 space-y-1">
+                                  <li>Ensure topic is 3-200 characters long</li>
+                                  <li>Check duration is between 1-60 minutes</li>
+                                  <li>Verify all required fields are filled</li>
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={handleGenerate}>
+                            <RefreshCw className="size-4" />
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="pt-6">
                     <Button
                       onClick={handleGenerate}
                       disabled={loading || topic.length < 10}
-                      className="w-full h-12 text-lg"
+                      className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
                       size="lg"
                     >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                       {loading ? (
                         <>
-                          <Loader2 className="mr-2 size-5 animate-spin" /> Generating...
+                          <Loader2 className="mr-3 size-6 animate-spin" /> 
+                          <span>Generating Amazing Content...</span>
                         </>
                       ) : (
                         <>
-                          <Zap className="mr-2 size-5" />
-                          Generate Script
+                          <Zap className="mr-3 size-6 group-hover:scale-110 transition-transform duration-200" />
+                          <span>Generate Professional Script</span>
                         </>
                       )}
                     </Button>
+                    {topic.length < 10 && (
+                      <div className="mt-3 text-center">
+                        <div className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
+                          <span>Add more detail to your topic to enable generation</span>
+                        </div>
+                      </div>
+                    )}
                   </CardFooter>
                 </Card>
               </div>
 
               {/* Platform Guidelines */}
-              <div className="space-y-4">
-                <Card className="border-0 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <TrendingUp className="size-5" />
-                      Platform Tips
+              <div className="space-y-6">
+                <Card className="border-0 bg-gradient-to-br from-card/60 to-card/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-xl font-bold flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20">
+                        <TrendingUp className="size-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      Platform Optimization
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-4">
                     {platform === "youtube" && (
-                      <div className="space-y-2">
-                        <Badge variant="secondary">YouTube Optimized</Badge>
-                        <ul className="text-sm space-y-1 text-muted-foreground">
-                          <li>• Hook viewers in first 15 seconds</li>
-                          <li>• Include clear call-to-actions</li>
-                          <li>• Structure for longer attention spans</li>
-                          <li>• Optimize for search keywords</li>
-                        </ul>
+                      <div className="space-y-3">
+                        <Badge variant="secondary" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">
+                          🎥 YouTube Optimized
+                        </Badge>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Algorithm Tips:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• Hook viewers in first 15 seconds</li>
+                            <li>• Pattern interrupts every 30 seconds</li>
+                            <li>• Include timestamp suggestions</li>
+                            <li>• Optimize for watch time retention</li>
+                          </ul>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Content Structure:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• Preview-Proof-Payoff framework</li>
+                            <li>• Clear verbal and visual CTAs</li>
+                            <li>• Thumbnail-worthy moments</li>
+                            <li>• Chapter-ready organization</li>
+                          </ul>
+                        </div>
                       </div>
                     )}
                     {platform === "tiktok" && (
-                      <div className="space-y-2">
-                        <Badge variant="secondary">TikTok Optimized</Badge>
-                        <ul className="text-sm space-y-1 text-muted-foreground">
-                          <li>• Quick, punchy opening</li>
-                          <li>• Trend-aware content</li>
-                          <li>• Visual storytelling focus</li>
-                          <li>• Immediate value delivery</li>
-                        </ul>
+                      <div className="space-y-3">
+                        <Badge variant="secondary" className="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100">
+                          🎵 TikTok Optimized
+                        </Badge>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Engagement Tips:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• 3-second pattern interrupt hook</li>
+                            <li>• Jump cuts every 2-3 seconds</li>
+                            <li>• Trending audio suggestions</li>
+                            <li>• Text overlay opportunities</li>
+                          </ul>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Viral Elements:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• Problem-Agitation-Solution format</li>
+                            <li>• Scroll-stopping moments</li>
+                            <li>• Strong next video hook</li>
+                            <li>• Hashtag optimization</li>
+                          </ul>
+                        </div>
                       </div>
                     )}
                     {platform === "instagram" && (
+                      <div className="space-y-3">
+                        <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100">
+                          📸 Instagram Optimized
+                        </Badge>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Visual Strategy:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• Vertical-first storytelling</li>
+                            <li>• Caption-worthy quotes</li>
+                            <li>• Story highlight potential</li>
+                            <li>• Aesthetic visual sequences</li>
+                          </ul>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Engagement:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• AIDA framework integration</li>
+                            <li>• Interactive elements (polls, Q&A)</li>
+                            <li>• Shareable moments design</li>
+                            <li>• Save-worthy content</li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                    {platform === "general" && (
+                      <div className="space-y-3">
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                          📱 Multi-Platform Ready
+                        </Badge>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Universal Principles:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• Adaptable content structure</li>
+                            <li>• Platform-agnostic storytelling</li>
+                            <li>• Flexible timing formats</li>
+                            <li>• Cross-platform optimization</li>
+                          </ul>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium">Adaptation Notes:</div>
+                          <ul className="text-sm space-y-1 text-muted-foreground">
+                            <li>• Multiple format variations</li>
+                            <li>• Scalable engagement tactics</li>
+                            <li>• Universal value delivery</li>
+                            <li>• Cross-platform CTAs</li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
+                  </CardContent>
+                </Card>
+
+                {/* Tone Guidelines */}
+                <Card className="border-0 bg-gradient-to-br from-card/60 to-card/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-xl font-bold flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/20">
+                        <span className="text-lg">🎭</span>
+                      </div>
+                      Tone Guidance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {tone === "professional" && (
                       <div className="space-y-2">
-                        <Badge variant="secondary">Instagram Optimized</Badge>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-100">
+                          👔 Professional Tone
+                        </Badge>
                         <ul className="text-sm space-y-1 text-muted-foreground">
-                          <li>• Visual-first narrative</li>
-                          <li>• Lifestyle-focused tone</li>
-                          <li>• Story-driven content</li>
-                          <li>• Community engagement</li>
+                          <li>• Authoritative but approachable language</li>
+                          <li>• Industry-specific terminology</li>
+                          <li>• Fact-based credibility markers</li>
+                          <li>• Confident, declarative statements</li>
+                        </ul>
+                      </div>
+                    )}
+                    {tone === "casual" && (
+                      <div className="space-y-2">
+                        <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-100">
+                          😊 Casual Tone
+                        </Badge>
+                        <ul className="text-sm space-y-1 text-muted-foreground">
+                          <li>• Conversational, friend-to-friend style</li>
+                          <li>• Personal anecdotes and examples</li>
+                          <li>• Contractions and everyday expressions</li>
+                          <li>• Intimate, one-on-one feeling</li>
+                        </ul>
+                      </div>
+                    )}
+                    {tone === "energetic" && (
+                      <div className="space-y-2">
+                        <Badge variant="outline" className="bg-orange-50 text-orange-700 dark:bg-orange-900 dark:text-orange-100">
+                          ⚡ Energetic Tone
+                        </Badge>
+                        <ul className="text-sm space-y-1 text-muted-foreground">
+                          <li>• Dynamic, action-oriented language</li>
+                          <li>• Excitement markers and power words</li>
+                          <li>• Short, punchy sentences</li>
+                          <li>• High energy without overwhelming</li>
+                        </ul>
+                      </div>
+                    )}
+                    {tone === "calm" && (
+                      <div className="space-y-2">
+                        <Badge variant="outline" className="bg-teal-50 text-teal-700 dark:bg-teal-900 dark:text-teal-100">
+                          😌 Calm Tone
+                        </Badge>
+                        <ul className="text-sm space-y-1 text-muted-foreground">
+                          <li>• Soothing, reassuring language</li>
+                          <li>• Mindful pauses and breathing moments</li>
+                          <li>• Peaceful, stress-free atmosphere</li>
+                          <li>• Steady pacing without rushing</li>
+                        </ul>
+                      </div>
+                    )}
+                    {tone === "humorous" && (
+                      <div className="space-y-2">
+                        <Badge variant="outline" className="bg-yellow-50 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-100">
+                          😄 Humorous Tone
+                        </Badge>
+                        <ul className="text-sm space-y-1 text-muted-foreground">
+                          <li>• Well-timed jokes and wit</li>
+                          <li>• Playful language and comparisons</li>
+                          <li>• Self-deprecating humor when appropriate</li>
+                          <li>• Balance humor with valuable content</li>
                         </ul>
                       </div>
                     )}
@@ -502,10 +920,12 @@ export default function VideoScriptGeneratorPage() {
                 </Card>
 
                 {analysis && (
-                  <Card className="border-0 bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Target className="size-5" />
+                  <Card className="border-0 bg-gradient-to-br from-emerald-50/80 to-emerald-100/40 dark:from-emerald-900/20 dark:to-emerald-800/10 backdrop-blur-sm shadow-lg border border-emerald-200/50 dark:border-emerald-800/30">
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-xl font-bold flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/20">
+                          <Target className="size-5 text-emerald-600 dark:text-emerald-400" />
+                        </div>
                         Script Analysis
                       </CardTitle>
                     </CardHeader>
@@ -547,36 +967,68 @@ export default function VideoScriptGeneratorPage() {
 
             {/* Generated Script Display */}
             {script && (
-              <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
-                <CardHeader>
+              <Card className="shadow-2xl border-0 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group animate-in slide-in-from-bottom-4 duration-700">
+                <CardHeader className="pb-6">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-green-500/10">
-                        <FileText className="size-6 text-green-600" />
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <FileText className="size-7 text-green-600 dark:text-green-400" />
                       </div>
-                      <div>
-                        <CardTitle className="text-xl">Generated Script</CardTitle>
-                        <CardDescription>Your AI-generated video script is ready</CardDescription>
+                      <div className="flex-1">
+                        <CardTitle className="text-2xl font-bold flex items-center gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                          Generated Script
+                          {isCached && (
+                            <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 dark:from-blue-900 dark:to-blue-800 dark:text-blue-100 border border-blue-300 dark:border-blue-700">
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+                                <span>⚡ Cached</span>
+                              </div>
+                            </Badge>
+                          )}
+                        </CardTitle>
+                        <CardDescription className="text-base mt-2">
+                          {isCached 
+                            ? "Retrieved from cache for faster response" 
+                            : "Your AI-generated video script is ready for production"
+                          }
+                        </CardDescription>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={saveScript}>
-                        <Save className="size-4 mr-2" />
+                    <div className="flex items-center gap-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={saveScript}
+                        className="h-10 px-4 bg-background/50 hover:bg-background border-2 hover:border-primary/50 transition-all duration-200 group"
+                      >
+                        <Save className="size-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                         Save
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => downloadScript('txt')}>
-                        <Download className="size-4 mr-2" />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => downloadScript('txt')}
+                        className="h-10 px-4 bg-background/50 hover:bg-background border-2 hover:border-primary/50 transition-all duration-200 group"
+                      >
+                        <Download className="size-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                         Download
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => copyToClipboard()}>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => copyToClipboard()}
+                        className={`h-10 px-4 bg-background/50 hover:bg-background border-2 transition-all duration-200 group ${
+                          copied ? 'border-green-500 text-green-600' : 'hover:border-primary/50'
+                        }`}
+                      >
                         {copied ? (
                           <>
-                            <Check className="size-4 mr-2" />
+                            <Check className="size-4 mr-2 text-green-600" />
                             Copied!
                           </>
                         ) : (
                           <>
-                            <Copy className="size-4 mr-2" />
+                            <Copy className="size-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                             Copy
                           </>
                         )}
