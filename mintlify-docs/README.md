@@ -43,7 +43,7 @@ When contributing to the documentation:
 ## 🔗 Links
 
 - **Live Documentation**: [docs.replyiq.com](https://docs.replyiq.com)
-- **Main Application**: [app.replyiq.com](https://app.replyiq.com)
+- **Main Application**: [replyiq.com](https://replyiq.com)
 - **GitHub Repository**: [github.com/alexgutscher26/ReplyIQ](https://github.com/alexgutscher26/ReplyIQ)
 
 ## 📄 License

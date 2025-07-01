@@ -30,7 +30,7 @@ ReplyIQ uses a robust authentication system built on NextAuth.js with support fo
 
 <Steps>
   <Step title="Visit Registration Page">
-    Navigate to [app.replyiq.com/auth/register](https://app.replyiq.com/auth/register)
+    Navigate to [replyiq.com/auth/register](https://replyiq.com/auth/register)
   </Step>
   <Step title="Choose Authentication Method">
     <Tabs>
@@ -101,7 +101,7 @@ fetch('/api/auth/register', {
 ```python Python
 import requests
 
-response = requests.post('https://app.replyiq.com/api/auth/register', 
+response = requests.post('https://replyiq.com/api/auth/register', 
   json={
     'email': 'user@example.com',
     'password': 'securePassword123',
@@ -113,7 +113,7 @@ result = response.json()
 ```
 
 ```curl cURL
-curl -X POST https://app.replyiq.com/api/auth/register \
+curl -X POST https://replyiq.com/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -130,7 +130,7 @@ curl -X POST https://app.replyiq.com/api/auth/register \
 
 <Steps>
   <Step title="Visit Login Page">
-    Navigate to [app.replyiq.com/auth/login](https://app.replyiq.com/auth/login)
+    Navigate to [replyiq.com/auth/login](https://replyiq.com/auth/login)
   </Step>
   <Step title="Enter Credentials">
     Provide your email and password or use OAuth provider
@@ -201,7 +201,7 @@ fetch('/api/auth/login', {
 import requests
 
 # Login
-login_response = requests.post('https://app.replyiq.com/api/auth/login', 
+login_response = requests.post('https://replyiq.com/api/auth/login', 
   json={
     'email': 'user@example.com',
     'password': 'securePassword123'
@@ -212,7 +212,7 @@ token = login_response.json()['token']
 
 # Use token for API calls
 headers = {'Authorization': f'Bearer {token}'}
-api_response = requests.post('https://app.replyiq.com/api/ai/generate',
+api_response = requests.post('https://replyiq.com/api/ai/generate',
   headers=headers,
   json={'text': 'Original post', 'tone': 'professional'}
 )
@@ -271,7 +271,7 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-response = requests.post('https://app.replyiq.com/api/ai/generate',
+response = requests.post('https://replyiq.com/api/ai/generate',
     headers=headers,
     json={
         'text': 'Original post content',
@@ -282,7 +282,7 @@ response = requests.post('https://app.replyiq.com/api/ai/generate',
 ```
 
 ```curl cURL
-curl -X POST https://app.replyiq.com/api/ai/generate \
+curl -X POST https://replyiq.com/api/ai/generate \
   -H "X-API-Key: riq_1234567890abcdef" \
   -H "Content-Type: application/json" \
   -d '{
