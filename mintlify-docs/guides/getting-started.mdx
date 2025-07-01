@@ -1,0 +1,682 @@
+---
+title: 'Getting Started Guide'
+description: 'Complete beginner guide to using ReplyIQ for AI-powered social media engagement'
+---
+
+## Welcome to ReplyIQ
+
+This comprehensive guide will walk you through everything you need to know to start using ReplyIQ effectively for AI-powered social media engagement.
+
+<Info>
+  **New to ReplyIQ?** This guide assumes no prior experience and will take you from setup to advanced usage.
+</Info>
+
+## What You'll Learn
+
+<CardGroup cols={2}>
+  <Card title="Account Setup" icon="user-plus">
+    Create your account and configure basic settings
+  </Card>
+  <Card title="AI Configuration" icon="robot">
+    Set up AI models and customize behavior
+  </Card>
+  <Card title="Extension Usage" icon="puzzle-piece">
+    Install and use the browser extension effectively
+  </Card>
+  <Card title="Best Practices" icon="star">
+    Learn proven strategies for maximum engagement
+  </Card>
+</CardGroup>
+
+## Step 1: Account Creation
+
+### Sign Up Process
+
+<Steps>
+  <Step title="Visit ReplyIQ">
+    Go to [app.replyiq.com](https://app.replyiq.com) and click **"Sign Up"**
+  </Step>
+  <Step title="Choose Sign-Up Method">
+    <Tabs>
+      <Tab title="Email & Password">
+        - Enter your email address
+        - Create a secure password
+        - Verify your email address
+      </Tab>
+      <Tab title="OAuth Providers">
+        - Sign up with Google
+        - Sign up with GitHub
+        - Sign up with Discord
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Complete Profile">
+    - Add your name and profile information
+    - Select your use case (individual, team, business)
+    - Choose your primary social media platforms
+  </Step>
+  <Step title="Email Verification">
+    Check your email and click the verification link to activate your account
+  </Step>
+</Steps>
+
+### Account Types
+
+<CardGroup cols={3}>
+  <Card title="Individual" icon="user">
+    **Perfect for:**
+    - Personal social media management
+    - Content creators
+    - Freelancers
+    
+    **Features:**
+    - Personal dashboard
+    - Basic analytics
+    - Standard support
+  </Card>
+  <Card title="Team" icon="users">
+    **Perfect for:**
+    - Small teams and agencies
+    - Collaborative workflows
+    - Shared configurations
+    
+    **Features:**
+    - Team management
+    - Shared settings
+    - Team analytics
+  </Card>
+  <Card title="Business" icon="building">
+    **Perfect for:**
+    - Large organizations
+    - Enterprise features
+    - Advanced security
+    
+    **Features:**
+    - Advanced admin controls
+    - Custom integrations
+    - Priority support
+  </Card>
+</CardGroup>
+
+## Step 2: AI Model Configuration
+
+<Warning>
+  **Important**: AI model configuration is required before you can generate replies. This is done through the admin dashboard, not environment variables.
+</Warning>
+
+### Setting Up AI Providers
+
+<Steps>
+  <Step title="Access Settings">
+    Navigate to **Dashboard → Settings → AI Model Provider**
+  </Step>
+  <Step title="Choose Your AI Provider">
+    <Tabs>
+      <Tab title="OpenAI (Recommended)">
+        **Best for:** General use, high quality responses
+        
+        1. Get API key from [OpenAI Platform](https://platform.openai.com)
+        2. Add key to ReplyIQ dashboard
+        3. Select default models (GPT-4, GPT-3.5 Turbo)
+        4. Test connection
+        
+        **Models available:**
+        - GPT-4 Turbo (best quality)
+        - GPT-4 (high quality)
+        - GPT-3.5 Turbo (fast & cost-effective)
+      </Tab>
+      <Tab title="Anthropic Claude">
+        **Best for:** Nuanced, thoughtful responses
+        
+        1. Get API key from [Anthropic Console](https://console.anthropic.com)
+        2. Add key to ReplyIQ dashboard
+        3. Select Claude models
+        4. Test connection
+        
+        **Models available:**
+        - Claude 3 Opus (highest quality)
+        - Claude 3 Sonnet (balanced)
+        - Claude 3 Haiku (fastest)
+      </Tab>
+      <Tab title="Google AI">
+        **Best for:** Multimodal understanding
+        
+        1. Get API key from [Google AI Studio](https://aistudio.google.com)
+        2. Add key to ReplyIQ dashboard
+        3. Configure Gemini models
+        4. Test connection
+        
+        **Models available:**
+        - Gemini Pro (general purpose)
+        - Gemini Pro Vision (image understanding)
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Test Your Configuration">
+    Use the built-in connection tester to verify your API keys work correctly
+  </Step>
+  <Step title="Set Default Models">
+    Choose default models for different scenarios:
+    - Professional communications
+    - Casual interactions
+    - Platform-specific defaults
+  </Step>
+</Steps>
+
+### Model Selection Guide
+
+<AccordionGroup>
+  <Accordion title="For Professional Use (LinkedIn, Business Twitter)">
+    **Recommended Models:**
+    - GPT-4 or Claude 3 Opus for important communications
+    - GPT-3.5 Turbo or Claude 3 Sonnet for regular interactions
+    
+    **Why:** These models provide nuanced, professional language and understand business context better.
+  </Accordion>
+
+  <Accordion title="For Casual Use (Personal Twitter, Facebook)">
+    **Recommended Models:**
+    - GPT-3.5 Turbo or Claude 3 Haiku for speed
+    - GPT-4 for complex or sensitive topics
+    
+    **Why:** Faster models are sufficient for casual interactions and help manage costs.
+  </Accordion>
+
+  <Accordion title="For High-Volume Use">
+    **Recommended Models:**
+    - Claude 3 Haiku (fastest, most cost-effective)
+    - GPT-3.5 Turbo (good balance of speed and quality)
+    
+    **Why:** These models provide good quality at high speed and lower cost.
+  </Accordion>
+</AccordionGroup>
+
+## Step 3: Browser Extension Setup
+
+### Installation
+
+<Tabs>
+  <Tab title="Chrome">
+    1. Visit [Chrome Web Store](https://chrome.google.com/webstore)
+    2. Search for "ReplyIQ"
+    3. Click "Add to Chrome"
+    4. Pin extension to toolbar
+  </Tab>
+  <Tab title="Firefox">
+    1. Visit [Firefox Add-ons](https://addons.mozilla.org)
+    2. Search for "ReplyIQ"
+    3. Click "Add to Firefox"
+    4. Grant permissions when prompted
+  </Tab>
+  <Tab title="Edge">
+    1. Visit [Edge Add-ons](https://microsoftedge.microsoft.com/addons)
+    2. Search for "ReplyIQ"
+    3. Click "Get"
+    4. Enable extension
+  </Tab>
+</Tabs>
+
+### Extension Configuration
+
+<Steps>
+  <Step title="Sign In">
+    Click the ReplyIQ extension icon and sign in with your account
+  </Step>
+  <Step title="Grant Permissions">
+    Allow access to social media websites when prompted
+  </Step>
+  <Step title="Configure Preferences">
+    Set your default preferences:
+    - Default tone (professional, casual, friendly, etc.)
+    - Preferred AI model
+    - Keyboard shortcuts
+    - Notification settings
+  </Step>
+  <Step title="Test the Extension">
+    Visit Twitter, LinkedIn, or Facebook and test reply generation
+  </Step>
+</Steps>
+
+## Step 4: Your First Reply
+
+Let's generate your first AI-powered reply:
+
+<Steps>
+  <Step title="Find a Post">
+    Navigate to Twitter, LinkedIn, or Facebook and find a post you want to reply to
+  </Step>
+  <Step title="Start Reply">
+    Click the reply button on the post - you should see the ReplyIQ interface appear
+  </Step>
+  <Step title="Select Tone">
+    Choose the appropriate tone for your reply:
+    - **Professional** for business content
+    - **Casual** for everyday conversations
+    - **Friendly** for warm interactions
+    - **Supportive** for encouraging responses
+  </Step>
+  <Step title="Generate Reply">
+    Click **"Generate Reply"** and wait for the AI to create a response
+  </Step>
+  <Step title="Review and Edit">
+    - Read the generated reply
+    - Make any necessary edits
+    - Add emojis if suggested
+    - Ensure it matches your voice
+  </Step>
+  <Step title="Use the Reply">
+    Click **"Use Reply"** to insert it into the platform's text field, then post normally
+  </Step>
+</Steps>
+
+### Example Walkthrough
+
+<CodeGroup>
+
+```text Original Post
+"Just launched our new product after 2 years of development! The journey was challenging but incredibly rewarding. What's the longest project you've worked on?"
+```
+
+```text Generated Reply (Professional Tone)
+Congratulations on your launch! 🎉 Two years is a significant commitment that shows real dedication. I recently completed a 3-year digital transformation project that taught me the value of persistence and iterative improvement. The challenges often become the most valuable learning experiences. Wishing you great success with your new product!
+```
+
+```text Generated Reply (Casual Tone)
+Congrats on the launch! 🚀 Two years is no joke - that's some serious dedication! I once worked on a side project for about 18 months and thought I was going to lose my mind 😅 But those long projects really teach you patience, right? Hope your launch goes amazingly!
+```
+
+</CodeGroup>
+
+## Step 5: Understanding Tone Options
+
+### Tone Guide
+
+<AccordionGroup>
+  <Accordion title="Professional">
+    **Best for:** LinkedIn, business Twitter, formal communications
+    
+    **Characteristics:**
+    - Formal language and structure
+    - Industry-appropriate terminology
+    - Respectful and courteous tone
+    - Clear and concise messaging
+    
+    **Example use cases:**
+    - Responding to industry leaders
+    - Business networking
+    - Professional announcements
+    - Thought leadership content
+  </Accordion>
+
+  <Accordion title="Casual">
+    **Best for:** Personal Twitter, Facebook, everyday conversations
+    
+    **Characteristics:**
+    - Relaxed, conversational language
+    - Natural expressions and contractions
+    - Friendly but not overly familiar
+    - Appropriate humor when relevant
+    
+    **Example use cases:**
+    - Personal social media
+    - Community discussions
+    - Hobby-related content
+    - General networking
+  </Accordion>
+
+  <Accordion title="Friendly">
+    **Best for:** Building relationships, warm interactions
+    
+    **Characteristics:**
+    - Warm and welcoming tone
+    - Positive, encouraging language
+    - Personal touch without being intrusive
+    - Empathetic responses
+    
+    **Example use cases:**
+    - Welcome messages
+    - Community building
+    - Customer service
+    - Personal connections
+  </Accordion>
+
+  <Accordion title="Humorous">
+    **Best for:** Entertainment content, light-hearted interactions
+    
+    **Characteristics:**
+    - Witty and clever responses
+    - Light humor appropriate to context
+    - Playful language
+    - Engaging and entertaining
+    
+    **Example use cases:**
+    - Entertainment industry
+    - Meme responses
+    - Light-hearted discussions
+    - Brand personality expression
+  </Accordion>
+
+  <Accordion title="Supportive">
+    **Best for:** Encouraging others, offering help
+    
+    **Characteristics:**
+    - Empathetic and understanding
+    - Encouraging and uplifting
+    - Helpful suggestions when appropriate
+    - Positive reinforcement
+    
+    **Example use cases:**
+    - Mental health discussions
+    - Career advice
+    - Personal struggles
+    - Achievement celebrations
+  </Accordion>
+
+  <Accordion title="Informative">
+    **Best for:** Educational content, sharing knowledge
+    
+    **Characteristics:**
+    - Factual and educational
+    - Clear explanations
+    - Helpful insights
+    - Authoritative but approachable
+    
+    **Example use cases:**
+    - Educational content
+    - How-to discussions
+    - Industry insights
+    - Knowledge sharing
+  </Accordion>
+</AccordionGroup>
+
+## Step 6: Platform-Specific Best Practices
+
+### Twitter/X Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Character Optimization" icon="text-width">
+    - Keep replies under 280 characters
+    - Use abbreviations when appropriate
+    - Break long thoughts into threads
+    - Prioritize impact over length
+  </Card>
+  <Card title="Engagement Tactics" icon="heart">
+    - Ask questions to encourage responses
+    - Use relevant hashtags (1-2 max)
+    - Include emojis for visual appeal
+    - Respond quickly to trending topics
+  </Card>
+</CardGroup>
+
+**Twitter-Specific Tips:**
+- Use casual or humorous tones for better engagement
+- Include relevant hashtags but don't overdo it
+- Respond to trending topics quickly
+- Use threads for complex responses
+
+### LinkedIn Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Professional Tone" icon="briefcase">
+    - Always use professional tone
+    - Include industry insights
+    - Share relevant experience
+    - Maintain business etiquette
+  </Card>
+  <Card title="Networking Focus" icon="handshake">
+    - Build meaningful connections
+    - Offer value in responses
+    - Ask thoughtful questions
+    - Share professional achievements
+  </Card>
+</CardGroup>
+
+**LinkedIn-Specific Tips:**
+- Always use professional tone, even for casual content
+- Share relevant professional experience
+- Ask thoughtful, industry-related questions
+- Avoid overly casual language or excessive emojis
+
+### Facebook Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Community Building" icon="users">
+    - Focus on building relationships
+    - Use friendly, approachable tone
+    - Encourage discussion
+    - Share personal experiences
+  </Card>
+  <Card title="Engagement Optimization" icon="thumbs-up">
+    - Use emojis appropriately
+    - Ask open-ended questions
+    - Share relatable content
+    - Respond to comments promptly
+  </Card>
+</CardGroup>
+
+**Facebook-Specific Tips:**
+- Use friendly or casual tones for better community feel
+- Share personal experiences when relevant
+- Use emojis to add personality
+- Focus on building genuine relationships
+
+## Step 7: Advanced Features
+
+### Custom Instructions
+
+Add custom instructions to fine-tune AI responses:
+
+<CodeGroup>
+
+```text Example Custom Instructions
+"Always ask a follow-up question to encourage engagement"
+```
+
+```text Example Custom Instructions
+"Include a relevant industry statistic when possible"
+```
+
+```text Example Custom Instructions
+"Maintain a startup founder perspective in responses"
+```
+
+</CodeGroup>
+
+### Multiple Variations
+
+Generate multiple reply options to choose from:
+
+<Steps>
+  <Step title="Enable Variations">
+    In the extension settings, enable "Generate multiple variations"
+  </Step>
+  <Step title="Set Variation Count">
+    Choose how many variations to generate (2-5 recommended)
+  </Step>
+  <Step title="Compare Options">
+    Review all variations and choose the best one for your context
+  </Step>
+  <Step title="Learn from Patterns">
+    Notice which types of replies work best for your audience
+  </Step>
+</Steps>
+
+### Emoji and Hashtag Optimization
+
+<AccordionGroup>
+  <Accordion title="Smart Emoji Usage">
+    - Use 1-3 emojis maximum per reply
+    - Choose emojis that match the content tone
+    - Avoid overusing the same emojis
+    - Consider platform emoji culture
+  </Accordion>
+
+  <Accordion title="Hashtag Strategy">
+    - Use 1-2 hashtags on Twitter
+    - Avoid hashtags on LinkedIn unless highly relevant
+    - Use popular but relevant hashtags
+    - Create branded hashtags for campaigns
+  </Accordion>
+</AccordionGroup>
+
+## Step 8: Monitoring and Analytics
+
+### Dashboard Analytics
+
+<Steps>
+  <Step title="Access Analytics">
+    Go to **Dashboard → Analytics** to view your usage data
+  </Step>
+  <Step title="Review Key Metrics">
+    Monitor:
+    - Replies generated per day/week/month
+    - Most used tones and platforms
+    - AI model performance
+    - Success rates and errors
+  </Step>
+  <Step title="Identify Patterns">
+    Look for:
+    - Peak usage times
+    - Most effective tones
+    - Platform-specific performance
+    - Areas for improvement
+  </Step>
+  <Step title="Optimize Strategy">
+    Use insights to:
+    - Adjust default settings
+    - Choose better models for specific use cases
+    - Improve reply quality
+    - Manage usage and costs
+  </Step>
+</Steps>
+
+### Performance Tracking
+
+<CardGroup cols={2}>
+  <Card title="Quality Metrics" icon="star">
+    - User satisfaction ratings
+    - Reply acceptance rates
+    - Edit frequency
+    - Regeneration requests
+  </Card>
+  <Card title="Usage Metrics" icon="chart-bar">
+    - Daily/weekly/monthly usage
+    - Platform distribution
+    - Tone preferences
+    - Model performance
+  </Card>
+</CardGroup>
+
+## Common Mistakes to Avoid
+
+<Warning>
+  **Don't:** Post AI-generated content without reviewing it first. Always read and edit replies before posting.
+</Warning>
+
+<AccordionGroup>
+  <Accordion title="Over-relying on AI">
+    **Problem:** Using AI for every reply without adding personal touch
+    
+    **Solution:** 
+    - Edit replies to match your voice
+    - Add personal experiences or insights
+    - Use AI as a starting point, not the final word
+  </Accordion>
+
+  <Accordion title="Ignoring Context">
+    **Problem:** Not considering the full conversation context
+    
+    **Solution:**
+    - Read the entire thread before replying
+    - Consider the relationship with the original poster
+    - Adapt tone based on the conversation's mood
+  </Accordion>
+
+  <Accordion title="Wrong Tone Selection">
+    **Problem:** Using inappropriate tone for the platform or context
+    
+    **Solution:**
+    - Learn platform cultures and expectations
+    - Match tone to the original post's tone
+    - When in doubt, err on the side of professionalism
+  </Accordion>
+
+  <Accordion title="Neglecting Platform Differences">
+    **Problem:** Using the same approach across all platforms
+    
+    **Solution:**
+    - Customize approach for each platform
+    - Understand platform-specific best practices
+    - Adjust content length and style accordingly
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="AI Model Setup"
+    icon="robot"
+    href="/guides/ai-model-setup"
+  >
+    Deep dive into AI model configuration and optimization
+  </Card>
+  <Card
+    title="Team Management"
+    icon="users"
+    href="/dashboard/team-management"
+  >
+    Set up team accounts and collaborative workflows
+  </Card>
+  <Card
+    title="API Integration"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Integrate ReplyIQ into your own applications
+  </Card>
+  <Card
+    title="Advanced Features"
+    icon="star"
+    href="/features/ai-reply-generation"
+  >
+    Explore advanced features and customization options
+  </Card>
+</CardGroup>
+
+## Getting Help
+
+<CardGroup cols={2}>
+  <Card
+    title="FAQ"
+    icon="question-circle"
+    href="/support/faq"
+  >
+    Answers to frequently asked questions
+  </Card>
+  <Card
+    title="Community"
+    icon="users"
+    href="https://discord.gg/replyiq"
+  >
+    Join our Discord community for help and tips
+  </Card>
+  <Card
+    title="Support"
+    icon="headset"
+    href="mailto:support@replyiq.com"
+  >
+    Contact our support team directly
+  </Card>
+  <Card
+    title="Video Tutorials"
+    icon="play-circle"
+    href="https://youtube.com/replyiq"
+  >
+    Watch step-by-step video guides
+  </Card>
+</CardGroup>
+
+---
+
+**Congratulations!** 🎉 You're now ready to use ReplyIQ effectively. Start with simple replies and gradually explore advanced features as you become more comfortable with the platform.

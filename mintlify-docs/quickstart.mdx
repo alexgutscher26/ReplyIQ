@@ -1,0 +1,253 @@
+---
+title: 'Quickstart'
+description: 'Get up and running with ReplyIQ in under 5 minutes'
+---
+
+## Overview
+
+This quickstart guide will help you set up ReplyIQ and generate your first AI-powered social media reply in under 5 minutes.
+
+<Info>
+  **Prerequisites**: You'll need a modern web browser and optionally API keys for AI services (OpenAI, Claude, etc.)
+</Info>
+
+## Step 1: Create Your Account
+
+<Steps>
+  <Step title="Sign Up">
+    Visit [app.replyiq.com](https://app.replyiq.com) and create your account using:
+    - Email and password
+    - Google OAuth
+    - GitHub OAuth
+    - Discord OAuth
+  </Step>
+  <Step title="Verify Email">
+    Check your email and click the verification link to activate your account
+  </Step>
+  <Step title="Complete Profile">
+    Fill in your profile information and select your use case (individual, team, business)
+  </Step>
+</Steps>
+
+## Step 2: Configure AI Services
+
+<Warning>
+  AI service configuration is required to generate replies. The first user automatically becomes an admin.
+</Warning>
+
+<Steps>
+  <Step title="Access Admin Dashboard">
+    Navigate to **Dashboard → Settings → AI Model Provider**
+  </Step>
+  <Step title="Add API Keys">
+    Configure your preferred AI services:
+    
+    <Tabs>
+      <Tab title="OpenAI">
+        ```json
+        {
+          "provider": "openai",
+          "apiKey": "sk-...",
+          "models": ["gpt-4", "gpt-3.5-turbo"]
+        }
+        ```
+      </Tab>
+      <Tab title="Claude">
+        ```json
+        {
+          "provider": "anthropic",
+          "apiKey": "sk-ant-...",
+          "models": ["claude-3-opus", "claude-3-sonnet"]
+        }
+        ```
+      </Tab>
+      <Tab title="Google AI">
+        ```json
+        {
+          "provider": "google",
+          "apiKey": "AIza...",
+          "models": ["gemini-pro", "gemini-pro-vision"]
+        }
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Test Connection">
+    Click **Test Connection** to verify your API keys are working correctly
+  </Step>
+  <Step title="Save Configuration">
+    Save your settings and set default models for different use cases
+  </Step>
+</Steps>
+
+## Step 3: Install Browser Extension
+
+<CardGroup cols={3}>
+  <Card title="Chrome" icon="chrome">
+    1. Visit [Chrome Web Store](https://chrome.google.com/webstore)
+    2. Search for "ReplyIQ"
+    3. Click "Add to Chrome"
+    4. Pin the extension to your toolbar
+  </Card>
+  <Card title="Firefox" icon="firefox">
+    1. Visit [Firefox Add-ons](https://addons.mozilla.org)
+    2. Search for "ReplyIQ"
+    3. Click "Add to Firefox"
+    4. Grant necessary permissions
+  </Card>
+  <Card title="Edge" icon="edge">
+    1. Visit [Edge Add-ons](https://microsoftedge.microsoft.com/addons)
+    2. Search for "ReplyIQ"
+    3. Click "Get"
+    4. Enable the extension
+  </Card>
+</CardGroup>
+
+### Extension Setup
+
+<Steps>
+  <Step title="Sign In">
+    Click the ReplyIQ extension icon and sign in with your account
+  </Step>
+  <Step title="Grant Permissions">
+    Allow the extension to access social media sites when prompted
+  </Step>
+  <Step title="Verify Connection">
+    The extension should show "Connected" status with your account info
+  </Step>
+</Steps>
+
+## Step 4: Generate Your First Reply
+
+<Steps>
+  <Step title="Navigate to Social Media">
+    Go to Twitter/X, LinkedIn, or Facebook and find a post you want to reply to
+  </Step>
+  <Step title="Activate ReplyIQ">
+    - Click the reply button on the post
+    - Look for the ReplyIQ icon in the text area
+    - Or use the keyboard shortcut: `Ctrl+Shift+R` (Windows) or `Cmd+Shift+R` (Mac)
+  </Step>
+  <Step title="Configure Your Reply">
+    <Tabs>
+      <Tab title="Tone Selection">
+        Choose from available tones:
+        - **Professional**: Formal, business-appropriate
+        - **Casual**: Relaxed, conversational
+        - **Friendly**: Warm, approachable
+        - **Humorous**: Light-hearted, witty
+        - **Supportive**: Encouraging, empathetic
+      </Tab>
+      <Tab title="Platform Optimization">
+        ReplyIQ automatically optimizes for the current platform:
+        - **Twitter/X**: Character limits, hashtag suggestions
+        - **LinkedIn**: Professional tone, industry context
+        - **Facebook**: Conversational, engagement-focused
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Generate Reply">
+    Click **Generate Reply** and watch as AI creates a contextual response
+  </Step>
+  <Step title="Review and Edit">
+    - Review the generated reply
+    - Make any necessary edits
+    - Add emojis using the smart suggestions
+    - Click **Use Reply** to insert it into the text field
+  </Step>
+</Steps>
+
+## Step 5: Explore Advanced Features
+
+<CardGroup cols={2}>
+  <Card title="Emoji Suggestions" icon="face-smile">
+    Get context-aware emoji recommendations that enhance engagement
+  </Card>
+  <Card title="Hashtag Generation" icon="hashtag">
+    Generate relevant hashtags for increased visibility
+  </Card>
+  <Card title="Analytics Dashboard" icon="chart-bar">
+    Track your usage, engagement metrics, and optimization opportunities
+  </Card>
+  <Card title="Team Collaboration" icon="users">
+    Invite team members and manage shared AI configurations
+  </Card>
+</CardGroup>
+
+## Usage Tips
+
+<Tip>
+  **Keyboard Shortcuts**: Use `Ctrl+Shift+R` (or `Cmd+Shift+R` on Mac) to quickly activate ReplyIQ on any social media platform.
+</Tip>
+
+<Tip>
+  **Tone Consistency**: The extension remembers your last used tone for consistent brand voice across replies.
+</Tip>
+
+<Tip>
+  **Context Matters**: The AI analyzes the original post content, so more context leads to better replies.
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Extension not appearing">
+    1. Refresh the social media page
+    2. Check if the extension is enabled in your browser
+    3. Verify you're signed in to your ReplyIQ account
+    4. Try disabling and re-enabling the extension
+  </Accordion>
+
+  <Accordion title="AI generation failing">
+    1. Check your AI service configuration in the dashboard
+    2. Verify your API keys are valid and have sufficient credits
+    3. Try switching to a different AI model
+    4. Contact support if the issue persists
+  </Accordion>
+
+  <Accordion title="Slow response times">
+    1. Check your internet connection
+    2. Try using a different AI model (some are faster than others)
+    3. Clear your browser cache and cookies
+    4. Restart your browser
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Explore Features"
+    icon="compass"
+    href="/features/ai-reply-generation"
+  >
+    Learn about all available features and customization options
+  </Card>
+  <Card
+    title="API Integration"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Integrate ReplyIQ into your own applications
+  </Card>
+  <Card
+    title="Team Setup"
+    icon="users"
+    href="/dashboard/team-management"
+  >
+    Set up team accounts and manage user permissions
+  </Card>
+  <Card
+    title="Advanced Configuration"
+    icon="cog"
+    href="/guides/ai-model-setup"
+  >
+    Fine-tune AI models and customize behavior
+  </Card>
+</CardGroup>
+
+---
+
+**Congratulations!** 🎉 You've successfully set up ReplyIQ and generated your first AI-powered reply. 
+
+Need help? Join our [Discord community](https://discord.gg/replyiq) or [contact support](mailto:support@replyiq.com).

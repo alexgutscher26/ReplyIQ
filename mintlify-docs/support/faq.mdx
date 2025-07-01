@@ -1,0 +1,478 @@
+---
+title: 'Frequently Asked Questions'
+description: 'Common questions and answers about ReplyIQ'
+---
+
+## General Questions
+
+<AccordionGroup>
+  <Accordion title="What is ReplyIQ?">
+    ReplyIQ is an AI-powered SaaS platform that helps users generate engaging, contextually-appropriate responses for social media platforms. It uses advanced AI models like GPT-4, Claude, and Gemini to create replies that match your tone and style while being optimized for each platform.
+  </Accordion>
+
+  <Accordion title="Which social media platforms does ReplyIQ support?">
+    ReplyIQ currently supports:
+    - **Twitter/X** (full support)
+    - **LinkedIn** (full support)
+    - **Facebook** (full support)
+    - **Instagram** (beta support)
+    
+    We're continuously adding support for more platforms based on user demand.
+  </Accordion>
+
+  <Accordion title="Do I need technical knowledge to use ReplyIQ?">
+    No! ReplyIQ is designed for everyone. The browser extension works seamlessly with social media platforms, and the web dashboard is user-friendly. No coding or technical expertise required.
+  </Accordion>
+
+  <Accordion title="Is ReplyIQ free to use?">
+    ReplyIQ offers a free tier with limited features:
+    - 100 requests per hour
+    - 1,000 requests per month
+    - Basic AI models only
+    
+    Paid plans offer more requests, advanced AI models, and additional features.
+  </Accordion>
+</AccordionGroup>
+
+## Account & Setup
+
+<AccordionGroup>
+  <Accordion title="How do I create a ReplyIQ account?">
+    1. Visit [app.replyiq.com](https://app.replyiq.com)
+    2. Click "Sign Up"
+    3. Choose email/password or OAuth provider (Google, GitHub, Discord)
+    4. Verify your email address
+    5. Complete your profile setup
+    
+    The first user automatically becomes an admin with full access to AI configuration.
+  </Accordion>
+
+  <Accordion title="Why do I need to configure AI models separately?">
+    For security and flexibility reasons, AI API keys are configured through the admin dashboard rather than environment variables. This allows:
+    - Secure key management
+    - Easy updates without server restarts
+    - Team-based key sharing
+    - Better cost control
+  </Accordion>
+
+  <Accordion title="Which AI provider should I choose?">
+    **For beginners:** Start with OpenAI (GPT-3.5 Turbo) for good balance of quality and cost.
+    
+    **For professionals:** Use GPT-4 or Claude 3 Opus for highest quality responses.
+    
+    **For high volume:** Use Claude 3 Haiku or GPT-3.5 Turbo for speed and cost efficiency.
+    
+    You can configure multiple providers and switch between them as needed.
+  </Accordion>
+
+  <Accordion title="Can I use ReplyIQ without API keys?">
+    No, AI API keys are required to generate replies. However, you can:
+    - Use the free tier of most AI providers
+    - Share team API keys (for team accounts)
+    - Start with the most cost-effective models
+    
+    Most providers offer free credits for new users.
+  </Accordion>
+</AccordionGroup>
+
+## Browser Extension
+
+<AccordionGroup>
+  <Accordion title="Why isn't the ReplyIQ extension appearing on social media sites?">
+    **Common solutions:**
+    1. **Refresh the page** - The extension needs to load after page changes
+    2. **Check if you're signed in** - Click the extension icon and verify login status
+    3. **Verify permissions** - Ensure the extension has access to the social media site
+    4. **Clear cache** - Clear browser cache and cookies
+    5. **Restart browser** - Sometimes a browser restart resolves loading issues
+    
+    If issues persist, try disabling and re-enabling the extension.
+  </Accordion>
+
+  <Accordion title="The extension is installed but not working. What should I do?">
+    **Troubleshooting steps:**
+    1. **Check extension status** - Click the extension icon to see if you're logged in
+    2. **Verify AI configuration** - Ensure AI models are configured in your dashboard
+    3. **Test on different platforms** - Try Twitter, LinkedIn, and Facebook
+    4. **Check browser console** - Look for error messages (F12 → Console)
+    5. **Update extension** - Ensure you have the latest version
+    
+    **Still not working?** Contact support with your browser type and version.
+  </Accordion>
+
+  <Accordion title="Can I use ReplyIQ on mobile devices?">
+    **Mobile browser support is limited** due to browser extension restrictions. However:
+    
+    **Current options:**
+    - Use the web dashboard on mobile browsers
+    - Copy/paste content for reply generation
+    - Mobile app is in development
+    
+    **Coming soon:**
+    - Native mobile apps for iOS and Android
+    - Progressive Web App (PWA) support
+  </Accordion>
+
+  <Accordion title="Which browsers support the ReplyIQ extension?">
+    **Full support:**
+    - Chrome 88+ (recommended)
+    - Firefox 78+
+    - Edge 88+ (Chromium-based)
+    
+    **Limited support:**
+    - Safari 14+ (basic functionality)
+    
+    **Not supported:**
+    - Internet Explorer
+    - Older browser versions
+  </Accordion>
+</AccordionGroup>
+
+## AI & Reply Generation
+
+<AccordionGroup>
+  <Accordion title="Why are my generated replies not good quality?">
+    **Common causes and solutions:**
+    
+    **Insufficient context:**
+    - Ensure the original post has enough content for context
+    - Try adding custom instructions for better guidance
+    
+    **Wrong model selection:**
+    - Use GPT-4 or Claude Opus for complex content
+    - Switch models if current one isn't performing well
+    
+    **Inappropriate tone:**
+    - Match tone to the platform and context
+    - Experiment with different tone options
+    
+    **Generic prompts:**
+    - Add specific instructions in the context field
+    - Provide more details about your role or perspective
+  </Accordion>
+
+  <Accordion title="How can I make replies sound more like me?">
+    **Personalization strategies:**
+    
+    1. **Edit generated replies** - Always review and modify to match your voice
+    2. **Use custom instructions** - Add guidelines like "Write from a startup founder perspective"
+    3. **Choose appropriate tone** - Select the tone that matches your usual communication style
+    4. **Add personal touches** - Include your own experiences or insights
+    5. **Learn from patterns** - Notice which edits you make frequently and adjust instructions
+  </Accordion>
+
+  <Accordion title="Can I generate multiple reply options?">
+    Yes! You can generate multiple variations:
+    
+    **In the extension:**
+    - Enable "Generate variations" in settings
+    - Set the number of variations (2-5 recommended)
+    
+    **Via API:**
+    - Use the `variations` parameter in your API request
+    
+    **Benefits:**
+    - Compare different approaches
+    - Choose the best option for context
+    - Learn what works best for your audience
+  </Accordion>
+
+  <Accordion title="Why do some replies get flagged or rejected?">
+    **Content filtering reasons:**
+    
+    1. **Inappropriate content** - AI models have built-in safety filters
+    2. **Platform violations** - Content that violates social media guidelines
+    3. **Spam detection** - Overly promotional or repetitive content
+    4. **Context misunderstanding** - AI misinterpreted the original post
+    
+    **Solutions:**
+    - Try regenerating with different instructions
+    - Use a different AI model
+    - Manually edit the problematic parts
+    - Contact support if filtering seems incorrect
+  </Accordion>
+</AccordionGroup>
+
+## Billing & Subscriptions
+
+<AccordionGroup>
+  <Accordion title="How does ReplyIQ pricing work?">
+    **Pricing is based on usage tiers:**
+    
+    **Free Tier:**
+    - 1,000 requests/month
+    - Basic AI models only
+    - Community support
+    
+    **Pro Tier ($19/month):**
+    - 10,000 requests/month
+    - All AI models
+    - Priority support
+    - Team features
+    
+    **Enterprise (Custom):**
+    - Unlimited requests
+    - Custom models
+    - Dedicated support
+    - Advanced security
+    
+    **Note:** You also need API credits with your chosen AI provider (OpenAI, Anthropic, etc.)
+  </Accordion>
+
+  <Accordion title="Do I need to pay for AI API usage separately?">
+    **Yes, AI API costs are separate:**
+    
+    - **ReplyIQ subscription** - Platform access and features
+    - **AI provider costs** - Actual AI model usage (OpenAI, Anthropic, Google)
+    
+    **Typical AI costs:**
+    - GPT-3.5 Turbo: ~$0.001 per reply
+    - GPT-4: ~$0.01 per reply
+    - Claude 3 Haiku: ~$0.0005 per reply
+    
+    Most providers offer free credits for new users.
+  </Accordion>
+
+  <Accordion title="Can I change my subscription plan?">
+    **Yes, you can change plans anytime:**
+    
+    **Upgrading:**
+    - Immediate access to new features
+    - Prorated billing for current period
+    
+    **Downgrading:**
+    - Changes take effect at next billing cycle
+    - Current features remain until cycle end
+    
+    **Canceling:**
+    - Access continues until end of billing period
+    - Data is retained for 30 days after cancellation
+  </Accordion>
+
+  <Accordion title="What happens if I exceed my usage limits?">
+    **Free tier:**
+    - Requests are blocked until next month
+    - Option to upgrade for immediate access
+    
+    **Paid tiers:**
+    - Overage charges apply
+    - Automatic notifications at 80% and 100% usage
+    - Option to set usage caps to prevent overages
+  </Accordion>
+</AccordionGroup>
+
+## Team & Collaboration
+
+<AccordionGroup>
+  <Accordion title="How do I add team members to my account?">
+    **Team setup process:**
+    
+    1. **Upgrade to Pro or Enterprise** - Team features require paid plans
+    2. **Go to Team Settings** - Dashboard → Team → Invite Members
+    3. **Send invitations** - Enter email addresses and select roles
+    4. **Configure permissions** - Set access levels for each member
+    5. **Share configurations** - Set up shared AI models and preferences
+  </Accordion>
+
+  <Accordion title="What are the different team roles?">
+    **Admin:**
+    - Full access to all features
+    - Manage team members and billing
+    - Configure AI models and settings
+    
+    **Manager:**
+    - Manage team settings and members
+    - View team analytics
+    - Limited billing access
+    
+    **Member:**
+    - Generate replies and use features
+    - View personal analytics
+    - Use shared configurations
+  </Accordion>
+
+  <Accordion title="Can team members share AI configurations?">
+    **Yes, teams can share:**
+    - AI model configurations
+    - Default tone preferences
+    - Custom instruction templates
+    - Brand voice guidelines
+    
+    **Benefits:**
+    - Consistent brand voice across team
+    - Shared costs for AI API usage
+    - Centralized configuration management
+  </Accordion>
+</AccordionGroup>
+
+## Technical Issues
+
+<AccordionGroup>
+  <Accordion title="I'm getting API errors. What should I check?">
+    **Common API issues and solutions:**
+    
+    **Invalid API Key:**
+    - Verify API key is correct in dashboard
+    - Check if key has expired
+    - Ensure key has proper permissions
+    
+    **Quota Exceeded:**
+    - Check AI provider account for remaining credits
+    - Upgrade AI provider plan if needed
+    - Switch to different model temporarily
+    
+    **Rate Limiting:**
+    - Wait before making more requests
+    - Upgrade to higher tier for increased limits
+    - Distribute usage throughout the day
+    
+    **Model Unavailable:**
+    - Try different AI model
+    - Check AI provider status page
+    - Contact support if issue persists
+  </Accordion>
+
+  <Accordion title="The extension is slow or unresponsive. How can I fix this?">
+    **Performance optimization:**
+    
+    **Browser optimization:**
+    - Close unnecessary tabs
+    - Disable unused extensions
+    - Clear browser cache
+    - Restart browser
+    
+    **Extension optimization:**
+    - Update to latest version
+    - Reset extension settings
+    - Clear extension data
+    - Reinstall if necessary
+    
+    **Network optimization:**
+    - Check internet connection
+    - Try different network if possible
+    - Disable VPN temporarily
+  </Accordion>
+
+  <Accordion title="I'm having trouble with authentication. What should I do?">
+    **Authentication troubleshooting:**
+    
+    **Can't sign in:**
+    - Verify email and password
+    - Try password reset if needed
+    - Check if account is verified
+    - Try different OAuth provider
+    
+    **Session expires frequently:**
+    - Check browser cookie settings
+    - Disable private/incognito mode
+    - Clear browser data and sign in again
+    
+    **Extension not authenticated:**
+    - Click extension icon and sign in
+    - Verify web app authentication first
+    - Clear extension data and re-authenticate
+  </Accordion>
+</AccordionGroup>
+
+## Data & Privacy
+
+<AccordionGroup>
+  <Accordion title="What data does ReplyIQ collect?">
+    **Data we collect:**
+    - Account information (email, name, preferences)
+    - Usage analytics (anonymized)
+    - Generated content (for improvement)
+    - Error logs (for debugging)
+    
+    **Data we DON'T collect:**
+    - Personal browsing history
+    - Private messages or DMs
+    - Passwords or sensitive credentials
+    - Financial information
+  </Accordion>
+
+  <Accordion title="Is my data secure?">
+    **Security measures:**
+    - All data encrypted in transit (HTTPS/TLS)
+    - API keys encrypted at rest
+    - Regular security audits
+    - GDPR compliance
+    - SOC 2 Type II certification (in progress)
+    
+    **Data retention:**
+    - Account data: Until account deletion
+    - Usage analytics: 2 years
+    - Generated content: 30 days (unless saved)
+    - Error logs: 90 days
+  </Accordion>
+
+  <Accordion title="Can I export or delete my data?">
+    **Data portability:**
+    - Export account data via dashboard
+    - Download usage analytics
+    - Export generated content history
+    
+    **Data deletion:**
+    - Delete account in settings
+    - Request complete data deletion
+    - GDPR "right to be forgotten" compliance
+    
+    **Timeline:**
+    - Immediate: Account deactivation
+    - 30 days: Complete data deletion
+    - Backups: Purged within 90 days
+  </Accordion>
+</AccordionGroup>
+
+## Getting More Help
+
+<CardGroup cols={2}>
+  <Card
+    title="Contact Support"
+    icon="envelope"
+    href="mailto:support@replyiq.com"
+  >
+    Email our support team for personalized help
+  </Card>
+  <Card
+    title="Join Community"
+    icon="discord"
+    href="https://discord.gg/replyiq"
+  >
+    Get help from other users in our Discord
+  </Card>
+  <Card
+    title="Video Tutorials"
+    icon="play-circle"
+    href="https://youtube.com/replyiq"
+  >
+    Watch step-by-step guides on YouTube
+  </Card>
+  <Card
+    title="Feature Requests"
+    icon="lightbulb"
+    href="https://github.com/alexgutscher26/ReplyIQ/issues"
+  >
+    Request new features on GitHub
+  </Card>
+</CardGroup>
+
+## Still Need Help?
+
+If you can't find the answer to your question:
+
+1. **Search this documentation** - Use the search function to find specific topics
+2. **Check our status page** - Verify if there are any ongoing issues
+3. **Contact support** - Email us with detailed information about your issue
+4. **Join our community** - Ask questions in our Discord server
+
+**When contacting support, please include:**
+- Your account email
+- Browser type and version
+- Steps to reproduce the issue
+- Any error messages
+- Screenshots if relevant
+
+---
+
+**Response time:** We typically respond to support requests within 24 hours during business days.
