@@ -1,0 +1,480 @@
+---
+title: 'Browser Extension Installation'
+description: 'Install and configure the ReplyIQ browser extension for seamless social media integration'
+---
+
+## Overview
+
+The ReplyIQ browser extension provides seamless integration with social media platforms, allowing you to generate AI-powered replies directly on Twitter/X, LinkedIn, Facebook, and more.
+
+<CardGroup cols={3}>
+  <Card title="Chrome" icon="chrome">
+    Compatible with Chrome 88+ and Chromium-based browsers
+  </Card>
+  <Card title="Firefox" icon="firefox">
+    Compatible with Firefox 78+ and Firefox ESR
+  </Card>
+  <Card title="Edge" icon="edge">
+    Compatible with Microsoft Edge 88+ (Chromium-based)
+  </Card>
+</CardGroup>
+
+## Installation from Web Stores
+
+### Chrome Web Store
+
+<Steps>
+  <Step title="Visit Chrome Web Store">
+    Navigate to the [Chrome Web Store](https://chrome.google.com/webstore) and search for "ReplyIQ"
+  </Step>
+  <Step title="Add Extension">
+    Click **"Add to Chrome"** button on the ReplyIQ extension page
+  </Step>
+  <Step title="Grant Permissions">
+    Review and accept the required permissions:
+    - Access to social media websites
+    - Storage for user preferences
+    - Communication with ReplyIQ servers
+  </Step>
+  <Step title="Pin Extension">
+    Click the puzzle piece icon in Chrome toolbar and pin ReplyIQ for easy access
+  </Step>
+</Steps>
+
+### Firefox Add-ons
+
+<Steps>
+  <Step title="Visit Firefox Add-ons">
+    Navigate to [Firefox Add-ons](https://addons.mozilla.org) and search for "ReplyIQ"
+  </Step>
+  <Step title="Add to Firefox">
+    Click **"Add to Firefox"** button on the ReplyIQ extension page
+  </Step>
+  <Step title="Grant Permissions">
+    Accept the permission requests when prompted
+  </Step>
+  <Step title="Access Extension">
+    Click the ReplyIQ icon in the Firefox toolbar
+  </Step>
+</Steps>
+
+### Microsoft Edge Add-ons
+
+<Steps>
+  <Step title="Visit Edge Add-ons">
+    Navigate to [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons) and search for "ReplyIQ"
+  </Step>
+  <Step title="Get Extension">
+    Click **"Get"** button on the ReplyIQ extension page
+  </Step>
+  <Step title="Enable Extension">
+    Ensure the extension is enabled in Edge settings
+  </Step>
+</Steps>
+
+## Development Installation
+
+For developers or users who want to install from source:
+
+### Prerequisites
+
+<CardGroup cols={2}>
+  <Card title="Node.js 18+" icon="node-js">
+    Required for building the extension
+  </Card>
+  <Card title="Bun (Optional)" icon="package">
+    Faster alternative to npm for package management
+  </Card>
+</CardGroup>
+
+### Build from Source
+
+<Steps>
+  <Step title="Clone Repository">
+    ```bash
+    git clone https://github.com/alexgutscher26/ReplyIQ.git
+    cd ReplyIQ/extension-v6.0.0
+    ```
+  </Step>
+  <Step title="Install Dependencies">
+    <Tabs>
+      <Tab title="Bun">
+        ```bash
+        bun install
+        ```
+      </Tab>
+      <Tab title="npm">
+        ```bash
+        npm install
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Configure Environment">
+    ```bash
+    # Copy environment file
+    cp .env.example .env
+    
+    # Edit .env file
+    WXT_SITE_URL="http://localhost:3000"  # Your ReplyIQ web app URL
+    WXT_DEBUG="true"                      # Enable debug logging
+    ```
+  </Step>
+  <Step title="Build Extension">
+    <Tabs>
+      <Tab title="All Browsers">
+        ```bash
+        bun run build:all
+        ```
+      </Tab>
+      <Tab title="Chrome Only">
+        ```bash
+        bun run build:chrome
+        ```
+      </Tab>
+      <Tab title="Firefox Only">
+        ```bash
+        bun run build:firefox
+        ```
+      </Tab>
+      <Tab title="Edge Only">
+        ```bash
+        bun run build:edge
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+### Load Unpacked Extension
+
+<Tabs>
+  <Tab title="Chrome">
+    <Steps>
+      <Step title="Open Extensions Page">
+        Navigate to `chrome://extensions/` or go to **Menu → More tools → Extensions**
+      </Step>
+      <Step title="Enable Developer Mode">
+        Toggle the **"Developer mode"** switch in the top right
+      </Step>
+      <Step title="Load Extension">
+        Click **"Load unpacked"** and select the `.output/chrome-mv3` folder
+      </Step>
+      <Step title="Verify Installation">
+        The ReplyIQ extension should appear in your extensions list
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Firefox">
+    <Steps>
+      <Step title="Open Add-ons Page">
+        Navigate to `about:addons` or go to **Menu → Add-ons and themes**
+      </Step>
+      <Step title="Debug Add-ons">
+        Click the gear icon and select **"Debug Add-ons"**
+      </Step>
+      <Step title="Load Temporary Add-on">
+        Click **"Load Temporary Add-on"** and select the `manifest.json` file from `.output/firefox-mv2`
+      </Step>
+      <Step title="Verify Installation">
+        The extension will be loaded temporarily until Firefox is restarted
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Edge">
+    <Steps>
+      <Step title="Open Extensions Page">
+        Navigate to `edge://extensions/` or go to **Menu → Extensions**
+      </Step>
+      <Step title="Enable Developer Mode">
+        Toggle the **"Developer mode"** switch
+      </Step>
+      <Step title="Load Extension">
+        Click **"Load unpacked"** and select the `.output/edge-mv3` folder
+      </Step>
+      <Step title="Verify Installation">
+        The ReplyIQ extension should appear in your extensions list
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Extension Setup
+
+### Initial Configuration
+
+<Steps>
+  <Step title="Click Extension Icon">
+    Click the ReplyIQ icon in your browser toolbar
+  </Step>
+  <Step title="Sign In">
+    Sign in with your ReplyIQ account credentials
+    
+    <Info>
+      You must have a ReplyIQ web app account first. Create one at [app.replyiq.com](https://app.replyiq.com)
+    </Info>
+  </Step>
+  <Step title="Grant Permissions">
+    Allow the extension to access social media websites when prompted
+  </Step>
+  <Step title="Verify Connection">
+    The extension popup should show "Connected" status with your account information
+  </Step>
+</Steps>
+
+### Extension Permissions
+
+The ReplyIQ extension requires the following permissions:
+
+<AccordionGroup>
+  <Accordion title="Host Permissions">
+    - **twitter.com** / **x.com** - For Twitter/X integration
+    - **linkedin.com** - For LinkedIn integration  
+    - **facebook.com** - For Facebook integration
+    - **app.replyiq.com** - For API communication
+  </Accordion>
+
+  <Accordion title="API Permissions">
+    - **storage** - Save user preferences and cache
+    - **activeTab** - Access current tab for content injection
+    - **scripting** - Inject content scripts on social media pages
+  </Accordion>
+
+  <Accordion title="Optional Permissions">
+    - **notifications** - Show success/error notifications
+    - **contextMenus** - Right-click menu integration
+  </Accordion>
+</AccordionGroup>
+
+## Using the Extension
+
+### Basic Usage
+
+<Steps>
+  <Step title="Navigate to Social Media">
+    Go to any supported social media platform (Twitter/X, LinkedIn, Facebook)
+  </Step>
+  <Step title="Find a Post">
+    Navigate to a post you want to reply to
+  </Step>
+  <Step title="Start Reply">
+    Click the reply button on the post - you'll see the ReplyIQ interface appear
+  </Step>
+  <Step title="Generate Reply">
+    - Select your preferred tone
+    - Click **"Generate Reply"**
+    - Review and edit the generated response
+    - Click **"Use Reply"** to insert it
+  </Step>
+</Steps>
+
+### Keyboard Shortcuts
+
+<CardGroup cols={2}>
+  <Card title="Quick Activation" icon="keyboard">
+    **Ctrl+Shift+R** (Windows/Linux)  
+    **Cmd+Shift+R** (Mac)
+    
+    Quickly activate ReplyIQ on any social media page
+  </Card>
+  <Card title="Generate Reply" icon="bolt">
+    **Enter** (when ReplyIQ is active)
+    
+    Generate a reply with the current settings
+  </Card>
+</CardGroup>
+
+## Extension Features
+
+<CardGroup cols={2}>
+  <Card title="Smart Reply Generation" icon="robot">
+    AI-powered contextual replies with retry logic and error handling
+  </Card>
+  <Card title="Emoji Suggestions" icon="face-smile">
+    Context-aware emoji recommendations with keyboard navigation
+  </Card>
+  <Card title="Tone Selection" icon="palette">
+    Multiple tone options with visual feedback for consistency
+  </Card>
+  <Card title="Real-time Sync" icon="sync">
+    Syncs with your web dashboard for unified experience
+  </Card>
+  <Card title="Platform Optimization" icon="target">
+    Automatically optimizes content for each social media platform
+  </Card>
+  <Card title="Offline Support" icon="wifi-off">
+    Basic functionality works offline with cached data
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Extension Not Appearing">
+    **Possible solutions:**
+    1. Refresh the social media page
+    2. Check if extension is enabled in browser settings
+    3. Verify you're signed in to your ReplyIQ account
+    4. Clear browser cache and cookies
+    5. Disable and re-enable the extension
+    
+    **Check extension status:**
+    ```javascript
+    // Open browser console and run:
+    chrome.runtime.sendMessage({action: "getStatus"}, (response) => {
+      console.log("Extension status:", response);
+    });
+    ```
+  </Accordion>
+
+  <Accordion title="Authentication Issues">
+    **Common problems:**
+    1. **Not signed in**: Click extension icon and sign in
+    2. **Session expired**: Sign out and sign back in
+    3. **Account suspended**: Check your account status in web app
+    4. **Network issues**: Check internet connection
+    
+    **Reset authentication:**
+    1. Click extension icon
+    2. Click "Sign Out"
+    3. Clear extension data in browser settings
+    4. Sign in again
+  </Accordion>
+
+  <Accordion title="Reply Generation Failing">
+    **Troubleshooting steps:**
+    1. Check AI service configuration in web dashboard
+    2. Verify API keys are valid and have sufficient credits
+    3. Try switching to a different AI model
+    4. Check browser console for error messages
+    5. Disable other extensions that might interfere
+    
+    **Debug mode:**
+    Enable debug logging in extension settings to see detailed error information.
+  </Accordion>
+
+  <Accordion title="Performance Issues">
+    **Optimization tips:**
+    1. Close unnecessary browser tabs
+    2. Disable unused browser extensions
+    3. Clear browser cache regularly
+    4. Update to latest browser version
+    5. Restart browser if issues persist
+    
+    **Memory usage:**
+    The extension uses minimal memory (~5-10MB) but performance may vary based on browser and system resources.
+  </Accordion>
+</AccordionGroup>
+
+## Extension Updates
+
+### Automatic Updates
+
+Extensions installed from web stores update automatically:
+
+- **Chrome**: Updates check every few hours
+- **Firefox**: Updates check daily
+- **Edge**: Updates check automatically
+
+### Manual Updates
+
+For development installations:
+
+<Steps>
+  <Step title="Pull Latest Code">
+    ```bash
+    git pull origin main
+    cd extension-v6.0.0
+    ```
+  </Step>
+  <Step title="Install Dependencies">
+    ```bash
+    bun install  # or npm install
+    ```
+  </Step>
+  <Step title="Rebuild Extension">
+    ```bash
+    bun run build:all
+    ```
+  </Step>
+  <Step title="Reload in Browser">
+    Go to extensions page and click the reload button for ReplyIQ
+  </Step>
+</Steps>
+
+## Privacy & Security
+
+<CardGroup cols={2}>
+  <Card title="Data Collection" icon="shield-check">
+    - No personal data stored locally
+    - Usage analytics are anonymized
+    - All data encrypted in transit
+  </Card>
+  <Card title="Permissions" icon="lock">
+    - Minimal required permissions
+    - No access to sensitive browser data
+    - Secure communication with ReplyIQ servers
+  </Card>
+</CardGroup>
+
+### Data Handling
+
+<AccordionGroup>
+  <Accordion title="What Data is Collected">
+    - Usage statistics (anonymous)
+    - Error logs for debugging
+    - User preferences and settings
+    - Generated reply content (for improvement)
+  </Accordion>
+
+  <Accordion title="What Data is NOT Collected">
+    - Personal browsing history
+    - Passwords or sensitive information
+    - Private messages or DMs
+    - Financial information
+  </Accordion>
+
+  <Accordion title="Data Storage">
+    - Local storage: User preferences only
+    - Server storage: Encrypted and secure
+    - No data sold to third parties
+    - GDPR compliant data handling
+  </Accordion>
+</AccordionGroup>
+
+## Support
+
+<CardGroup cols={2}>
+  <Card
+    title="Extension Issues"
+    icon="bug"
+    href="/support/troubleshooting"
+  >
+    Common extension problems and solutions
+  </Card>
+  <Card
+    title="Feature Requests"
+    icon="lightbulb"
+    href="https://github.com/alexgutscher26/ReplyIQ/issues"
+  >
+    Request new features or report bugs
+  </Card>
+  <Card
+    title="Community Support"
+    icon="users"
+    href="https://discord.gg/replyiq"
+  >
+    Get help from the community
+  </Card>
+  <Card
+    title="Direct Support"
+    icon="envelope"
+    href="mailto:support@replyiq.com"
+  >
+    Contact our support team
+  </Card>
+</CardGroup>
+
+---
+
+**Next Steps**: Once installed, check out our [Extension Features Guide](/extension/features) to learn about all available functionality.

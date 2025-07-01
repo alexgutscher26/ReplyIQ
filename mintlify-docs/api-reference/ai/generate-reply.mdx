@@ -1,0 +1,594 @@
+---
+title: 'Generate Reply'
+api: 'POST https://app.replyiq.com/api/ai/generate'
+description: 'Generate AI-powered replies for social media posts'
+---
+
+## Overview
+
+The Generate Reply endpoint is the core of ReplyIQ's API, allowing you to create contextual, engaging replies for social media posts using advanced AI models.
+
+<Info>
+  This endpoint requires authentication via API key or Bearer token. See [Authentication](/api-reference/authentication) for details.
+</Info>
+
+## Request
+
+<ParamField body="text" type="string" required>
+  The original post content to generate a reply for. This should include the full text of the social media post.
+  
+  **Example**: `"Just launched our new product after 2 years of development! What do you think?"`
+</ParamField>
+
+<ParamField body="tone" type="string" default="casual">
+  The tone for the generated reply. Available options:
+  - `professional` - Formal, business-appropriate
+  - `casual` - Relaxed, conversational
+  - `friendly` - Warm, approachable
+  - `humorous` - Light-hearted, witty
+  - `supportive` - Encouraging, empathetic
+  - `informative` - Educational, fact-focused
+</ParamField>
+
+<ParamField body="platform" type="string" default="twitter">
+  The social media platform for optimization:
+  - `twitter` - Twitter/X optimization
+  - `linkedin` - LinkedIn professional optimization
+  - `facebook` - Facebook social optimization
+  - `instagram` - Instagram visual-focused optimization
+</ParamField>
+
+<ParamField body="model" type="string" optional>
+  Specific AI model to use. If not provided, uses the default model for your account:
+  - `gpt-4` - OpenAI GPT-4
+  - `gpt-3.5-turbo` - OpenAI GPT-3.5 Turbo
+  - `claude-3-opus` - Anthropic Claude 3 Opus
+  - `claude-3-sonnet` - Anthropic Claude 3 Sonnet
+  - `claude-3-haiku` - Anthropic Claude 3 Haiku
+  - `gemini-pro` - Google Gemini Pro
+</ParamField>
+
+<ParamField body="maxLength" type="number" optional>
+  Maximum character length for the reply. Platform defaults:
+  - Twitter: 280 characters
+  - LinkedIn: 3000 characters
+  - Facebook: 8000 characters
+</ParamField>
+
+<ParamField body="includeEmojis" type="boolean" default="true">
+  Whether to include emoji suggestions in the reply
+</ParamField>
+
+<ParamField body="includeHashtags" type="boolean" default="false">
+  Whether to include relevant hashtags in the reply
+</ParamField>
+
+<ParamField body="context" type="object" optional>
+  Additional context to improve reply generation:
+  
+  <Expandable title="Context Object">
+    <ParamField body="context.userRole" type="string" optional>
+      The role of the person replying (e.g., "Marketing Manager", "CEO", "Developer")
+    </ParamField>
+    
+    <ParamField body="context.industry" type="string" optional>
+      Industry context (e.g., "Technology", "Healthcare", "Finance")
+    </ParamField>
+    
+    <ParamField body="context.relationship" type="string" optional>
+      Relationship to the original poster (e.g., "colleague", "customer", "friend")
+    </ParamField>
+    
+    <ParamField body="context.customInstructions" type="string" optional>
+      Custom instructions for the AI (e.g., "Always ask a follow-up question")
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="variations" type="number" default="1" optional>
+  Number of reply variations to generate (1-5). Higher numbers consume more credits.
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="Data Object">
+    <ResponseField name="data.reply" type="string">
+      The generated reply text
+    </ResponseField>
+    
+    <ResponseField name="data.variations" type="array" optional>
+      Array of reply variations if `variations > 1` was requested
+    </ResponseField>
+    
+    <ResponseField name="data.emojis" type="array" optional>
+      Suggested emojis for the reply if `includeEmojis` is true
+    </ResponseField>
+    
+    <ResponseField name="data.hashtags" type="array" optional>
+      Suggested hashtags if `includeHashtags` is true
+    </ResponseField>
+    
+    <ResponseField name="data.metadata" type="object">
+      <Expandable title="Metadata Object">
+        <ResponseField name="data.metadata.model" type="string">
+          AI model used for generation
+        </ResponseField>
+        
+        <ResponseField name="data.metadata.tone" type="string">
+          Tone used for the reply
+        </ResponseField>
+        
+        <ResponseField name="data.metadata.platform" type="string">
+          Platform optimization applied
+        </ResponseField>
+        
+        <ResponseField name="data.metadata.characterCount" type="number">
+          Character count of the generated reply
+        </ResponseField>
+        
+        <ResponseField name="data.metadata.processingTime" type="number">
+          Time taken to generate the reply (in milliseconds)
+        </ResponseField>
+        
+        <ResponseField name="data.metadata.confidence" type="number">
+          AI confidence score (0-1) for the generated reply
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="usage" type="object">
+  <Expandable title="Usage Object">
+    <ResponseField name="usage.creditsUsed" type="number">
+      Number of credits consumed for this request
+    </ResponseField>
+    
+    <ResponseField name="usage.remainingCredits" type="number">
+      Remaining credits in your account
+    </ResponseField>
+    
+    <ResponseField name="usage.resetDate" type="string">
+      Date when credits reset (ISO 8601 format)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  ISO 8601 timestamp of the response
+</ResponseField>
+
+## Examples
+
+### Basic Reply Generation
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('https://app.replyiq.com/api/ai/generate', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'riq_your_api_key_here',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    text: 'Just launched our new product after 2 years of development! What do you think?',
+    tone: 'professional',
+    platform: 'linkedin'
+  })
+});
+
+const result = await response.json();
+console.log(result.data.reply);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://app.replyiq.com/api/ai/generate',
+    headers={
+        'X-API-Key': 'riq_your_api_key_here',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'text': 'Just launched our new product after 2 years of development! What do you think?',
+        'tone': 'professional',
+        'platform': 'linkedin'
+    }
+)
+
+result = response.json()
+print(result['data']['reply'])
+```
+
+```javascript JavaScript
+fetch('https://app.replyiq.com/api/ai/generate', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'riq_your_api_key_here',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    text: 'Just launched our new product after 2 years of development! What do you think?',
+    tone: 'professional',
+    platform: 'linkedin'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data.data.reply));
+```
+
+```curl cURL
+curl -X POST https://app.replyiq.com/api/ai/generate \
+  -H "X-API-Key: riq_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Just launched our new product after 2 years of development! What do you think?",
+    "tone": "professional",
+    "platform": "linkedin"
+  }'
+```
+
+</CodeGroup>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true,
+  "data": {
+    "reply": "Congratulations on your launch! 🎉 Two years is a significant commitment that shows real dedication. I'd love to learn more about the key challenges you overcame during development. What was the most valuable lesson you learned throughout this journey?",
+    "emojis": ["🎉", "💪", "🚀", "👏"],
+    "metadata": {
+      "model": "gpt-4",
+      "tone": "professional",
+      "platform": "linkedin",
+      "characterCount": 187,
+      "processingTime": 2340,
+      "confidence": 0.92
+    }
+  },
+  "usage": {
+    "creditsUsed": 1,
+    "remainingCredits": 999,
+    "resetDate": "2024-02-01T00:00:00Z"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+</ResponseExample>
+
+### Advanced Reply with Context
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('https://app.replyiq.com/api/ai/generate', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'riq_your_api_key_here',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    text: 'Struggling with work-life balance lately. Any tips?',
+    tone: 'supportive',
+    platform: 'twitter',
+    model: 'claude-3-sonnet',
+    maxLength: 250,
+    includeEmojis: true,
+    includeHashtags: true,
+    context: {
+      userRole: 'Life Coach',
+      relationship: 'professional',
+      customInstructions: 'Provide actionable advice and ask an engaging question'
+    },
+    variations: 2
+  })
+});
+
+const result = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://app.replyiq.com/api/ai/generate',
+    headers={
+        'X-API-Key': 'riq_your_api_key_here',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'text': 'Struggling with work-life balance lately. Any tips?',
+        'tone': 'supportive',
+        'platform': 'twitter',
+        'model': 'claude-3-sonnet',
+        'maxLength': 250,
+        'includeEmojis': True,
+        'includeHashtags': True,
+        'context': {
+            'userRole': 'Life Coach',
+            'relationship': 'professional',
+            'customInstructions': 'Provide actionable advice and ask an engaging question'
+        },
+        'variations': 2
+    }
+)
+
+result = response.json()
+```
+
+</CodeGroup>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true,
+  "data": {
+    "reply": "I hear you! 💙 Start small: set clear boundaries, schedule 'you time' daily, and remember that saying no is self-care. What's one boundary you could set this week? 🌱",
+    "variations": [
+      "I hear you! 💙 Start small: set clear boundaries, schedule 'you time' daily, and remember that saying no is self-care. What's one boundary you could set this week? 🌱",
+      "Balance is a journey, not a destination! 🌟 Try the 3-2-1 rule: 3 work priorities, 2 personal goals, 1 moment of joy daily. Which resonates most with you? ✨"
+    ],
+    "emojis": ["💙", "🌱", "🌟", "✨", "💪", "🧘‍♀️"],
+    "hashtags": ["#WorkLifeBalance", "#SelfCare", "#Mindfulness", "#Wellness"],
+    "metadata": {
+      "model": "claude-3-sonnet",
+      "tone": "supportive",
+      "platform": "twitter",
+      "characterCount": 147,
+      "processingTime": 1890,
+      "confidence": 0.89
+    }
+  },
+  "usage": {
+    "creditsUsed": 2,
+    "remainingCredits": 998,
+    "resetDate": "2024-02-01T00:00:00Z"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+</ResponseExample>
+
+### Multiple Variations
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('https://app.replyiq.com/api/ai/generate', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'riq_your_api_key_here',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    text: 'Coffee shops without WiFi passwords are the worst 😤',
+    tone: 'humorous',
+    platform: 'twitter',
+    variations: 3
+  })
+});
+
+const result = await response.json();
+// result.data.variations will contain 3 different humorous replies
+```
+
+</CodeGroup>
+
+<ResponseExample>
+
+```json Response
+{
+  "success": true,
+  "data": {
+    "reply": "The audacity! 😅 It's like they want us to actually talk to people or something. Revolutionary concept! ☕️💻",
+    "variations": [
+      "The audacity! 😅 It's like they want us to actually talk to people or something. Revolutionary concept! ☕️💻",
+      "Plot twist: they're secretly running a digital detox program disguised as a coffee shop 🕵️‍♀️☕️",
+      "WiFi password: 'TalkToHumans123' - the most secure password because nobody wants to try it 😂"
+    ],
+    "emojis": ["😅", "☕️", "💻", "🕵️‍♀️", "😂", "🤷‍♀️"],
+    "metadata": {
+      "model": "gpt-3.5-turbo",
+      "tone": "humorous",
+      "platform": "twitter",
+      "characterCount": 98,
+      "processingTime": 1560,
+      "confidence": 0.87
+    }
+  },
+  "usage": {
+    "creditsUsed": 3,
+    "remainingCredits": 997,
+    "resetDate": "2024-02-01T00:00:00Z"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<CodeGroup>
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_REQUEST",
+    "message": "Request validation failed",
+    "details": {
+      "field": "text",
+      "issue": "Text content is required and cannot be empty"
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+```json 401 Unauthorized
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_API_KEY",
+    "message": "The provided API key is invalid or expired",
+    "details": {
+      "field": "apiKey"
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+```json 403 Forbidden
+{
+  "success": false,
+  "error": {
+    "code": "QUOTA_EXCEEDED",
+    "message": "Monthly API quota exceeded",
+    "details": {
+      "quotaLimit": 1000,
+      "quotaUsed": 1000,
+      "resetDate": "2024-02-01T00:00:00Z"
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+```json 429 Rate Limited
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Rate limit exceeded. Try again in 60 seconds",
+    "details": {
+      "retryAfter": 60,
+      "limit": 100,
+      "remaining": 0,
+      "resetTime": "2024-01-15T11:00:00Z"
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+```json 500 Server Error
+{
+  "success": false,
+  "error": {
+    "code": "AI_SERVICE_UNAVAILABLE",
+    "message": "AI service temporarily unavailable",
+    "details": {
+      "service": "openai",
+      "retryAfter": 30
+    }
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+</CodeGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Input Optimization">
+    - **Provide context**: Include the full original post text for better replies
+    - **Choose appropriate tone**: Match the tone to your brand voice and platform
+    - **Use platform optimization**: Specify the correct platform for better results
+    - **Add context**: Use the context object for more personalized replies
+  </Accordion>
+
+  <Accordion title="Performance Tips">
+    - **Cache responses**: Cache replies for identical inputs to save credits
+    - **Batch requests**: Use variations parameter instead of multiple API calls
+    - **Choose models wisely**: Use faster models (GPT-3.5, Claude Haiku) for simple replies
+    - **Monitor usage**: Track credit consumption to optimize costs
+  </Accordion>
+
+  <Accordion title="Error Handling">
+    - **Implement retries**: Use exponential backoff for temporary failures
+    - **Handle rate limits**: Respect rate limit headers and implement queuing
+    - **Validate inputs**: Check inputs client-side before API calls
+    - **Fallback strategies**: Have backup plans for AI service outages
+  </Accordion>
+
+  <Accordion title="Quality Assurance">
+    - **Review outputs**: Always review generated content before posting
+    - **Test different models**: Experiment with different AI models for your use case
+    - **Monitor confidence scores**: Use confidence scores to filter low-quality replies
+    - **Collect feedback**: Track which replies perform best for continuous improvement
+  </Accordion>
+</AccordionGroup>
+
+## Rate Limits & Pricing
+
+<CardGroup cols={3}>
+  <Card title="Free Tier" icon="gift">
+    - 100 requests/hour
+    - 1,000 requests/month
+    - GPT-3.5 Turbo only
+    - Basic support
+  </Card>
+  <Card title="Pro Tier" icon="star">
+    - 1,000 requests/hour
+    - 10,000 requests/month
+    - All AI models
+    - Priority support
+  </Card>
+  <Card title="Enterprise" icon="building">
+    - Custom rate limits
+    - Unlimited requests
+    - Custom models
+    - Dedicated support
+  </Card>
+</CardGroup>
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Emoji Suggestions"
+    icon="face-smile"
+    href="/api-reference/ai/emoji-suggestions"
+  >
+    Get context-aware emoji recommendations
+  </Card>
+  <Card
+    title="Hashtag Generation"
+    icon="hashtag"
+    href="/api-reference/ai/hashtag-generation"
+  >
+    Generate relevant hashtags for posts
+  </Card>
+  <Card
+    title="Usage Tracking"
+    icon="chart-bar"
+    href="/api-reference/usage/track-usage"
+  >
+    Monitor your API usage and quotas
+  </Card>
+  <Card
+    title="Analytics"
+    icon="chart-line"
+    href="/api-reference/analytics/get-analytics"
+  >
+    Access detailed usage analytics
+  </Card>
+</CardGroup>
+
+---
+
+**Need help?** Check our [troubleshooting guide](/support/troubleshooting) or [contact support](mailto:api-support@replyiq.com).

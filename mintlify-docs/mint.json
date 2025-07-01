@@ -1,0 +1,174 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "ReplyIQ Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@replyiq.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.replyiq.com"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Browser Extension",
+      "url": "extension"
+    },
+    {
+      "name": "Guides",
+      "url": "guides"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open-cover",
+      "url": "https://docs.replyiq.com"
+    },
+    {
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://discord.gg/replyiq"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://blog.replyiq.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication"
+      ]
+    },
+    {
+      "group": "Installation",
+      "pages": [
+        "installation/web-app",
+        "installation/browser-extension",
+        "installation/environment-setup",
+        "installation/database-setup"
+      ]
+    },
+    {
+      "group": "Core Features",
+      "pages": [
+        "features/ai-reply-generation",
+        "features/emoji-suggestions",
+        "features/tone-customization",
+        "features/multi-platform-support",
+        "features/analytics"
+      ]
+    },
+    {
+      "group": "Dashboard",
+      "pages": [
+        "dashboard/overview",
+        "dashboard/settings",
+        "dashboard/ai-configuration",
+        "dashboard/subscription-management",
+        "dashboard/usage-analytics",
+        "dashboard/team-management"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/introduction",
+        "api-reference/authentication",
+        {
+          "group": "AI Generation",
+          "pages": [
+            "api-reference/ai/generate-reply",
+            "api-reference/ai/emoji-suggestions",
+            "api-reference/ai/hashtag-generation"
+          ]
+        },
+        {
+          "group": "Usage & Analytics",
+          "pages": [
+            "api-reference/usage/track-usage",
+            "api-reference/analytics/get-analytics"
+          ]
+        },
+        {
+          "group": "Payments",
+          "pages": [
+            "api-reference/payments/stripe-checkout",
+            "api-reference/payments/paypal-payment"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Browser Extension",
+      "pages": [
+        "extension/overview",
+        "extension/installation",
+        "extension/features",
+        "extension/supported-platforms",
+        "extension/keyboard-shortcuts",
+        "extension/troubleshooting"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/getting-started",
+        "guides/ai-model-setup",
+        "guides/payment-integration",
+        "guides/custom-deployment",
+        "guides/development-setup",
+        "guides/contributing"
+      ]
+    },
+    {
+      "group": "Advanced",
+      "pages": [
+        "advanced/architecture",
+        "advanced/security",
+        "advanced/performance",
+        "advanced/scaling",
+        "advanced/customization"
+      ]
+    },
+    {
+      "group": "Support",
+      "pages": [
+        "support/troubleshooting",
+        "support/faq",
+        "support/changelog",
+        "support/contact"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/replyiq",
+    "github": "https://github.com/alexgutscher26/ReplyIQ",
+    "linkedin": "https://www.linkedin.com/company/replyiq"
+  }
+}

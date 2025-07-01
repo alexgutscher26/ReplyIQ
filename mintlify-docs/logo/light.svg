@@ -1,0 +1,8 @@
+<svg width="120" height="32" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#0D9373"/>
+  <path d="M6 12C6 10.8954 6.89543 10 8 10H12C13.1046 10 14 10.8954 14 12V14C14 15.1046 13.1046 16 12 16H8C6.89543 16 6 15.1046 6 14V12Z" fill="white"/>
+  <path d="M16 12C16 10.8954 16.8954 10 18 10H20C21.1046 10 22 10.8954 22 12V14C22 15.1046 21.1046 16 20 16H18C16.8954 16 16 15.1046 16 14V12Z" fill="white"/>
+  <path d="M6 20C6 18.8954 6.89543 18 8 18H20C21.1046 18 22 18.8954 22 20V22C22 23.1046 21.1046 24 20 24H8C6.89543 24 6 23.1046 6 22V20Z" fill="white"/>
+  
+  <text x="40" y="20" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">ReplyIQ</text>
+</svg>

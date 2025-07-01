@@ -1,0 +1,516 @@
+---
+title: 'Authentication'
+description: 'Learn how authentication works in ReplyIQ and how to integrate with our APIs'
+---
+
+## Overview
+
+ReplyIQ uses a robust authentication system built on NextAuth.js with support for multiple authentication providers and secure session management.
+
+## Authentication Methods
+
+<CardGroup cols={2}>
+  <Card title="Email & Password" icon="envelope">
+    Traditional email and password authentication with secure password hashing
+  </Card>
+  <Card title="OAuth Providers" icon="shield-check">
+    Sign in with Google, GitHub, Discord, and other OAuth providers
+  </Card>
+  <Card title="API Keys" icon="key">
+    Programmatic access using secure API keys for integrations
+  </Card>
+  <Card title="JWT Tokens" icon="lock">
+    Secure session management with JSON Web Tokens
+  </Card>
+</CardGroup>
+
+## User Registration
+
+### Web Application
+
+<Steps>
+  <Step title="Visit Registration Page">
+    Navigate to [app.replyiq.com/auth/register](https://app.replyiq.com/auth/register)
+  </Step>
+  <Step title="Choose Authentication Method">
+    <Tabs>
+      <Tab title="Email & Password">
+        ```typescript
+        // Registration form data
+        {
+          email: "user@example.com",
+          password: "securePassword123",
+          name: "John Doe",
+          acceptTerms: true
+        }
+        ```
+      </Tab>
+      <Tab title="OAuth Provider">
+        Click on your preferred provider:
+        - Google
+        - GitHub
+        - Discord
+        - More providers available
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Email Verification">
+    Check your email and click the verification link to activate your account
+  </Step>
+  <Step title="Complete Profile">
+    Fill in additional profile information and preferences
+  </Step>
+</Steps>
+
+### API Registration
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('/api/auth/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'securePassword123',
+    name: 'John Doe'
+  })
+});
+
+const result = await response.json();
+```
+
+```javascript JavaScript
+fetch('/api/auth/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'securePassword123',
+    name: 'John Doe'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```python Python
+import requests
+
+response = requests.post('https://app.replyiq.com/api/auth/register', 
+  json={
+    'email': 'user@example.com',
+    'password': 'securePassword123',
+    'name': 'John Doe'
+  }
+)
+
+result = response.json()
+```
+
+```curl cURL
+curl -X POST https://app.replyiq.com/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securePassword123",
+    "name": "John Doe"
+  }'
+```
+
+</CodeGroup>
+
+## User Login
+
+### Web Application Login
+
+<Steps>
+  <Step title="Visit Login Page">
+    Navigate to [app.replyiq.com/auth/login](https://app.replyiq.com/auth/login)
+  </Step>
+  <Step title="Enter Credentials">
+    Provide your email and password or use OAuth provider
+  </Step>
+  <Step title="Two-Factor Authentication (Optional)">
+    If enabled, enter your 2FA code from your authenticator app
+  </Step>
+  <Step title="Access Dashboard">
+    You'll be redirected to your dashboard upon successful authentication
+  </Step>
+</Steps>
+
+### API Authentication
+
+<CodeGroup>
+
+```typescript TypeScript
+// Login and get session token
+const loginResponse = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'securePassword123'
+  })
+});
+
+const { token } = await loginResponse.json();
+
+// Use token for authenticated requests
+const apiResponse = await fetch('/api/ai/generate', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    text: "Original post content",
+    tone: "professional"
+  })
+});
+```
+
+```javascript JavaScript
+// Login
+fetch('/api/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'securePassword123'
+  })
+})
+.then(response => response.json())
+.then(data => {
+  const token = data.token;
+  
+  // Store token for future requests
+  localStorage.setItem('authToken', token);
+});
+```
+
+```python Python
+import requests
+
+# Login
+login_response = requests.post('https://app.replyiq.com/api/auth/login', 
+  json={
+    'email': 'user@example.com',
+    'password': 'securePassword123'
+  }
+)
+
+token = login_response.json()['token']
+
+# Use token for API calls
+headers = {'Authorization': f'Bearer {token}'}
+api_response = requests.post('https://app.replyiq.com/api/ai/generate',
+  headers=headers,
+  json={'text': 'Original post', 'tone': 'professional'}
+)
+```
+
+</CodeGroup>
+
+## API Key Authentication
+
+For server-to-server integrations, use API keys instead of user sessions.
+
+### Generating API Keys
+
+<Steps>
+  <Step title="Access Dashboard">
+    Log in to your ReplyIQ dashboard
+  </Step>
+  <Step title="Navigate to API Settings">
+    Go to **Settings → API Keys**
+  </Step>
+  <Step title="Create New Key">
+    Click **Generate New API Key** and provide:
+    - Key name/description
+    - Permissions/scopes
+    - Expiration date (optional)
+  </Step>
+  <Step title="Store Securely">
+    Copy the API key and store it securely - it won't be shown again
+  </Step>
+</Steps>
+
+### Using API Keys
+
+<CodeGroup>
+
+```typescript TypeScript
+const response = await fetch('/api/ai/generate', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'riq_1234567890abcdef',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    text: "Original post content",
+    tone: "professional",
+    platform: "twitter"
+  })
+});
+```
+
+```python Python
+import requests
+
+headers = {
+    'X-API-Key': 'riq_1234567890abcdef',
+    'Content-Type': 'application/json'
+}
+
+response = requests.post('https://app.replyiq.com/api/ai/generate',
+    headers=headers,
+    json={
+        'text': 'Original post content',
+        'tone': 'professional',
+        'platform': 'twitter'
+    }
+)
+```
+
+```curl cURL
+curl -X POST https://app.replyiq.com/api/ai/generate \
+  -H "X-API-Key: riq_1234567890abcdef" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Original post content",
+    "tone": "professional",
+    "platform": "twitter"
+  }'
+```
+
+</CodeGroup>
+
+## OAuth Integration
+
+### Supported Providers
+
+<CardGroup cols={2}>
+  <Card title="Google" icon="google">
+    Sign in with Google accounts using OAuth 2.0
+  </Card>
+  <Card title="GitHub" icon="github">
+    Authenticate using GitHub accounts
+  </Card>
+  <Card title="Discord" icon="discord">
+    Connect with Discord for community integration
+  </Card>
+  <Card title="Custom OAuth" icon="key">
+    Configure custom OAuth providers as needed
+  </Card>
+</CardGroup>
+
+### OAuth Flow
+
+<Steps>
+  <Step title="Initiate OAuth">
+    User clicks "Sign in with [Provider]" button
+  </Step>
+  <Step title="Provider Authorization">
+    User is redirected to provider's authorization page
+  </Step>
+  <Step title="Grant Permissions">
+    User grants necessary permissions to ReplyIQ
+  </Step>
+  <Step title="Callback Processing">
+    Provider redirects back to ReplyIQ with authorization code
+  </Step>
+  <Step title="Token Exchange">
+    ReplyIQ exchanges code for access token
+  </Step>
+  <Step title="User Creation/Login">
+    User account is created or existing user is logged in
+  </Step>
+</Steps>
+
+## Session Management
+
+### Session Configuration
+
+```typescript
+// Session configuration
+{
+  strategy: "jwt",
+  maxAge: 30 * 24 * 60 * 60, // 30 days
+  updateAge: 24 * 60 * 60,    // 24 hours
+  generateSessionToken: () => crypto.randomUUID(),
+}
+```
+
+### Session Validation
+
+<CodeGroup>
+
+```typescript TypeScript
+// Validate session on server
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+
+export async function validateSession(req: Request) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+  
+  return session.user;
+}
+```
+
+```typescript Client-side
+// Check session on client
+import { useSession } from "next-auth/react";
+
+function ProtectedComponent() {
+  const { data: session, status } = useSession();
+  
+  if (status === "loading") return <p>Loading...</p>;
+  if (status === "unauthenticated") return <p>Access Denied</p>;
+  
+  return <p>Welcome {session.user.email}!</p>;
+}
+```
+
+</CodeGroup>
+
+## Security Features
+
+<AccordionGroup>
+  <Accordion title="Password Security">
+    - Passwords are hashed using bcrypt with salt rounds
+    - Minimum password requirements enforced
+    - Password strength validation
+    - Secure password reset flow
+  </Accordion>
+
+  <Accordion title="Session Security">
+    - JWT tokens with secure signing
+    - Automatic token refresh
+    - Session invalidation on logout
+    - CSRF protection enabled
+  </Accordion>
+
+  <Accordion title="API Security">
+    - Rate limiting per user/IP
+    - API key rotation support
+    - Scope-based permissions
+    - Request signing for sensitive operations
+  </Accordion>
+
+  <Accordion title="Two-Factor Authentication">
+    - TOTP-based 2FA support
+    - Backup codes generation
+    - Recovery options available
+    - Optional enforcement for admin users
+  </Accordion>
+</AccordionGroup>
+
+## Error Handling
+
+### Common Authentication Errors
+
+<CodeGroup>
+
+```json 401 Unauthorized
+{
+  "error": "Unauthorized",
+  "message": "Invalid or missing authentication token",
+  "code": "AUTH_REQUIRED"
+}
+```
+
+```json 403 Forbidden
+{
+  "error": "Forbidden", 
+  "message": "Insufficient permissions for this operation",
+  "code": "INSUFFICIENT_PERMISSIONS"
+}
+```
+
+```json 429 Rate Limited
+{
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded. Try again in 60 seconds",
+  "code": "RATE_LIMIT_EXCEEDED",
+  "retryAfter": 60
+}
+```
+
+</CodeGroup>
+
+### Error Handling Best Practices
+
+<Tip>
+  Always handle authentication errors gracefully and provide clear feedback to users about what went wrong and how to fix it.
+</Tip>
+
+<CodeGroup>
+
+```typescript TypeScript
+try {
+  const response = await fetch('/api/ai/generate', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestData)
+  });
+
+  if (response.status === 401) {
+    // Token expired, redirect to login
+    window.location.href = '/auth/login';
+    return;
+  }
+
+  if (response.status === 429) {
+    // Rate limited, show retry message
+    const data = await response.json();
+    showError(`Rate limited. Try again in ${data.retryAfter} seconds`);
+    return;
+  }
+
+  const result = await response.json();
+  return result;
+} catch (error) {
+  console.error('Authentication error:', error);
+  showError('Authentication failed. Please try again.');
+}
+```
+
+</CodeGroup>
+
+## Browser Extension Authentication
+
+The browser extension uses a special authentication flow to sync with the web application:
+
+<Steps>
+  <Step title="Extension Installation">
+    User installs the browser extension from the web store
+  </Step>
+  <Step title="Web App Login">
+    User must be logged in to the web application first
+  </Step>
+  <Step title="Extension Sync">
+    Extension automatically detects and syncs with the web app session
+  </Step>
+  <Step title="Token Refresh">
+    Extension handles automatic token refresh in the background
+  </Step>
+</Steps>
+
+---
+
+For more information about specific authentication scenarios, check out our [API Reference](/api-reference/authentication) or [contact support](mailto:support@replyiq.com).
