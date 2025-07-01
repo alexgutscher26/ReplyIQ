@@ -24,6 +24,9 @@ interface HashtagChipProps {
   saved: boolean;
 }
 
+/**
+ * Renders a hashtag chip with copy and save functionality.
+ */
 const HashtagChip = ({ tag, onCopy, copied, onSave, saved }: HashtagChipProps) => (
   <span className="bg-muted px-2 py-1 rounded text-sm font-mono border border-border flex items-center gap-1" tabIndex={0} aria-label={`Hashtag ${tag}`}> 
     {tag}
@@ -47,6 +50,16 @@ const HashtagChip = ({ tag, onCopy, copied, onSave, saved }: HashtagChipProps) =
 );
 // --- End HashtagChip ---
 
+/**
+ * The main component for generating hashtags from user input content.
+ *
+ * This component manages the state of input content, generated hashtags, loading status,
+ * errors, and saved hashtags. It fetches hashtag suggestions from an API and provides
+ * functionality to copy individual or all hashtags, save them, and display analytics.
+ *
+ * @returns A React functional component rendering a card with input fields, buttons for actions,
+ *          and display areas for generated and saved hashtags.
+ */
 export default function HashtagGeneratorPage() {
   const [content, setContent] = useState("");
   const [hashtags, setHashtags] = useState<string[]>([]);
@@ -62,6 +75,16 @@ export default function HashtagGeneratorPage() {
     if (saved) setSavedTags(JSON.parse(saved));
   }, []);
 
+  /**
+   * Handles the generation of hashtags from given content.
+   *
+   * It initiates a loading state, clears previous errors and states,
+   * sends a POST request to the server with the provided content,
+   * processes the response to update hashtags or set an error message accordingly,
+   * and finally stops the loading state.
+   *
+   * @returns A promise that resolves when the operation is complete.
+   */
   const handleGenerate = async () => {
     setLoading(true);
     setError(null);
@@ -96,6 +119,9 @@ export default function HashtagGeneratorPage() {
     }
   };
 
+  /**
+   * Copies a given tag to the clipboard and sets a timeout to clear the copied tag state.
+   */
   const handleCopyTag = async (tag: string) => {
     try {
       await navigator.clipboard.writeText(tag);
@@ -104,6 +130,9 @@ export default function HashtagGeneratorPage() {
     } catch {}
   };
 
+  /**
+   * Copies all hashtags to the clipboard and sets copied state.
+   */
   const handleCopyAll = async () => {
     try {
       await navigator.clipboard.writeText(hashtags.join(" "));
@@ -112,6 +141,9 @@ export default function HashtagGeneratorPage() {
     } catch {}
   };
 
+  /**
+   * Adds a new tag to the saved tags list and updates local storage if it's not already present.
+   */
   const handleSaveTag = (tag: string) => {
     if (!savedTags.includes(tag)) {
       const updated = [...savedTags, tag];
