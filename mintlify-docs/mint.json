@@ -112,19 +112,6 @@
             "api-reference/ai/translate",
             "api-reference/ai/video-scripts"
           ]
-        },
-        {
-          "group": "Usage & Analytics",
-          "pages": [
-            "api-reference/usage/track-usage"
-          ]
-        },
-        {
-          "group": "Payments",
-          "pages": [
-            "api-reference/payments/stripe-checkout",
-            "api-reference/payments/paypal-payment"
-          ]
         }
       ]
     },
