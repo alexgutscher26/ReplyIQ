@@ -10,6 +10,9 @@ import Link from "next/link";
 import { useState, type ComponentPropsWithoutRef } from "react";
 import SupportDialog from "./support-dialog";
 
+/**
+ * Renders a secondary navigation menu with support for dialogs.
+ */
 export default function NavSecondary({
   items,
   mini = false,
