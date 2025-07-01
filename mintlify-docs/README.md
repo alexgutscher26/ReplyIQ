@@ -28,8 +28,6 @@ cd mintlify-docs
 mintlify dev
 ```
 
-The documentation will be available at `http://localhost:3000`.
-
 ## 📝 Contributing
 
 When contributing to the documentation:

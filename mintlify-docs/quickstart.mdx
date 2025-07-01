@@ -8,8 +8,12 @@ description: 'Get up and running with ReplyIQ in under 5 minutes'
 This quickstart guide will help you set up ReplyIQ and generate your first AI-powered social media reply in under 5 minutes.
 
 <Info>
-  **Prerequisites**: You'll need a modern web browser and optionally API keys for AI services (OpenAI, Claude, etc.)
+  **Prerequisites**: You'll need a modern web browser. <b>API keys for AI services (OpenAI, Claude, Google, etc.) are required to generate replies.</b> See below for details on obtaining these keys.
 </Info>
+
+<Warning>
+  <b>Security Note:</b> Never share your API keys publicly. Treat them as sensitive credentials.
+</Warning>
 
 ## Step 1: Create Your Account
 
@@ -32,7 +36,8 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
 ## Step 2: Configure AI Services
 
 <Warning>
-  AI service configuration is required to generate replies. The first user automatically becomes an admin.
+  AI service configuration is required to generate replies.<br/>
+  <b>Important:</b> The first user to sign up automatically becomes an admin. Make sure this is a trusted account.
 </Warning>
 
 <Steps>
@@ -40,7 +45,10 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
     Navigate to **Dashboard → Settings → AI Model Provider**
   </Step>
   <Step title="Add API Keys">
-    Configure your preferred AI services:
+    Configure your preferred AI services. <b>You'll need to obtain API keys from each provider's website:</b>
+    - <b>OpenAI:</b> [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
+    - <b>Anthropic (Claude):</b> [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+    - <b>Google AI (Gemini):</b> [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
     
     <Tabs>
       <Tab title="OpenAI">
@@ -88,18 +96,21 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
     2. Search for "ReplyIQ"
     3. Click "Add to Chrome"
     4. Pin the extension to your toolbar
+    5. <b>Note:</b> The extension may not be available in all regions. Check for updates after installation.
   </Card>
   <Card title="Firefox" icon="firefox">
     1. Visit [Firefox Add-ons](https://addons.mozilla.org)
     2. Search for "ReplyIQ"
     3. Click "Add to Firefox"
     4. Grant necessary permissions
+    5. <b>Note:</b> The extension may not be available in all regions. Check for updates after installation.
   </Card>
   <Card title="Edge" icon="edge">
     1. Visit [Edge Add-ons](https://microsoftedge.microsoft.com/addons)
     2. Search for "ReplyIQ"
     3. Click "Get"
     4. Enable the extension
+    5. <b>Note:</b> The extension may not be available in all regions. Check for updates after installation.
   </Card>
 </CardGroup>
 
@@ -196,6 +207,8 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
     2. Check if the extension is enabled in your browser
     3. Verify you're signed in to your ReplyIQ account
     4. Try disabling and re-enabling the extension
+    5. Clear your browser cache and cookies
+    6. <b>Still stuck?</b> Visit our [FAQ](/support/faq) or [contact support](mailto:support@replyiq.com)
   </Accordion>
 
   <Accordion title="AI generation failing">
@@ -247,6 +260,8 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
 </CardGroup>
 
 ---
+
+_Last updated: 2024-06-09_
 
 **Congratulations!** 🎉 You've successfully set up ReplyIQ and generated your first AI-powered reply. 
 
