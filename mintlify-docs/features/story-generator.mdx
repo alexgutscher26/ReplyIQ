@@ -1,0 +1,140 @@
+---
+title: 'Story Generator'
+description: 'Create engaging stories for social media platforms like Instagram and Facebook'
+---
+
+# Story Generator
+
+The Story Generator tool helps you create engaging and compelling stories for social media platforms like Instagram and Facebook, enhancing your brand's narrative and audience engagement.
+
+## Overview
+
+Stories have become a crucial format for social media engagement, offering a temporary yet impactful way to connect with your audience. The Story Generator uses AI to help you create compelling story content that captures attention and drives engagement.
+
+<img
+  className="block dark:hidden"
+  src="/images/story-generator-light.png"
+  alt="Story Generator Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/story-generator-dark.png"
+  alt="Story Generator Dark"
+/>
+
+## Features
+
+- **Content Ideation**: Generate creative story ideas based on your brand and objectives
+- **Structured Narratives**: Create stories with a clear beginning, middle, and end
+- **Platform Optimization**: Generate content optimized for specific platforms (Instagram, Facebook, etc.)
+- **Visual Suggestions**: Get recommendations for visual elements to include
+- **Call-to-Action Integration**: Include effective calls-to-action in your stories
+- **Tone Selection**: Choose from various tones to match your brand voice
+
+## How to Use
+
+1. Navigate to the Story Generator in the dashboard
+2. Enter your story topic or theme in the input field
+3. Select the target platform (Instagram, Facebook, etc.)
+4. Choose your preferred tone and style
+5. Specify any key points or elements you want to include
+6. Click "Generate Story"
+7. Review and customize the generated story content
+
+## Example
+
+<CodeGroup>
+  ```jsx Input
+  Topic: New summer collection launch
+  Brand: Eco-friendly clothing brand
+  Key points: Sustainable materials, beach-inspired designs, limited edition
+  ```
+
+  ```jsx Output
+  Story Sequence:
+
+  Frame 1:
+  [Image suggestion: Sunrise over beach with silhouette of clothing]
+  Text: Something exciting is coming... 👀
+
+  Frame 2:
+  [Image suggestion: Close-up of eco-friendly fabric texture]
+  Text: Made with 100% recycled ocean plastic
+
+  Frame 3:
+  [Image suggestion: Model wearing beach outfit from collection]
+  Text: Introducing our Summer Paradise Collection 🌊
+
+  Frame 4:
+  [Image suggestion: Array of collection items laid out on sand]
+  Text: Beach-inspired designs that protect what we love
+
+  Frame 5:
+  [Image suggestion: Limited edition tag/label]
+  Text: Limited edition - Once they're gone, they're gone!
+
+  Frame 6:
+  [Image suggestion: Person wearing collection at beach]
+  Text: Available tomorrow at 10 AM! Set your reminders 🔔
+
+  CTA: Swipe up to join the waitlist and get early access!
+  ```
+</CodeGroup>
+
+## Best Practices
+
+- **Keep it Concise**: Stories are meant to be quick and engaging - keep text brief
+- **Visual First**: Focus on strong visual elements with supporting text
+- **Create a Narrative Arc**: Build a story with a beginning, middle, and end
+- **Use Interactive Elements**: Incorporate polls, questions, or sliders when possible
+- **Maintain Brand Consistency**: Ensure your stories align with your overall brand identity
+- **Call to Action**: Include a clear call to action in your stories
+- **Platform Considerations**:
+  - **Instagram**: 15-second segments, vertical format (9:16), interactive stickers
+  - **Facebook**: Similar to Instagram but with different audience expectations
+  - **Snapchat**: More casual and playful content typically works best
+  - **LinkedIn**: More professional tone and business-focused content
+
+## API Integration
+
+You can also access the Story Generator through our API. See the [API Reference](/api-reference/ai/stories) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/stories', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    topic: 'New summer collection launch',
+    brand: 'Eco-friendly clothing brand',
+    keyPoints: ['Sustainable materials', 'Beach-inspired designs', 'Limited edition'],
+    platform: 'instagram',
+    tone: 'excited'
+  })
+});
+
+const data = await response.json();
+console.log(data.storySequence);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Image Caption Generator"
+    icon="image"
+    href="/features/image-caption-generator"
+  >
+    Create compelling captions for your social media images
+  </Card>
+  <Card
+    title="Thread Generator"
+    icon="list-ol"
+    href="/features/thread-generator"
+  >
+    Create engaging thread content for platforms like Twitter/X
+  </Card>
+</CardGroup>

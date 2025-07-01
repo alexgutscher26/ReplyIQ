@@ -5,10 +5,10 @@ description: 'Get up and running with ReplyIQ in under 5 minutes'
 
 ## Overview
 
-This quickstart guide will help you set up ReplyIQ and generate your first AI-powered social media reply in under 5 minutes.
+This quickstart guide will help you set up ReplyIQ and generate your first AI-powered content in under 5 minutes.
 
 <Info>
-  **Prerequisites**: You'll need a modern web browser. <b>API keys for AI services (OpenAI, Claude, Google, etc.) are required to generate replies.</b> See below for details on obtaining these keys.
+  **Prerequisites**: You'll need a modern web browser. <b>API keys for AI services (OpenAI, Mistral, Google, etc.) are required to generate content.</b> See below for details on obtaining these keys.
 </Info>
 
 <Warning>
@@ -36,7 +36,7 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
 ## Step 2: Configure AI Services
 
 <Warning>
-  AI service configuration is required to generate replies.<br/>
+  AI service configuration is required to generate content.<br/>
   <b>Important:</b> The first user to sign up automatically becomes an admin. Make sure this is a trusted account.
 </Warning>
 
@@ -47,7 +47,7 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
   <Step title="Add API Keys">
     Configure your preferred AI services. <b>You'll need to obtain API keys from each provider's website:</b>
     - <b>OpenAI:</b> [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
-    - <b>Anthropic (Claude):</b> [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+    - <b>Mistral AI:</b> [https://console.mistral.ai/api-keys/](https://console.mistral.ai/api-keys/)
     - <b>Google AI (Gemini):</b> [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
     
     <Tabs>
@@ -60,12 +60,12 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
         }
         ```
       </Tab>
-      <Tab title="Claude">
+      <Tab title="Mistral">
         ```json
         {
-          "provider": "anthropic",
-          "apiKey": "sk-ant-...",
-          "models": ["claude-3-opus", "claude-3-sonnet"]
+          "provider": "mistral",
+          "apiKey": "...",
+          "models": ["mistral-large", "mistral-medium"]
         }
         ```
       </Tab>
@@ -128,18 +128,23 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
   </Step>
 </Steps>
 
-## Step 4: Generate Your First Reply
+## Step 4: Generate Your First Content
 
 <Steps>
-  <Step title="Navigate to Social Media">
-    Go to Twitter/X, LinkedIn, or Facebook and find a post you want to reply to
+  <Step title="Access the Dashboard">
+    Go to your ReplyIQ dashboard and select one of the AI tools from the sidebar
   </Step>
-  <Step title="Activate ReplyIQ">
-    - Click the reply button on the post
-    - Look for the ReplyIQ icon in the text area
-    - Or use the keyboard shortcut: `Ctrl+Shift+R` (Windows) or `Cmd+Shift+R` (Mac)
+  <Step title="Choose a Tool">
+    Select the tool that matches your content needs:
+    - **Hashtag Generator**: Create relevant hashtags for your posts
+    - **Image Caption Generator**: Generate compelling image captions
+    - **Language Translator**: Translate content to other languages
+    - **Sentiment Analysis**: Analyze the emotional tone of text
+    - **Story Generator**: Create engaging social media stories
+    - **Thread Generator**: Generate coherent thread content
+    - **Video Script Generator**: Create scripts for video content
   </Step>
-  <Step title="Configure Your Reply">
+  <Step title="Configure Your Content">
     <Tabs>
       <Tab title="Tone Selection">
         Choose from available tones:
@@ -149,64 +154,60 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
         - **Humorous**: Light-hearted, witty
         - **Supportive**: Encouraging, empathetic
       </Tab>
-      <Tab title="Platform Optimization">
-        ReplyIQ automatically optimizes for the current platform:
-        - **Twitter/X**: Character limits, hashtag suggestions
-        - **LinkedIn**: Professional tone, industry context
-        - **Facebook**: Conversational, engagement-focused
+      <Tab title="Content Parameters">
+        Set specific parameters based on the selected tool:
+        - **Length**: Short, medium, or long content
+        - **Format**: Structure and style options
+        - **Target Platform**: Optimize for specific social platforms
+        - **Language**: Select output language
       </Tab>
     </Tabs>
   </Step>
-  <Step title="Generate Reply">
-    Click **Generate Reply** and watch as AI creates a contextual response
+  <Step title="Generate Content">
+    Enter your input text or parameters and click the **Generate** button
   </Step>
   <Step title="Review and Edit">
-    - Review the generated reply
+    - Review the generated content
     - Make any necessary edits
-    - Add emojis using the smart suggestions
+    - Save or copy the content for use
   </Step>
 </Steps>
 
 ## Step 5: Explore Advanced Features
 
 <CardGroup cols={2}>
+  <Card title="Brand Voice Training" icon="microphone">
+    Customize AI outputs to match your brand's unique voice and style
+  </Card>
   <Card title="Emoji Suggestions" icon="face-smile">
     Get context-aware emoji recommendations that enhance engagement
   </Card>
-  <Card title="Hashtag Generation" icon="hashtag">
-    Generate relevant hashtags for increased visibility
-  </Card>
   <Card title="Analytics Dashboard" icon="chart-bar">
-    Track your usage, engagement metrics, and optimization opportunities
+    Track your usage patterns and optimize your content strategy
   </Card>
-  <Card title="Team Collaboration" icon="users">
-    Invite team members and manage shared AI configurations
+  <Card title="Browser Extension" icon="puzzle-piece">
+    Use ReplyIQ directly on social media platforms
   </Card>
 </CardGroup>
 
 ## Usage Tips
 
 <Tip>
-  **Tone Consistency**: The extension remembers your last used tone for consistent brand voice across replies.
+  **Provide Clear Context**: The more specific your input, the better the AI-generated content will be.
 </Tip>
 
 <Tip>
-  **Context Matters**: The AI analyzes the original post content, so more context leads to better replies.
+  **Save Templates**: Create and save templates for frequently used content types to save time.
+</Tip>
+
+<Tip>
+  **Train Your Brand Voice**: Use the Brand Voice Training tool to customize AI outputs to match your brand's tone and style.
 </Tip>
 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="Extension not appearing">
-    1. Refresh the social media page
-    2. Check if the extension is enabled in your browser
-    3. Verify you're signed in to your ReplyIQ account
-    4. Try disabling and re-enabling the extension
-    5. Clear your browser cache and cookies
-    6. <b>Still stuck?</b> Visit our [FAQ](/support/faq) or [contact support](mailto:support@replyiq.com)
-  </Accordion>
-
-  <Accordion title="AI generation failing">
+  <Accordion title="Content generation failing">
     1. Check your AI service configuration in the dashboard
     2. Verify your API keys are valid and have sufficient credits
     3. Try switching to a different AI model
@@ -216,8 +217,16 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
   <Accordion title="Slow response times">
     1. Check your internet connection
     2. Try using a different AI model (some are faster than others)
-    3. Clear your browser cache and cookies
-    4. Restart your browser
+    3. Reduce the complexity or length of your requested content
+    4. Clear your browser cache and restart your browser
+  </Accordion>
+
+  <Accordion title="Browser extension issues">
+    1. Verify the extension is properly installed and enabled
+    2. Check if you're signed in to your ReplyIQ account
+    3. Try disabling and re-enabling the extension
+    4. Clear your browser cache and cookies
+    5. <b>Still stuck?</b> Visit our [FAQ](/support/faq) or [contact support](mailto:support@replyiq.com)
   </Accordion>
 </AccordionGroup>
 
@@ -227,9 +236,9 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
   <Card
     title="Explore Features"
     icon="compass"
-    href="/features/ai-reply-generation"
+    href="/features/hashtag-generator"
   >
-    Learn about all available features and customization options
+    Learn about all available content generation tools
   </Card>
   <Card
     title="API Integration"
@@ -239,25 +248,25 @@ This quickstart guide will help you set up ReplyIQ and generate your first AI-po
     Integrate ReplyIQ into your own applications
   </Card>
   <Card
-    title="Team Setup"
-    icon="users"
-    href="/dashboard/team-management"
+    title="Dashboard Overview"
+    icon="gauge"
+    href="/dashboard/overview"
   >
-    Set up team accounts and manage user permissions
+    Learn how to navigate and use the dashboard effectively
   </Card>
   <Card
-    title="Advanced Configuration"
-    icon="cog"
-    href="/guides/ai-model-setup"
+    title="Brand Voice Training"
+    icon="microphone"
+    href="/dashboard/brand-voice-training"
   >
-    Fine-tune AI models and customize behavior
+    Customize the AI to match your brand's unique voice
   </Card>
 </CardGroup>
 
 ---
 
-_Last updated: 2024-06-09_
+_Last updated: 2025-07-01_
 
-**Congratulations!** 🎉 You've successfully set up ReplyIQ and generated your first AI-powered reply. 
+**Congratulations!** 🎉 You've successfully set up ReplyIQ and generated your first AI-powered content. 
 
-Need help? Join our [Discord community](https://discord.gg/replyiq) or [contact support](mailto:support@replyiq.com).
+Need help? Contact our [support team](mailto:support@replyiq.com) for assistance.

@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: 'Welcome to ReplyIQ - The intelligent SaaS platform for AI-powered social media engagement'
+description: 'Welcome to ReplyIQ - The intelligent SaaS platform for AI-powered social media content creation and engagement'
 ---
 
 <img
@@ -16,10 +16,10 @@ description: 'Welcome to ReplyIQ - The intelligent SaaS platform for AI-powered 
 
 ## What is ReplyIQ?
 
-ReplyIQ is an intelligent SaaS platform that empowers users to create engaging, contextually-appropriate responses for social media platforms using advanced AI technology. Designed for social media managers, content creators, and businesses, ReplyIQ streamlines social media engagement across multiple platforms.
+ReplyIQ is an intelligent SaaS platform that empowers users to create engaging, contextually-appropriate content for social media platforms using advanced AI technology. Designed for social media managers, content creators, and businesses, ReplyIQ streamlines social media content creation and engagement across multiple platforms.
 
 <Info>
-  <b>API keys for AI services (OpenAI, Claude, Google, etc.) are required to generate AI-powered replies.</b> See the Quick Start section below for details on obtaining these keys.
+  <b>API keys for AI services (OpenAI, Mistral, Google, etc.) are required to generate AI-powered content.</b> See the Quick Start section below for details on obtaining these keys.
 </Info>
 
 <Warning>
@@ -28,18 +28,18 @@ ReplyIQ is an intelligent SaaS platform that empowers users to create engaging, 
 
 <CardGroup cols={2}>
   <Card
-    title="AI-Powered Replies"
+    title="AI-Powered Content Generation"
     icon="robot"
     href="/features/ai-reply-generation"
   >
-    Generate contextual replies using advanced AI models like GPT-4, Claude, and more
+    Generate contextual content using advanced AI models like GPT-4, Mistral, and more
   </Card>
   <Card
-    title="Multi-Platform Support"
-    icon="share-nodes"
-    href="/features/multi-platform-support"
+    title="Multiple Content Tools"
+    icon="tools"
+    href="/features/hashtag-generator"
   >
-    Works seamlessly with Twitter/X, LinkedIn, Facebook, and more platforms
+    Create hashtags, image captions, video scripts, threads, stories, and more
   </Card>
   <Card
     title="Browser Extension"
@@ -51,37 +51,57 @@ ReplyIQ is an intelligent SaaS platform that empowers users to create engaging, 
   <Card
     title="Analytics Dashboard"
     icon="chart-line"
-    href="/dashboard/usage-analytics"
+    href="/dashboard/analytics"
   >
-    Track engagement, usage statistics, and optimize your social media strategy
+    Track usage statistics and optimize your social media strategy
   </Card>
 </CardGroup>
 
 ## Key Features
 
 <AccordionGroup>
-  <Accordion title="🎯 AI-Powered Reply Generation">
-    Generate contextual, engaging replies using state-of-the-art AI models. Choose from multiple tone options including professional, casual, friendly, and more.
+  <Accordion title="🎯 AI-Powered Content Generation">
+    Generate contextual, engaging content using state-of-the-art AI models. Choose from multiple tone options including professional, casual, friendly, and more.
   </Accordion>
 
-  <Accordion title="🌐 Multi-Platform Integration">
-    Seamlessly work across Twitter/X, LinkedIn, Facebook, and other major social media platforms with platform-specific optimizations.
+  <Accordion title="🔤 Hashtag Generator">
+    Create relevant and trending hashtags for your social media posts to increase visibility and engagement.
+  </Accordion>
+
+  <Accordion title="📸 Image Caption Generator">
+    Generate compelling captions for your images that drive engagement and tell your story.
+  </Accordion>
+
+  <Accordion title="🌐 Language Translator">
+    Translate your content into multiple languages to reach a global audience.
   </Accordion>
 
   <Accordion title="😊 Smart Emoji Suggestions">
-    Get context-aware emoji recommendations that enhance your replies and increase engagement rates.
+    Get context-aware emoji recommendations that enhance your content and increase engagement rates.
+  </Accordion>
+
+  <Accordion title="🧠 Sentiment Analysis">
+    Analyze the sentiment of text to understand the emotional tone and adjust your messaging accordingly.
+  </Accordion>
+
+  <Accordion title="📚 Story Generator">
+    Create engaging stories for social media platforms like Instagram and Facebook.
+  </Accordion>
+
+  <Accordion title="🧵 Thread Generator">
+    Generate coherent and engaging thread content for platforms like Twitter/X.
+  </Accordion>
+
+  <Accordion title="🎬 Video Script Generator">
+    Create compelling scripts for your video content across various platforms.
   </Accordion>
 
   <Accordion title="🔧 Complete SaaS Platform">
-    Full-featured SaaS with user authentication, subscription management, usage tracking, and comprehensive admin dashboard.
+    Full-featured SaaS with user authentication, subscription management, usage tracking, and comprehensive dashboard.
   </Accordion>
 
-  <Accordion title="🚀 Browser Extension">
-    Chrome, Firefox, and Edge compatible extension that works directly on social media platforms for seamless workflow integration.
-  </Accordion>
-
-  <Accordion title="📊 Real-time Analytics">
-    Monitor engagement metrics, track usage patterns, and optimize your social media strategy with detailed analytics.
+  <Accordion title="📊 Analytics">
+    Monitor usage patterns and optimize your social media strategy with detailed analytics.
   </Accordion>
 </AccordionGroup>
 
@@ -100,7 +120,7 @@ Get up and running with ReplyIQ in minutes:
       <li>Obtain API keys from each provider's website:
         <ul>
           <li><b>OpenAI:</b> [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)</li>
-          <li><b>Anthropic (Claude):</b> [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)</li>
+          <li><b>Mistral AI:</b> [https://console.mistral.ai/api-keys/](https://console.mistral.ai/api-keys/)</li>
           <li><b>Google AI (Gemini):</b> [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)</li>
         </ul>
       </li>
@@ -108,11 +128,11 @@ Get up and running with ReplyIQ in minutes:
     </ul>
   </Step>
   <Step title="Install Browser Extension">
-    Download and install the ReplyIQ browser extension for your preferred browser (Chrome, Firefox, Edge).<br/>
+    Download and install the ReplyIQ browser extension for your preferred browser.<br/>
     <b>Note:</b> The extension may not be available in all regions. Check for updates after installation.
   </Step>
-  <Step title="Start Generating Replies">
-    Navigate to any supported social media platform and start generating AI-powered replies!
+  <Step title="Start Creating Content">
+    Use the dashboard tools or browser extension to start generating AI-powered content!
   </Step>
 </Steps>
 
@@ -136,10 +156,9 @@ graph TB
     end
     
     subgraph "External Services"
-        G --> I["OpenAI/Claude"]
+        G --> I["OpenAI/Mistral/Google"]
         H --> J["Stripe"]
         H --> K["PayPal"]
-        L["Social Platforms"] --> C
     end
 ```
 
@@ -147,22 +166,20 @@ graph TB
 
 <CardGroup cols={3}>
   <Card title="Frontend" icon="code">
-    - Next.js 14 with App Router
+    - Next.js 15 with App Router
     - TypeScript & Tailwind CSS
     - shadcn/ui components
-    - Zustand state management
   </Card>
   <Card title="Backend" icon="server">
     - tRPC for type-safe APIs
     - PostgreSQL with Drizzle ORM
-    - NextAuth.js authentication
+    - Better Auth authentication
     - Stripe & PayPal integration
   </Card>
-  <Card title="Extension" icon="puzzle-piece">
-    - WXT framework with React
-    - TypeScript & Vite
-    - Cross-browser compatibility
-    - Real-time sync with web app
+  <Card title="AI Integration" icon="brain">
+    - AI SDK for multiple providers
+    - OpenAI, Mistral, Google AI
+    - Custom prompt engineering
   </Card>
 </CardGroup>
 
@@ -175,13 +192,6 @@ graph TB
     href="/guides/getting-started"
   >
     Comprehensive guides and API documentation
-  </Card>
-  <Card
-    title="Community Support"
-    icon="users"
-    href="https://discord.gg/replyiq"
-  >
-    Join our Discord community for help and discussions
   </Card>
   <Card
     title="GitHub Repository"
@@ -208,6 +218,6 @@ graph TB
 
 ---
 
-_Last updated: 2024-06-09_
+_Last updated: 2025-07-01_
 
 Ready to get started? Check out our [Quick Start Guide](/quickstart) or explore the [API Reference](/api-reference/introduction).

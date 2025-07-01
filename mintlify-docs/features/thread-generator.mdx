@@ -1,0 +1,126 @@
+---
+title: 'Thread Generator'
+description: 'Create coherent and engaging thread content for platforms like Twitter/X'
+---
+
+# Thread Generator
+
+The Thread Generator tool helps you create coherent, engaging, and informative thread content for platforms like Twitter/X, allowing you to share longer-form content in a digestible format.
+
+## Overview
+
+Threads have become a popular way to share complex ideas, stories, or educational content on platforms with character limitations. The Thread Generator uses AI to help you create well-structured threads that maintain reader interest from start to finish.
+
+<img
+  className="block dark:hidden"
+  src="/images/thread-generator-light.png"
+  alt="Thread Generator Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/thread-generator-dark.png"
+  alt="Thread Generator Dark"
+/>
+
+## Features
+
+- **Topic Expansion**: Develop a single topic into a comprehensive thread
+- **Logical Flow**: Create threads with a coherent structure and smooth transitions
+- **Character Optimization**: Automatically optimize content for platform character limits
+- **Hook Creation**: Generate compelling opening tweets to grab attention
+- **Call-to-Action Integration**: Include effective calls-to-action in your threads
+- **Tone Selection**: Choose from various tones to match your brand voice
+- **Numbered Formatting**: Automatically number tweets for easy reference
+
+## How to Use
+
+1. Navigate to the Thread Generator in the dashboard
+2. Enter your thread topic or main idea in the input field
+3. Specify the number of tweets you want in your thread
+4. Choose your preferred tone and style
+5. Add any key points you want to include
+6. Click "Generate Thread"
+7. Review and customize the generated thread content
+
+## Example
+
+<CodeGroup>
+  ```jsx Input
+  Topic: Benefits of meditation for productivity
+  Number of tweets: 5
+  Tone: Informative but conversational
+  Include: Scientific research, beginner tips
+  ```
+
+  ```jsx Output
+  Tweet 1:
+  Ever wondered how just a few minutes of meditation could transform your workday? I've been researching the science behind meditation and productivity, and the results are fascinating. Let me break it down in this thread! 🧵👇 #Productivity #Meditation
+
+  Tweet 2:
+  1️⃣ Science confirms: A 2018 study in the Journal of Cognitive Enhancement found that just 8 weeks of regular meditation improved participants' attention span and ability to focus on tasks for longer periods. Your brain literally changes! 🧠 #Neuroscience
+
+  Tweet 3:
+  2️⃣ Stress reduction = better decisions. When we meditate, cortisol levels drop significantly. This means less reactive decision-making and more thoughtful choices. I've found my work decisions improve dramatically on days I meditate first. #MentalHealth
+
+  Tweet 4:
+  3️⃣ Beginner tip: Start with just 5 minutes! Set a timer, sit comfortably, and focus on your breathing. When your mind wanders (it will!), gently bring attention back to your breath. No special equipment or perfect silence needed. #BeginnerMeditation
+
+  Tweet 5:
+  4️⃣ The productivity hack nobody talks about: Consistency beats duration. 5 minutes daily is more effective than 35 minutes once a week. I use the @AppName app to track my streak - currently at 64 days! What questions do you have about meditation? Reply below! 👇
+  ```
+</CodeGroup>
+
+## Best Practices
+
+- **Start Strong**: Your first tweet should hook readers and clearly indicate what the thread will cover
+- **Maintain Coherence**: Ensure each tweet flows logically from the previous one
+- **Use Numbering**: Number your tweets to help readers follow along
+- **Include Visuals**: Consider suggesting places to add images, GIFs, or videos to break up text
+- **End with Engagement**: Conclude with a question, call-to-action, or invitation for discussion
+- **Thread Length**: Aim for 4-10 tweets for most topics (longer threads work for in-depth subjects)
+- **Character Optimization**: Leave room for tweet numbering and hashtags within character limits
+- **Preview Your Thread**: Always review the entire thread for flow and coherence before posting
+
+## API Integration
+
+You can also access the Thread Generator through our API. See the [API Reference](/api-reference/ai/threads) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/threads', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    topic: 'Benefits of meditation for productivity',
+    tweetCount: 5,
+    tone: 'informative',
+    keyPoints: ['Scientific research', 'Beginner tips'],
+    includeHashtags: true
+  })
+});
+
+const data = await response.json();
+console.log(data.tweets);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Story Generator"
+    icon="book"
+    href="/features/story-generator"
+  >
+    Create engaging stories for platforms like Instagram and Facebook
+  </Card>
+  <Card
+    title="Hashtag Generator"
+    icon="hashtag"
+    href="/features/hashtag-generator"
+  >
+    Generate relevant hashtags for your social media posts
+  </Card>
+</CardGroup>

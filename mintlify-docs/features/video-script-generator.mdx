@@ -1,0 +1,143 @@
+---
+title: 'Video Script Generator'
+description: 'Create compelling scripts for your video content across various platforms'
+---
+
+# Video Script Generator
+
+The Video Script Generator tool helps you create compelling, structured scripts for your video content across various social media platforms, saving time and ensuring your message is clear and engaging.
+
+## Overview
+
+Video content is a powerful way to engage with your audience, but creating effective scripts can be challenging. The Video Script Generator uses AI to help you develop well-structured video scripts that capture attention and deliver your message effectively.
+
+<img
+  className="block dark:hidden"
+  src="/images/video-script-generator-light.png"
+  alt="Video Script Generator Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/video-script-generator-dark.png"
+  alt="Video Script Generator Dark"
+/>
+
+## Features
+
+- **Platform-Specific Scripts**: Generate scripts optimized for different platforms (TikTok, YouTube, Instagram, etc.)
+- **Duration Options**: Create scripts for various video lengths (15 seconds to 10+ minutes)
+- **Format Templates**: Access templates for different video formats (tutorial, product showcase, storytelling, etc.)
+- **Hook Creation**: Generate attention-grabbing openings to reduce viewer drop-off
+- **Call-to-Action Integration**: Include effective calls-to-action in your videos
+- **Tone Selection**: Choose from various tones to match your brand voice
+- **Visual Cue Integration**: Get suggestions for visual elements and B-roll footage
+
+## How to Use
+
+1. Navigate to the Video Script Generator in the dashboard
+2. Enter your video topic or main idea in the input field
+3. Select the target platform and video duration
+4. Choose your preferred format and tone
+5. Specify any key points you want to include
+6. Click "Generate Script"
+7. Review and customize the generated script
+
+## Example
+
+<CodeGroup>
+  ```jsx Input
+  Topic: How to make cold brew coffee at home
+  Platform: TikTok
+  Duration: 60 seconds
+  Format: Tutorial
+  Key points: Simple ingredients, overnight process, cost-effective
+  ```
+
+  ```jsx Output
+  VIDEO SCRIPT: HOMEMADE COLD BREW COFFEE (60-SEC TIKTOK)
+  
+  [HOOK - 0:00-0:07]
+  Text on screen: "Starbucks cold brew: $5 vs Homemade: $0.50"
+  YOU: "Stop wasting money on expensive cold brew! I'm going to show you how to make a week's worth at home in just 60 seconds. It's ridiculously easy."
+  [Visual: Show store-bought cold brew price vs. homemade cost]
+  
+  [INGREDIENTS - 0:08-0:15]
+  YOU: "You only need two things: coffee grounds and water. That's it! I use this coarse ground coffee, but any will work. The ratio is 1:4 coffee to water."
+  [Visual: Show coffee grounds and water, then the measuring process]
+  
+  [PROCESS - 0:16-0:35]
+  YOU: "Add your coffee to a large jar, pour in cold water, and stir. Make sure all grounds are wet. Now cover and let it sit overnight - at least 12 hours. No heat, no special equipment!"
+  [Visual: Demonstrate each step in fast motion]
+  
+  YOU: "After 12 hours, strain through a coffee filter or fine mesh strainer. Look at this rich color! This is concentrated cold brew."
+  [Visual: Show straining process and final liquid]
+  
+  [SERVING - 0:36-0:50]
+  YOU: "To serve, mix 1 part cold brew with 1 part water or milk. Add ice and any sweetener you like. This batch will last up to 2 weeks in your fridge!"
+  [Visual: Show mixing final drink and taking a sip]
+  
+  [CALL TO ACTION - 0:51-0:60]
+  YOU: "That's it! Super simple, saves money, and tastes amazing. Drop a comment if you try it! Follow for more easy coffee hacks."
+  [Text on screen: "Saves $25+ per week if you drink cold brew daily!"]
+  [Hashtags: #coldbrewcoffee #moneysavinghack #coffeetok]
+  ```
+</CodeGroup>
+
+## Best Practices
+
+- **Start with a Hook**: Capture attention in the first 3-5 seconds
+- **Keep it Concise**: Be clear and direct with your messaging
+- **Consider Platform Norms**: 
+  - TikTok/Instagram Reels: Fast-paced, entertaining, often with trending sounds
+  - YouTube: More detailed, can include longer explanations
+  - LinkedIn: Professional tone, focus on value and insights
+- **Script for Visuals**: Include notes about what should be shown on screen
+- **Use Simple Language**: Write how you speak, not how you write
+- **Include Timestamps**: Mark sections of your script with approximate timing
+- **Plan for Edits**: Write slightly more content than needed to allow for editing flexibility
+- **End with Clear CTA**: Tell viewers exactly what you want them to do next
+
+## API Integration
+
+You can also access the Video Script Generator through our API. See the [API Reference](/api-reference/ai/video-scripts) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/video-scripts', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    topic: 'How to make cold brew coffee at home',
+    platform: 'tiktok',
+    duration: 60,
+    format: 'tutorial',
+    keyPoints: ['Simple ingredients', 'Overnight process', 'Cost-effective'],
+    tone: 'casual'
+  })
+});
+
+const data = await response.json();
+console.log(data.script);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Story Generator"
+    icon="book"
+    href="/features/story-generator"
+  >
+    Create engaging stories for platforms like Instagram and Facebook
+  </Card>
+  <Card
+    title="Thread Generator"
+    icon="list-ol"
+    href="/features/thread-generator"
+  >
+    Create engaging thread content for platforms like Twitter/X
+  </Card>
+</CardGroup>

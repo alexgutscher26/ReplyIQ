@@ -1,0 +1,129 @@
+---
+title: 'Sentiment Analysis'
+description: 'Analyze the sentiment of text to understand emotional tone and adjust messaging accordingly'
+---
+
+# Sentiment Analysis
+
+The Sentiment Analysis tool helps you understand the emotional tone of text content, allowing you to gauge audience reactions and adjust your messaging strategy accordingly.
+
+## Overview
+
+Understanding the sentiment behind social media comments, messages, and content is crucial for effective communication. The Sentiment Analysis tool uses advanced AI to analyze text and determine whether the sentiment is positive, negative, or neutral, along with providing a detailed breakdown of emotional tones.
+
+<img
+  className="block dark:hidden"
+  src="/images/sentiment-analysis-light.png"
+  alt="Sentiment Analysis Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/sentiment-analysis-dark.png"
+  alt="Sentiment Analysis Dark"
+/>
+
+## Features
+
+- **Overall Sentiment Classification**: Categorizes text as positive, negative, or neutral
+- **Sentiment Score**: Provides a numerical score indicating sentiment intensity
+- **Emotion Detection**: Identifies specific emotions (joy, anger, sadness, etc.)
+- **Key Phrase Extraction**: Highlights phrases that strongly influence sentiment
+- **Batch Analysis**: Analyze multiple pieces of content at once
+- **Trend Analysis**: Track sentiment changes over time for ongoing campaigns
+
+## How to Use
+
+1. Navigate to the Sentiment Analysis tool in the dashboard
+2. Enter the text you want to analyze in the input field
+3. Click "Analyze Sentiment"
+4. Review the sentiment analysis results, including:
+   - Overall sentiment classification
+   - Sentiment score
+   - Detected emotions
+   - Key phrases influencing the sentiment
+
+## Example
+
+<CodeGroup>
+  ```jsx Input
+  I absolutely love your new product! The design is beautiful and it works perfectly. Customer service was also very helpful when I had questions. Definitely recommending to my friends!
+  ```
+
+  ```jsx Output
+  {
+    "overallSentiment": "Positive",
+    "sentimentScore": 0.92,
+    "emotions": {
+      "joy": 0.85,
+      "satisfaction": 0.78,
+      "admiration": 0.65,
+      "trust": 0.72
+    },
+    "keyPhrases": [
+      "absolutely love",
+      "beautiful",
+      "works perfectly",
+      "very helpful",
+      "definitely recommending"
+    ]
+  }
+  ```
+</CodeGroup>
+
+## Use Cases
+
+- **Customer Feedback Analysis**: Understand how customers feel about your products or services
+- **Social Media Monitoring**: Track sentiment around your brand on social platforms
+- **Campaign Performance**: Gauge audience reaction to marketing campaigns
+- **Crisis Management**: Detect negative sentiment early to address issues proactively
+- **Competitor Analysis**: Compare sentiment around your brand versus competitors
+- **Content Optimization**: Adjust your messaging based on what resonates positively with your audience
+
+## Best Practices
+
+- **Context Matters**: Remember that sentiment analysis works best with sufficient context
+- **Consider Sarcasm and Idioms**: Be aware that AI may struggle with sarcasm, idioms, and cultural references
+- **Combine with Human Judgment**: Use sentiment analysis as a tool to support, not replace, human judgment
+- **Track Over Time**: Monitor sentiment trends over time rather than focusing on individual scores
+- **Segment Analysis**: Analyze sentiment across different audience segments for more targeted insights
+- **Act on Insights**: Use sentiment data to inform your content strategy and customer engagement approach
+
+## API Integration
+
+You can also access the Sentiment Analysis tool through our API. See the [API Reference](/api-reference/ai/sentiment-analysis) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/sentiment', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    text: 'I absolutely love your new product! The design is beautiful and it works perfectly. Customer service was also very helpful when I had questions. Definitely recommending to my friends!'
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="AI Reply Generation"
+    icon="reply"
+    href="/features/ai-reply-generation"
+  >
+    Generate contextual replies for social media engagement
+  </Card>
+  <Card
+    title="Analytics"
+    icon="chart-line"
+    href="/features/analytics"
+  >
+    Track usage statistics and optimize your social media strategy
+  </Card>
+</CardGroup>

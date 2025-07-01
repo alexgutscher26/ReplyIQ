@@ -1,93 +1,131 @@
 ---
 title: 'Dashboard Overview'
-description: 'Complete guide to the ReplyIQ dashboard and its features'
+description: 'Navigate and use the ReplyIQ dashboard effectively'
 ---
 
-## Welcome to Your ReplyIQ Dashboard
+# Dashboard Overview
 
-The ReplyIQ dashboard is your central hub for managing AI-powered social media engagement. From here, you can configure AI models, track usage analytics, manage team members, and monitor your subscription.
+The ReplyIQ dashboard is your central hub for accessing all the AI-powered content generation tools, managing your account, and tracking your usage.
 
-<CardGroup cols={2}>
-  <Card title="AI Configuration" icon="robot">
-    Set up and manage AI models and providers
-  </Card>
-  <Card title="Usage Analytics" icon="chart-line">
-    Monitor API usage, engagement metrics, and performance
-  </Card>
-  <Card title="Team Management" icon="users">
-    Invite team members and manage permissions
-  </Card>
-  <Card title="Subscription" icon="credit-card">
-    Manage billing, plans, and payment methods
-  </Card>
-</CardGroup>
+## Dashboard Layout
 
-## Dashboard Navigation
+The dashboard is designed for intuitive navigation and efficient workflow:
 
-### Main Navigation
+<img
+  className="block dark:hidden"
+  src="/images/dashboard-overview-light.png"
+  alt="Dashboard Overview Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/dashboard-overview-dark.png"
+  alt="Dashboard Overview Dark"
+/>
+
+## Main Sections
+
+### 1. Navigation Sidebar
+
+The sidebar provides quick access to all dashboard sections:
+
+- **Home**: Overview of your account and recent activity
+- **AI Tools**: Access to all content generation tools
+  - Hashtag Generator
+  - Image Caption Generator
+  - Language Translator
+  - Sentiment Analysis
+  - Story Generator
+  - Thread Generator
+  - Video Script Generator
+  - Brand Voice Training
+- **Analytics**: Usage statistics and performance metrics
+- **Settings**: Account, billing, and application settings
+- **Support**: Access help resources and contact support
+
+### 2. Home Dashboard
+
+The home dashboard provides a quick overview of:
+
+- **Recent Activity**: Your latest generated content
+- **Usage Summary**: Current usage metrics and limits
+- **Quick Access**: Shortcuts to your most-used tools
+- **Updates**: Latest platform news and feature announcements
+
+### 3. AI Tools Section
+
+Each AI tool has its own dedicated interface with:
+
+- **Input Area**: Where you enter your content or parameters
+- **Configuration Options**: Settings to customize the output
+- **Output Display**: Where generated content appears
+- **Action Buttons**: Copy, save, edit, or share your content
+
+### 4. Analytics Section
+
+Track your usage and performance with:
+
+- **Usage Metrics**: See how much you've used each tool
+- **Usage Trends**: View usage patterns over time
+- **Subscription Status**: Monitor your current plan and limits
+
+### 5. Settings Section
+
+Manage your account and preferences:
+
+- **Profile Settings**: Update your personal information
+- **API Configuration**: Set up and manage your AI provider API keys
+- **Subscription Management**: View, upgrade, or change your subscription
+- **Brand Voice Training**: Configure your brand's unique voice for AI generation
+- **Notification Preferences**: Control email and in-app notifications
+
+## Key Features
 
 <AccordionGroup>
-  <Accordion title="Overview">
-    **Dashboard home page** - Quick stats, recent activity, and key metrics
-    
-    - Usage summary for current month
-    - Recent reply generations
-    - Performance metrics
-    - Quick access to common actions
+  <Accordion title="Dark/Light Mode Toggle">
+    Switch between dark and light themes using the toggle in the user menu.
   </Accordion>
-
-  <Accordion title="Analytics">
-    **Detailed usage analytics** - Comprehensive insights into your ReplyIQ usage
-    
-    - API usage trends
-    - Model performance comparison
-    - Platform-specific metrics
-    - Engagement analytics
-    - Export capabilities
+  
+  <Accordion title="Responsive Design">
+    The dashboard is fully responsive and works on desktop, tablet, and mobile devices.
   </Accordion>
-
-  <Accordion title="Settings">
-    **Configuration and preferences** - Manage all aspects of your account
-    
-    - AI model configuration
-    - API key management
-    - Account preferences
-    - Notification settings
-    - Integration settings
+  
+  <Accordion title="Content History">
+    Access your previously generated content in the history section of each tool.
   </Accordion>
-
-  <Accordion title="Team">
-    **Team management** - Collaborate with team members
-    
-    - Invite team members
-    - Manage roles and permissions
-    - Team usage analytics
-    - Shared configurations
+  
+  <Accordion title="Favorites">
+    Save your favorite generated content for quick access later.
   </Accordion>
-
-  <Accordion title="Billing">
-    **Subscription and billing** - Manage your ReplyIQ subscription
-    
-    - Current plan details
-    - Usage and billing history
-    - Payment methods
-    - Plan upgrades/downgrades
+  
+  <Accordion title="Keyboard Shortcuts">
+    Use keyboard shortcuts for common actions (press '?' to view available shortcuts).
   </Accordion>
 </AccordionGroup>
 
-### Quick Actions
+## Getting Started
 
-<CardGroup cols={3}>
-  <Card title="Generate Reply" icon="bolt">
-    Quick reply generation directly from dashboard
-  </Card>
-  <Card title="API Keys" icon="key">
-    Generate and manage API keys
-  </Card>
-  <Card title="Test AI Models" icon="flask">
-    Test different AI models and configurations
-  </Card>
-</CardGroup>
+<Steps>
+  <Step title="Set Up Your Profile">
+    Complete your profile information in the Settings section to personalize your experience.
+  </Step>
+  <Step title="Configure AI Providers">
+    Add your API keys for OpenAI, Mistral, or Google AI in the Settings → General → AI Model Provider section.
+  </Step>
+  <Step title="Train Your Brand Voice">
+    Use the Brand Voice Training tool to customize AI outputs to match your brand's tone and style.
+  </Step>
+  <Step title="Generate Your First Content">
+    Select any tool from the sidebar and follow the prompts to create your first piece of AI-generated content.
+  </Step>
+</Steps>
+
+## Tips for Effective Use
+
+- **Save Templates**: Create and save templates for frequently used content types
+- **Explore Tool Settings**: Each tool has advanced settings that can significantly improve results
+- **Review Analytics**: Regularly check your usage patterns to optimize your subscription
+- **Update API Keys**: Keep your AI provider API keys up to date for uninterrupted service
+- **Use Keyboard Shortcuts**: Learn the keyboard shortcuts to speed up your workflow
 
 ## Dashboard Sections
 
@@ -98,8 +136,8 @@ Your main dashboard provides a comprehensive view of your ReplyIQ activity:
 #### Key Metrics
 
 <CardGroup cols={4}>
-  <Card title="Replies Generated" icon="robot">
-    Total replies generated this month
+  <Card title="Content Generated" icon="robot">
+    Total content pieces generated this month
   </Card>
   <Card title="API Calls" icon="code">
     Number of API requests made
@@ -114,38 +152,10 @@ Your main dashboard provides a comprehensive view of your ReplyIQ activity:
 
 #### Recent Activity
 
-- **Latest Generations**: Recent reply generations with timestamps
+- **Latest Generations**: Recent content generations with timestamps
 - **Model Usage**: Breakdown of AI models used
-- **Platform Distribution**: Usage across different social platforms
+- **Tool Distribution**: Usage across different AI tools
 - **Error Log**: Recent errors and their resolution status
-
-#### Quick Stats
-
-```typescript
-// Example dashboard data structure
-{
-  "monthlyStats": {
-    "repliesGenerated": 1247,
-    "apiCalls": 1389,
-    "creditsUsed": 1247,
-    "successRate": 98.7
-  },
-  "recentActivity": [
-    {
-      "id": "gen_123",
-      "platform": "linkedin",
-      "tone": "professional",
-      "timestamp": "2024-01-15T10:30:00Z",
-      "status": "success"
-    }
-  ],
-  "modelUsage": {
-    "gpt-4": 45,
-    "gpt-3.5-turbo": 35,
-    "claude-3-sonnet": 20
-  }
-}
-```
 
 ### 2. Analytics Dashboard
 
@@ -168,34 +178,13 @@ Comprehensive analytics help you understand and optimize your ReplyIQ usage:
     - Quality metrics and user feedback
   </Accordion>
 
-  <Accordion title="Platform Analytics">
-    - Usage breakdown by social platform
-    - Platform-specific performance metrics
-    - Engagement rates by platform
+  <Accordion title="Tool Analytics">
+    - Usage breakdown by AI tool
+    - Tool-specific performance metrics
+    - Most frequently used tools
     - Character count optimization
   </Accordion>
-
-  <Accordion title="Tone Analysis">
-    - Most used tones
-    - Tone effectiveness metrics
-    - A/B testing results
-    - Tone consistency tracking
-  </Accordion>
 </AccordionGroup>
-
-#### Export Options
-
-<CardGroup cols={3}>
-  <Card title="CSV Export" icon="file-csv">
-    Export raw data for external analysis
-  </Card>
-  <Card title="PDF Reports" icon="file-pdf">
-    Generate formatted reports for sharing
-  </Card>
-  <Card title="API Access" icon="code">
-    Programmatic access to analytics data
-  </Card>
-</CardGroup>
 
 ### 3. Settings Dashboard
 
@@ -207,7 +196,7 @@ Configure all aspects of your ReplyIQ experience:
   <Step title="Provider Setup">
     Configure API keys for AI providers:
     - OpenAI (GPT-4, GPT-3.5 Turbo)
-    - Anthropic (Claude 3 models)
+    - Mistral AI (Mistral models)
     - Google AI (Gemini Pro)
     - Custom API endpoints
   </Step>
@@ -215,7 +204,7 @@ Configure all aspects of your ReplyIQ experience:
     Set default models for different use cases:
     - Professional communications
     - Casual interactions
-    - Platform-specific defaults
+    - Tool-specific defaults
     - Fallback model hierarchy
   </Step>
   <Step title="Model Testing">
@@ -232,16 +221,15 @@ Configure all aspects of your ReplyIQ experience:
 <AccordionGroup>
   <Accordion title="General Settings">
     - Default tone preferences
-    - Platform optimization settings
     - Language and localization
     - Timezone configuration
+    - Interface preferences
   </Accordion>
 
   <Accordion title="Notification Settings">
     - Email notifications for quota alerts
-    - Webhook configurations
-    - Team activity notifications
     - System status updates
+    - New feature announcements
   </Accordion>
 
   <Accordion title="Privacy Settings">
@@ -249,151 +237,6 @@ Configure all aspects of your ReplyIQ experience:
     - Analytics opt-in/out
     - Third-party integrations
     - GDPR compliance settings
-  </Accordion>
-</AccordionGroup>
-
-### 4. Team Management
-
-Collaborate effectively with team members:
-
-#### Team Roles
-
-<CardGroup cols={3}>
-  <Card title="Admin" icon="crown">
-    **Full access** to all features
-    - Manage team members
-    - Configure AI models
-    - Access billing
-    - View all analytics
-  </Card>
-  <Card title="Manager" icon="user-tie">
-    **Management access** with restrictions
-    - View team analytics
-    - Manage team settings
-    - Limited billing access
-    - Cannot remove admins
-  </Card>
-  <Card title="Member" icon="user">
-    **Basic access** for daily use
-    - Generate replies
-    - View personal analytics
-    - Use shared configurations
-    - No administrative access
-  </Card>
-</CardGroup>
-
-#### Team Features
-
-<AccordionGroup>
-  <Accordion title="Shared Configurations">
-    - Shared AI model settings
-    - Team tone preferences
-    - Brand voice guidelines
-    - Template libraries
-  </Accordion>
-
-  <Accordion title="Usage Allocation">
-    - Credit allocation per team member
-    - Usage limits and quotas
-    - Department-based tracking
-    - Cost center reporting
-  </Accordion>
-
-  <Accordion title="Collaboration Tools">
-    - Shared reply templates
-    - Team performance metrics
-    - Collaborative model testing
-    - Knowledge sharing features
-  </Accordion>
-</AccordionGroup>
-
-### 5. Billing Dashboard
-
-Manage your subscription and billing:
-
-#### Subscription Overview
-
-<CardGroup cols={2}>
-  <Card title="Current Plan" icon="star">
-    - Plan name and features
-    - Monthly/annual billing
-    - Usage limits and quotas
-    - Renewal date
-  </Card>
-  <Card title="Usage Summary" icon="chart-bar">
-    - Current month usage
-    - Quota utilization
-    - Overage charges
-    - Historical usage
-  </Card>
-</CardGroup>
-
-#### Billing Features
-
-<AccordionGroup>
-  <Accordion title="Payment Methods">
-    - Credit card management
-    - PayPal integration
-    - Invoice billing (Enterprise)
-    - Automatic payment settings
-  </Accordion>
-
-  <Accordion title="Billing History">
-    - Invoice downloads
-    - Payment history
-    - Usage reports
-    - Tax documentation
-  </Accordion>
-
-  <Accordion title="Plan Management">
-    - Upgrade/downgrade options
-    - Feature comparisons
-    - Billing cycle changes
-    - Cancellation options
-  </Accordion>
-</AccordionGroup>
-
-## Dashboard Customization
-
-### Widgets and Layout
-
-<CardGroup cols={2}>
-  <Card title="Customizable Widgets" icon="th-large">
-    - Drag-and-drop dashboard layout
-    - Widget size customization
-    - Personal dashboard preferences
-    - Team dashboard templates
-  </Card>
-  <Card title="Data Visualization" icon="chart-pie">
-    - Interactive charts and graphs
-    - Custom date ranges
-    - Metric comparisons
-    - Real-time updates
-  </Card>
-</CardGroup>
-
-### Personalization Options
-
-<AccordionGroup>
-  <Accordion title="Dashboard Themes">
-    - Light and dark mode
-    - Custom color schemes
-    - Brand customization
-    - Accessibility options
-  </Accordion>
-
-  <Accordion title="Widget Configuration">
-    - Show/hide specific metrics
-    - Custom metric calculations
-    - Alert thresholds
-    - Refresh intervals
-  </Accordion>
-
-  <Accordion title="Saved Views">
-    - Save custom dashboard layouts
-    - Quick view switching
-    - Shared team views
-    - Bookmark favorite reports
   </Accordion>
 </AccordionGroup>
 
@@ -409,7 +252,7 @@ Access your ReplyIQ dashboard on mobile devices:
     - Offline capability
   </Card>
   <Card title="Mobile Features" icon="smartphone">
-    - Quick reply generation
+    - Quick content generation
     - Usage monitoring
     - Push notifications
     - Emergency access
@@ -423,27 +266,17 @@ Access your ReplyIQ dashboard on mobile devices:
 <CardGroup cols={2}>
   <Card title="Navigation" icon="keyboard">
     - `Ctrl + 1` - Overview
-    - `Ctrl + 2` - Analytics
-    - `Ctrl + 3` - Settings
-    - `Ctrl + 4` - Team
-    - `Ctrl + 5` - Billing
+    - `Ctrl + 2` - AI Tools
+    - `Ctrl + 3` - Analytics
+    - `Ctrl + 4` - Settings
   </Card>
   <Card title="Actions" icon="bolt">
-    - `Ctrl + G` - Generate Reply
-    - `Ctrl + K` - API Keys
-    - `Ctrl + T` - Test Models
-    - `Ctrl + S` - Save Settings
+    - `Ctrl + N` - New Content
+    - `Ctrl + S` - Save Content
+    - `Ctrl + C` - Copy to Clipboard
+    - `Ctrl + H` - View History
   </Card>
 </CardGroup>
-
-### Quick Actions Menu
-
-Access common actions from anywhere in the dashboard:
-
-- **Generate Reply**: Quick reply generation modal
-- **API Documentation**: Direct link to API docs
-- **Support**: Contact support or access help
-- **Feedback**: Provide product feedback
 
 ## Getting Help
 
@@ -456,32 +289,18 @@ Access common actions from anywhere in the dashboard:
     Contextual help and tooltips throughout the dashboard
   </Card>
   <Card
-    title="Video Tutorials"
-    icon="play-circle"
-    href="https://youtube.com/replyiq"
-  >
-    Step-by-step video guides for all features
-  </Card>
-  <Card
-    title="Live Chat"
-    icon="comments"
+    title="Support"
+    icon="envelope"
     href="mailto:support@replyiq.com"
   >
-    Real-time support during business hours
-  </Card>
-  <Card
-    title="Community"
-    icon="users"
-    href="https://discord.gg/replyiq"
-  >
-    Connect with other ReplyIQ users
+    Get direct support from our team
   </Card>
 </CardGroup>
 
 ---
 
-**Next Steps**: Explore specific dashboard sections like [AI Configuration](/dashboard/ai-configuration) or [Usage Analytics](/dashboard/usage-analytics).
+**Next Steps**: Explore specific dashboard sections like [Brand Voice Training](/dashboard/brand-voice-training) or [Analytics](/dashboard/analytics).
 
 ---
 
-_Last updated: 2024-06-09_
+_Last updated: 2025-07-01_
