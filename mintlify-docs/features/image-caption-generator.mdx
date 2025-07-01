@@ -1,0 +1,109 @@
+---
+title: 'Image Caption Generator'
+description: 'Create compelling captions for your social media images'
+---
+
+# Image Caption Generator
+
+The Image Caption Generator helps you create engaging and compelling captions for your social media images to drive engagement and tell your story effectively.
+
+## Overview
+
+A great image caption can significantly increase engagement on your social media posts. The Image Caption Generator uses AI to help you create captions that complement your images and encourage interaction from your audience.
+
+<img
+  className="block dark:hidden"
+  src="/images/image-caption-generator-light.png"
+  alt="Image Caption Generator Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/image-caption-generator-dark.png"
+  alt="Image Caption Generator Dark"
+/>
+
+## Features
+
+- **Image Description**: Describe your image to generate relevant captions
+- **Tone Selection**: Choose from various tones (professional, casual, humorous, etc.)
+- **Length Options**: Generate captions of different lengths to suit your needs
+- **Platform Optimization**: Create captions optimized for specific platforms
+- **Call-to-Action Integration**: Include effective calls-to-action in your captions
+- **Emoji Integration**: Automatically include relevant emojis in your captions
+
+## How to Use
+
+1. Navigate to the Image Caption Generator in the dashboard
+2. Describe your image in the input field
+3. Select your preferred tone and length
+4. Choose the target platform (optional)
+5. Click "Generate Caption"
+6. Copy the generated caption to use with your image
+
+## Example
+
+<CodeGroup>
+  ```jsx Input
+  A sunset view of a beach with palm trees and a person walking along the shore.
+  ```
+
+  ```jsx Output
+  Golden hour magic at its finest ✨ Nothing beats the serenity of a beach walk as the sun bids farewell for the day. The way the light dances on the water reminds me that even endings can be beautiful. What's your favorite time to visit the beach? 🌴🌊 #SunsetVibes #BeachLife
+  ```
+</CodeGroup>
+
+## Best Practices
+
+- **Be Descriptive**: Provide a detailed description of your image for better results
+- **Match Brand Voice**: Select a tone that aligns with your brand's personality
+- **Include Questions**: Encourage engagement by asking questions in your captions
+- **Use Storytelling**: Tell a story related to your image to create an emotional connection
+- **Include Relevant Hashtags**: Add hashtags to increase discoverability (use our [Hashtag Generator](/features/hashtag-generator) for best results)
+- **Keep Platform Limitations in Mind**: 
+  - Instagram: Up to 2,200 characters
+  - Twitter/X: 280 characters
+  - Facebook: No strict limit, but 40-80 characters is often optimal
+  - LinkedIn: Keep it professional and concise
+
+## API Integration
+
+You can also access the Image Caption Generator through our API. See the [API Reference](/api-reference/ai/image-captions) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/image-captions/generate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    imageDescription: 'A sunset view of a beach with palm trees and a person walking along the shore.',
+    tone: 'casual',
+    platform: 'instagram',
+    includeEmojis: true
+  })
+});
+
+const data = await response.json();
+console.log(data.caption);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Hashtag Generator"
+    icon="hashtag"
+    href="/features/hashtag-generator"
+  >
+    Generate relevant hashtags for your social media posts
+  </Card>
+  <Card
+    title="Emoji Suggestions"
+    icon="face-smile"
+    href="/features/emoji-suggestions"
+  >
+    Get context-aware emoji recommendations for your content
+  </Card>
+</CardGroup>

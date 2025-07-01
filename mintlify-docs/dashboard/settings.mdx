@@ -1,0 +1,313 @@
+---
+title: 'Settings'
+description: 'Configure your account, AI providers, and application preferences'
+---
+
+# Settings
+
+The Settings section allows you to configure all aspects of your ReplyIQ account, including AI providers, account information, notification preferences, and application settings.
+
+## Overview
+
+Properly configuring your settings is essential for getting the most out of ReplyIQ. The Settings section provides a comprehensive set of options to customize your experience and ensure optimal performance.
+
+<img
+  className="block dark:hidden"
+  src="/images/settings-dashboard-light.png"
+  alt="Settings Dashboard Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/settings-dashboard-dark.png"
+  alt="Settings Dashboard Dark"
+/>
+
+## Settings Categories
+
+The Settings section is organized into several categories for easy navigation:
+
+### 1. General Settings
+
+<AccordionGroup>
+  <Accordion title="Account Information">
+    Manage your basic account details:
+    - Name and email
+    - Password management
+    - Account deletion options
+    - Login history
+  </Accordion>
+  
+  <Accordion title="AI Model Providers">
+    Configure your AI service providers:
+    - OpenAI API key
+    - Mistral AI API key
+    - Google AI API key
+    - Custom API endpoints
+    - Default model selection
+  </Accordion>
+  
+  <Accordion title="Interface Preferences">
+    Customize your dashboard experience:
+    - Theme selection (light/dark)
+    - Default landing page
+    - Language preferences
+    - Timezone settings
+  </Accordion>
+  
+  <Accordion title="Default Content Settings">
+    Set defaults for content generation:
+    - Preferred tone
+    - Content length
+    - Include hashtags/emojis
+    - Default language
+  </Accordion>
+</AccordionGroup>
+
+### 2. Subscription Management
+
+<AccordionGroup>
+  <Accordion title="Current Plan">
+    View and manage your subscription:
+    - Plan details
+    - Usage limits
+    - Billing cycle
+    - Renewal information
+  </Accordion>
+  
+  <Accordion title="Billing Information">
+    Manage your payment details:
+    - Payment methods
+    - Billing address
+    - Tax information
+    - Invoice history
+  </Accordion>
+  
+  <Accordion title="Plan Options">
+    Explore available subscription options:
+    - Plan comparison
+    - Upgrade/downgrade options
+    - Add-on features
+    - Enterprise solutions
+  </Accordion>
+</AccordionGroup>
+
+### 3. Notification Settings
+
+<AccordionGroup>
+  <Accordion title="Email Notifications">
+    Configure email alert preferences:
+    - Usage alerts
+    - Billing notifications
+    - Feature updates
+    - Newsletter subscription
+  </Accordion>
+  
+  <Accordion title="In-App Notifications">
+    Manage notifications within the dashboard:
+    - System alerts
+    - Usage reminders
+    - New feature announcements
+    - Maintenance notifications
+  </Accordion>
+</AccordionGroup>
+
+### 4. Privacy & Security
+
+<AccordionGroup>
+  <Accordion title="Privacy Settings">
+    Control your data and privacy:
+    - Data retention policies
+    - Content storage options
+    - Analytics opt-in/out
+    - Data export options
+  </Accordion>
+  
+  <Accordion title="Security Options">
+    Enhance your account security:
+    - Two-factor authentication
+    - Session management
+    - API key rotation
+    - Login notifications
+  </Accordion>
+</AccordionGroup>
+
+### 5. Integration Settings
+
+<AccordionGroup>
+  <Accordion title="API Access">
+    Manage programmatic access to ReplyIQ:
+    - API key generation
+    - Usage limits
+    - Webhook configuration
+    - Documentation access
+  </Accordion>
+  
+  <Accordion title="Third-Party Connections">
+    Connect with other services:
+    - Social media accounts
+    - Content management systems
+    - Analytics platforms
+    - Team collaboration tools
+  </Accordion>
+</AccordionGroup>
+
+## Setting Up AI Providers
+
+One of the most important settings is configuring your AI providers. Follow these steps to set up your AI model access:
+
+<Steps>
+  <Step title="Navigate to AI Model Providers">
+    Go to Settings → General → AI Model Provider
+  </Step>
+  <Step title="Obtain API Keys">
+    Get API keys from your preferred providers:
+    <ul>
+      <li><b>OpenAI:</b> [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)</li>
+      <li><b>Mistral AI:</b> [https://console.mistral.ai/api-keys/](https://console.mistral.ai/api-keys/)</li>
+      <li><b>Google AI (Gemini):</b> [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)</li>
+    </ul>
+  </Step>
+  <Step title="Enter API Keys">
+    Add your API keys to the corresponding fields in the settings panel
+  </Step>
+  <Step title="Select Default Models">
+    Choose your preferred default models for different content types
+  </Step>
+  <Step title="Test Connection">
+    Use the "Test Connection" button to verify your API keys are working correctly
+  </Step>
+  <Step title="Save Configuration">
+    Click "Save Changes" to apply your AI provider settings
+  </Step>
+</Steps>
+
+<Warning>
+  **Security Note:** Your API keys are sensitive credentials. ReplyIQ encrypts these keys in storage and never shares them with third parties. We recommend using API keys with appropriate usage limits and rotating them periodically.
+</Warning>
+
+## Managing Your Subscription
+
+<AccordionGroup>
+  <Accordion title="Viewing Current Plan">
+    Your current subscription details are displayed in the Subscription Management section, including:
+    - Plan name and features
+    - Monthly/annual cost
+    - Usage limits
+    - Renewal date
+    - Payment method
+  </Accordion>
+  
+  <Accordion title="Upgrading Your Plan">
+    To upgrade your subscription:
+    1. Navigate to Settings → Subscription Management → Plan Options
+    2. Compare available plans
+    3. Select your desired plan
+    4. Review the changes in features and pricing
+    5. Confirm your upgrade
+    6. Receive confirmation of your new subscription
+  </Accordion>
+  
+  <Accordion title="Updating Billing Information">
+    To update your payment details:
+    1. Go to Settings → Subscription Management → Billing Information
+    2. Select "Edit Payment Method"
+    3. Enter your new payment information
+    4. Save your changes
+    5. Verify the update was successful
+  </Accordion>
+</AccordionGroup>
+
+## Customizing Your Experience
+
+<CardGroup cols={2}>
+  <Card title="Theme Settings" icon="palette">
+    Switch between light and dark mode:
+    - Auto (follows system preference)
+    - Light mode
+    - Dark mode
+    - High contrast options
+  </Card>
+  <Card title="Default Tool Settings" icon="sliders">
+    Set preferences for each AI tool:
+    - Default tone
+    - Output length
+    - Format preferences
+    - Language settings
+  </Card>
+</CardGroup>
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="API Key Management">
+    - Use separate API keys for different environments
+    - Set usage limits on your API keys
+    - Rotate keys periodically (every 90 days recommended)
+    - Never share keys in public repositories or forums
+  </Accordion>
+  
+  <Accordion title="Account Security">
+    - Use a strong, unique password
+    - Enable two-factor authentication
+    - Review login history regularly
+    - Log out from shared devices
+  </Accordion>
+  
+  <Accordion title="Data Protection">
+    - Review and adjust data retention settings
+    - Export and delete sensitive data when needed
+    - Understand how your content is stored and processed
+    - Review third-party access permissions regularly
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="API Connection Issues">
+    If you're experiencing problems with AI providers:
+    - Verify your API key is entered correctly
+    - Check your API key has sufficient credits/quota
+    - Ensure your account is in good standing with the provider
+    - Test with a simple request to isolate the issue
+  </Accordion>
+  
+  <Accordion title="Billing Problems">
+    For subscription or payment issues:
+    - Verify your payment method is up to date
+    - Check for any declined transactions
+    - Review your invoice for discrepancies
+    - Contact support for billing assistance
+  </Accordion>
+  
+  <Accordion title="Settings Not Saving">
+    If settings aren't being saved:
+    - Clear your browser cache
+    - Try a different browser
+    - Disable browser extensions
+    - Check for network connectivity issues
+  </Accordion>
+</AccordionGroup>
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Dashboard Overview"
+    icon="gauge"
+    href="/dashboard/overview"
+  >
+    Navigate and use the ReplyIQ dashboard effectively
+  </Card>
+  <Card
+    title="Brand Voice Training"
+    icon="microphone"
+    href="/dashboard/brand-voice-training"
+  >
+    Customize the AI to match your brand's unique voice
+  </Card>
+</CardGroup>
+
+---
+
+_Last updated: 2025-07-01_

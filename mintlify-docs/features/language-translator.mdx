@@ -1,0 +1,128 @@
+---
+title: 'Language Translator'
+description: 'Translate your content into multiple languages to reach a global audience'
+---
+
+# Language Translator
+
+The Language Translator tool helps you translate your social media content into multiple languages, allowing you to reach a global audience and expand your international presence.
+
+## Overview
+
+In today's global digital landscape, communicating with your audience in their native language can significantly increase engagement and build stronger connections. The Language Translator uses advanced AI to provide high-quality translations that maintain the tone and intent of your original content.
+
+<img
+  className="block dark:hidden"
+  src="/images/language-translator-light.png"
+  alt="Language Translator Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/language-translator-dark.png"
+  alt="Language Translator Dark"
+/>
+
+## Features
+
+- **Multiple Language Support**: Translate content to and from numerous languages
+- **Context-Aware Translation**: Maintains the context and nuance of your original content
+- **Tone Preservation**: Preserves the tone and style of your original message
+- **Batch Translation**: Translate multiple pieces of content at once
+- **Social Media Optimization**: Translations optimized for social media platforms
+- **Cultural Adaptation**: Adapts content to be culturally appropriate for the target audience
+
+## Supported Languages
+
+The Language Translator supports a wide range of languages, including but not limited to:
+
+- English
+- Spanish
+- French
+- German
+- Italian
+- Portuguese
+- Chinese (Simplified and Traditional)
+- Japanese
+- Korean
+- Arabic
+- Russian
+- Hindi
+- Dutch
+- Swedish
+- And many more...
+
+## How to Use
+
+1. Navigate to the Language Translator in the dashboard
+2. Enter your content in the input field
+3. Select the source language (or let it be auto-detected)
+4. Choose the target language(s) for translation
+5. Click "Translate"
+6. Copy the translated content to use in your social media posts
+
+## Example
+
+<CodeGroup>
+  ```jsx Input (English)
+  We're excited to announce our new product line that will be available starting next week. Stay tuned for more details!
+  ```
+
+  ```jsx Output (Spanish)
+  ¡Estamos emocionados de anunciar nuestra nueva línea de productos que estará disponible a partir de la próxima semana. ¡Mantente atento para más detalles!
+  ```
+
+  ```jsx Output (French)
+  Nous sommes ravis d'annoncer notre nouvelle gamme de produits qui sera disponible à partir de la semaine prochaine. Restez à l'écoute pour plus de détails !
+  ```
+</CodeGroup>
+
+## Best Practices
+
+- **Review Translations**: Always review automated translations for accuracy, especially for important communications
+- **Consider Cultural Context**: Be aware that direct translations may not always capture cultural nuances
+- **Use Simple Language**: When writing content that will be translated, use clear and simple language to improve translation quality
+- **Maintain Consistent Terminology**: Use consistent terminology across all your content for better translation results
+- **Test with Native Speakers**: When possible, have translations reviewed by native speakers
+- **Adapt Content Length**: Be aware that translations may be longer or shorter than the original text, which may affect character limits on platforms like Twitter/X
+
+## API Integration
+
+You can also access the Language Translator through our API. See the [API Reference](/api-reference/ai/translate) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/translate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    text: 'We're excited to announce our new product line that will be available starting next week. Stay tuned for more details!',
+    sourceLanguage: 'en',
+    targetLanguage: 'es'
+  })
+});
+
+const data = await response.json();
+console.log(data.translatedText);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="AI Reply Generation"
+    icon="reply"
+    href="/features/ai-reply-generation"
+  >
+    Generate contextual replies for social media engagement
+  </Card>
+  <Card
+    title="Thread Generator"
+    icon="list-ol"
+    href="/features/thread-generator"
+  >
+    Create engaging thread content for platforms like Twitter/X
+  </Card>
+</CardGroup>

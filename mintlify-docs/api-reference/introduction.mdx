@@ -1,11 +1,11 @@
 ---
 title: 'API Introduction'
-description: 'Get started with the ReplyIQ API for programmatic access to AI-powered social media reply generation'
+description: 'Get started with the ReplyIQ API for programmatic access to AI-powered content generation tools'
 ---
 
 ## Welcome to ReplyIQ API
 
-The ReplyIQ API provides programmatic access to our AI-powered social media reply generation platform. Build custom integrations, automate social media workflows, and scale your social media engagement with our robust REST API.
+The ReplyIQ API provides programmatic access to our AI-powered content generation platform. Build custom integrations, automate content workflows, and scale your social media content creation with our robust REST API.
 
 <CardGroup cols={2}>
   <Card title="RESTful API" icon="code">
@@ -257,10 +257,10 @@ curl -X POST https://app.replyiq.com/api/ai \
 
 ## API Endpoints Overview
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card
-    title="AI Generation"
-    icon="robot"
+    title="Reply Generation"
+    icon="reply"
     href="/api-reference/ai/generate-reply"
   >
     Generate AI-powered replies for social media posts
@@ -273,18 +273,60 @@ curl -X POST https://app.replyiq.com/api/ai \
     Get context-aware emoji recommendations
   </Card>
   <Card
+    title="Hashtag Generation"
+    icon="hashtag"
+    href="/api-reference/ai/hashtag-generation"
+  >
+    Create relevant hashtags for social media posts
+  </Card>
+  <Card
+    title="Image Captions"
+    icon="image"
+    href="/api-reference/ai/image-captions"
+  >
+    Generate compelling captions for images
+  </Card>
+  <Card
+    title="Sentiment Analysis"
+    icon="face-smile-beam"
+    href="/api-reference/ai/sentiment-analysis"
+  >
+    Analyze the sentiment of text content
+  </Card>
+  <Card
+    title="Story Generation"
+    icon="book"
+    href="/api-reference/ai/stories"
+  >
+    Create engaging stories for social platforms
+  </Card>
+  <Card
+    title="Thread Generation"
+    icon="list-ol"
+    href="/api-reference/ai/threads"
+  >
+    Generate coherent thread content
+  </Card>
+  <Card
+    title="Translation"
+    icon="language"
+    href="/api-reference/ai/translate"
+  >
+    Translate content into multiple languages
+  </Card>
+  <Card
+    title="Video Scripts"
+    icon="video"
+    href="/api-reference/ai/video-scripts"
+  >
+    Create scripts for video content
+  </Card>
+  <Card
     title="Usage Tracking"
     icon="chart-bar"
     href="/api-reference/usage/track-usage"
   >
     Track API usage and monitor quotas
-  </Card>
-  <Card
-    title="Analytics"
-    icon="chart-line"
-    href="/api-reference/analytics/get-analytics"
-  >
-    Access detailed usage analytics and insights
   </Card>
 </CardGroup>
 
@@ -449,8 +491,8 @@ ReplyIQ supports webhooks for real-time notifications:
 
 ---
 
-**Ready to start building?** Check out our [Generate Reply endpoint](/api-reference/ai/generate-reply) to create your first AI-powered social media reply.
+**Ready to start building?** Check out our [API endpoints](#api-endpoints-overview) to integrate AI-powered content generation into your applications.
 
 ---
 
-_Last updated: 2024-06-09_
+_Last updated: 2025-07-01_

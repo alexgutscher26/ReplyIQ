@@ -1,0 +1,106 @@
+---
+title: 'Hashtag Generator'
+description: 'Generate relevant and trending hashtags for your social media posts'
+---
+
+# Hashtag Generator
+
+The Hashtag Generator tool helps you create relevant and trending hashtags for your social media posts to increase visibility and engagement.
+
+## Overview
+
+Hashtags are essential for increasing the discoverability of your content on social media platforms. The Hashtag Generator uses AI to analyze your content and generate relevant hashtags that can help your posts reach a wider audience.
+
+<img
+  className="block dark:hidden"
+  src="/images/hashtag-generator-light.png"
+  alt="Hashtag Generator Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hashtag-generator-dark.png"
+  alt="Hashtag Generator Dark"
+/>
+
+## Features
+
+- **Content Analysis**: Analyzes your post content to generate relevant hashtags
+- **Customizable Output**: Control the number and type of hashtags generated
+- **Platform-Specific Optimization**: Generate hashtags optimized for specific platforms (Twitter/X, Instagram, LinkedIn, etc.)
+- **Trending Hashtags**: Includes popular and trending hashtags when relevant
+- **Niche Targeting**: Generate hashtags specific to your industry or niche
+
+## How to Use
+
+1. Navigate to the Hashtag Generator in the dashboard
+2. Enter your post content in the input field
+3. Select the target platform (optional)
+4. Specify the number of hashtags you want to generate
+5. Click "Generate Hashtags"
+6. Copy the generated hashtags to use in your social media posts
+
+## Example
+
+<CodeGroup>
+  ```jsx Input
+  I just launched my new e-commerce store selling handmade jewelry. Check it out and let me know what you think!
+  ```
+
+  ```jsx Output
+  #HandmadeJewelry #NewLaunch #EcommerceStore #ShopSmall #HandcraftedAccessories #JewelryDesigner #SmallBusiness #ArtisanJewelry #OnlineShopping #SupportSmallBusiness
+  ```
+</CodeGroup>
+
+## Best Practices
+
+- **Use Relevant Hashtags**: Only use hashtags that are relevant to your content
+- **Mix Popular and Niche Hashtags**: Combine widely-used hashtags with more specific ones
+- **Don't Overdo It**: Using too many hashtags can make your post look spammy
+- **Research Trending Hashtags**: Stay updated on trending hashtags in your industry
+- **Platform-Specific Considerations**:
+  - **Instagram**: Up to 30 hashtags are allowed, but 5-15 is often recommended
+  - **Twitter/X**: Use fewer hashtags (1-2) due to character limitations
+  - **LinkedIn**: 3-5 relevant hashtags work best
+  - **Facebook**: 2-3 hashtags are typically sufficient
+
+## API Integration
+
+You can also access the Hashtag Generator through our API. See the [API Reference](/api-reference/ai/hashtag-generation) for details.
+
+```javascript
+// Example API call
+const response = await fetch('https://api.replyiq.com/api/ai/hashtags/generate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    content: 'Your post content here',
+    platform: 'instagram',
+    count: 10
+  })
+});
+
+const data = await response.json();
+console.log(data.hashtags);
+```
+
+## Related Features
+
+<CardGroup cols={2}>
+  <Card
+    title="AI Reply Generation"
+    icon="reply"
+    href="/features/ai-reply-generation"
+  >
+    Generate contextual replies for social media engagement
+  </Card>
+  <Card
+    title="Image Caption Generator"
+    icon="image"
+    href="/features/image-caption-generator"
+  >
+    Create compelling captions for your social media images
+  </Card>
+</CardGroup>

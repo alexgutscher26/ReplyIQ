@@ -78,8 +78,13 @@
       "pages": [
         "features/ai-reply-generation",
         "features/emoji-suggestions",
-        "features/tone-customization",
-        "features/multi-platform-support",
+        "features/hashtag-generator",
+        "features/image-caption-generator",
+        "features/language-translator",
+        "features/sentiment-analysis",
+        "features/story-generator",
+        "features/thread-generator",
+        "features/video-script-generator",
         "features/analytics"
       ]
     },
@@ -88,10 +93,8 @@
       "pages": [
         "dashboard/overview",
         "dashboard/settings",
-        "dashboard/ai-configuration",
-        "dashboard/subscription-management",
-        "dashboard/usage-analytics",
-        "dashboard/team-management"
+        "dashboard/brand-voice-training",
+        "dashboard/analytics"
       ]
     },
     {
@@ -104,14 +107,19 @@
           "pages": [
             "api-reference/ai/generate-reply",
             "api-reference/ai/emoji-suggestions",
-            "api-reference/ai/hashtag-generation"
+            "api-reference/ai/hashtag-generation",
+            "api-reference/ai/image-captions",
+            "api-reference/ai/sentiment-analysis",
+            "api-reference/ai/stories",
+            "api-reference/ai/threads",
+            "api-reference/ai/translate",
+            "api-reference/ai/video-scripts"
           ]
         },
         {
           "group": "Usage & Analytics",
           "pages": [
-            "api-reference/usage/track-usage",
-            "api-reference/analytics/get-analytics"
+            "api-reference/usage/track-usage"
           ]
         },
         {
@@ -127,40 +135,19 @@
       "group": "Browser Extension",
       "pages": [
         "extension/overview",
-        "extension/installation",
-        "extension/features",
-        "extension/supported-platforms",
-        "extension/keyboard-shortcuts",
-        "extension/troubleshooting"
+        "extension/installation"
       ]
     },
     {
       "group": "Guides",
       "pages": [
-        "guides/getting-started",
-        "guides/ai-model-setup",
-        "guides/payment-integration",
-        "guides/custom-deployment",
-        "guides/development-setup",
-        "guides/contributing"
-      ]
-    },
-    {
-      "group": "Advanced",
-      "pages": [
-        "advanced/architecture",
-        "advanced/security",
-        "advanced/performance",
-        "advanced/scaling",
-        "advanced/customization"
+        "guides/getting-started"
       ]
     },
     {
       "group": "Support",
       "pages": [
-        "support/troubleshooting",
         "support/faq",
-        "support/changelog",
         "support/contact"
       ]
     }
