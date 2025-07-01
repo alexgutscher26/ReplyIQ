@@ -8,7 +8,8 @@ description: 'Complete guide to installing and setting up the ReplyIQ web applic
 This guide covers the complete installation process for the ReplyIQ web application, from local development to production deployment.
 
 <Info>
-  **Prerequisites**: Node.js 18+, PostgreSQL database, and optionally Bun 1.0+ for faster package management
+  **Prerequisites**: Node.js 18+, PostgreSQL database, and <b>Bun 1.0+ (recommended and supported for local development)</b> for faster package management. <br/>
+  <b>Note:</b> AI API keys (OpenAI, Claude, etc.) are configured in the dashboard after installation, <b>not</b> in the .env file.
 </Info>
 
 ## Prerequisites
@@ -51,7 +52,7 @@ cd ReplyIQ
 <Tabs>
   <Tab title="Bun (Recommended)">
     ```bash
-    # Install dependencies with Bun
+    # Install dependencies with Bun (officially supported)
     bun install
     
     # Verify installation
@@ -60,7 +61,7 @@ cd ReplyIQ
   </Tab>
   <Tab title="npm">
     ```bash
-    # Install dependencies with npm
+    # Install dependencies with npm (not officially supported)
     npm install
     
     # Verify installation
@@ -69,7 +70,7 @@ cd ReplyIQ
   </Tab>
   <Tab title="yarn">
     ```bash
-    # Install dependencies with Yarn
+    # Install dependencies with Yarn (not officially supported)
     yarn install
     
     # Verify installation
@@ -189,6 +190,8 @@ cd ReplyIQ
 
 <Success>
   Your ReplyIQ web application should now be running at [http://localhost:3000](http://localhost:3000)
+  <br/>
+  <b>Note:</b> Configure your AI API keys in the dashboard after setup. Do not add them to your .env file.
 </Success>
 
 ## Next Steps
@@ -227,3 +230,7 @@ cd ReplyIQ
 ---
 
 Need help with installation? [Contact our support team](mailto:support@replyiq.com) or join our [Discord community](https://discord.gg/replyiq).
+
+---
+
+_Last updated: 2024-06-09_

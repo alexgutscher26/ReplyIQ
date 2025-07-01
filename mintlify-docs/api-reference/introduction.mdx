@@ -46,7 +46,7 @@ ReplyIQ API supports two authentication methods:
     
     ```bash
     curl -H "X-API-Key: riq_1234567890abcdef" \
-         https://app.replyiq.com/api/ai/generate
+         https://app.replyiq.com/api/ai
     ```
   </Tab>
   <Tab title="Bearer Tokens">
@@ -54,7 +54,7 @@ ReplyIQ API supports two authentication methods:
     
     ```bash
     curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
-         https://app.replyiq.com/api/ai/generate
+         https://app.replyiq.com/api/ai
     ```
   </Tab>
 </Tabs>
@@ -188,7 +188,7 @@ All API responses follow a consistent JSON format:
 <CodeGroup>
 
 ```typescript TypeScript
-const response = await fetch('https://app.replyiq.com/api/ai/generate', {
+const response = await fetch('https://app.replyiq.com/api/ai', {
   method: 'POST',
   headers: {
     'X-API-Key': 'riq_your_api_key_here',
@@ -209,7 +209,7 @@ console.log(result.data.reply);
 import requests
 
 response = requests.post(
-    'https://app.replyiq.com/api/ai/generate',
+    'https://app.replyiq.com/api/ai',
     headers={
         'X-API-Key': 'riq_your_api_key_here',
         'Content-Type': 'application/json'
@@ -226,7 +226,7 @@ print(result['data']['reply'])
 ```
 
 ```javascript JavaScript
-fetch('https://app.replyiq.com/api/ai/generate', {
+fetch('https://app.replyiq.com/api/ai', {
   method: 'POST',
   headers: {
     'X-API-Key': 'riq_your_api_key_here',
@@ -243,7 +243,7 @@ fetch('https://app.replyiq.com/api/ai/generate', {
 ```
 
 ```curl cURL
-curl -X POST https://app.replyiq.com/api/ai/generate \
+curl -X POST https://app.replyiq.com/api/ai \
   -H "X-API-Key: riq_your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{
@@ -450,3 +450,7 @@ ReplyIQ supports webhooks for real-time notifications:
 ---
 
 **Ready to start building?** Check out our [Generate Reply endpoint](/api-reference/ai/generate-reply) to create your first AI-powered social media reply.
+
+---
+
+_Last updated: 2024-06-09_
