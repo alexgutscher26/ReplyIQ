@@ -163,7 +163,7 @@ const loginResponse = await fetch('/api/auth/login', {
 const { token } = await loginResponse.json();
 
 // Use token for authenticated requests
-const apiResponse = await fetch('/api/ai/generate', {
+const apiResponse = await fetch('/api/ai', {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -212,10 +212,19 @@ token = login_response.json()['token']
 
 # Use token for API calls
 headers = {'Authorization': f'Bearer {token}'}
-api_response = requests.post('https://replyiq.com/api/ai/generate',
+api_response = requests.post('https://replyiq.com/api/ai',
   headers=headers,
   json={'text': 'Original post', 'tone': 'professional'}
 )
+```
+
+```curl cURL
+curl -X POST https://replyiq.com/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securePassword123"
+  }'
 ```
 
 </CodeGroup>
@@ -223,6 +232,10 @@ api_response = requests.post('https://replyiq.com/api/ai/generate',
 ## API Key Authentication
 
 For server-to-server integrations, use API keys instead of user sessions.
+
+<Info>
+  <b>Note:</b> All authentication endpoints (e.g., <code>/api/auth/register</code>, <code>/api/auth/login</code>) are handled by the catch-all route <code>/api/auth/*</code>.
+</Info>
 
 ### Generating API Keys
 
@@ -249,7 +262,7 @@ For server-to-server integrations, use API keys instead of user sessions.
 <CodeGroup>
 
 ```typescript TypeScript
-const response = await fetch('/api/ai/generate', {
+const response = await fetch('/api/ai', {
   method: 'POST',
   headers: {
     'X-API-Key': 'riq_1234567890abcdef',
@@ -271,7 +284,7 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-response = requests.post('https://replyiq.com/api/ai/generate',
+response = requests.post('https://replyiq.com/api/ai',
     headers=headers,
     json={
         'text': 'Original post content',
@@ -282,7 +295,7 @@ response = requests.post('https://replyiq.com/api/ai/generate',
 ```
 
 ```curl cURL
-curl -X POST https://replyiq.com/api/ai/generate \
+curl -X POST https://replyiq.com/api/ai \
   -H "X-API-Key: riq_1234567890abcdef" \
   -H "Content-Type: application/json" \
   -d '{
@@ -461,7 +474,7 @@ function ProtectedComponent() {
 
 ```typescript TypeScript
 try {
-  const response = await fetch('/api/ai/generate', {
+  const response = await fetch('/api/ai', {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
