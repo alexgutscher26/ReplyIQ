@@ -89,7 +89,9 @@
         "dashboard/overview",
         "dashboard/settings",
         "dashboard/brand-voice-training",
-        "dashboard/analytics"
+        "dashboard/analytics",
+        "dashboard/usage-analytics",
+        "dashboard/payments"
       ]
     },
     {
