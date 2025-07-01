@@ -1,0 +1,22 @@
+{
+  "name": "replyiq-docs",
+  "version": "1.0.0",
+  "description": "ReplyIQ Documentation built with Mintlify",
+  "scripts": {
+    "dev": "mintlify dev",
+    "build": "mintlify build",
+    "preview": "mintlify preview"
+  },
+  "keywords": [
+    "replyiq",
+    "documentation",
+    "mintlify",
+    "ai",
+    "social-media"
+  ],
+  "author": "ReplyIQ Team",
+  "license": "CC-BY-NC-SA-4.0",
+  "devDependencies": {
+    "mintlify": "^4.0.0"
+  }
+}

@@ -1,0 +1,674 @@
+---
+title: 'Environment Setup'
+description: 'Configure your development environment for ReplyIQ'
+---
+
+## Overview
+
+This guide covers setting up your development environment for ReplyIQ, including all necessary tools, dependencies, and configurations.
+
+<Info>
+  **Target Audience**: Developers who want to run ReplyIQ locally or contribute to the project
+</Info>
+
+## Prerequisites
+
+### System Requirements
+
+<CardGroup cols={2}>
+  <Card title="Operating System" icon="desktop">
+    - **Windows 10+** with WSL2 (recommended)
+    - **macOS 12+** (Intel or Apple Silicon)
+    - **Linux** (Ubuntu 20.04+, Debian 11+, or equivalent)
+  </Card>
+  <Card title="Hardware" icon="microchip">
+    - **RAM**: 8GB minimum, 16GB recommended
+    - **Storage**: 10GB free space
+    - **CPU**: Multi-core processor recommended
+  </Card>
+</CardGroup>
+
+### Required Software
+
+<AccordionGroup>
+  <Accordion title="Node.js 18+">
+    **Installation:**
+    
+    <Tabs>
+      <Tab title="Using Node Version Manager (Recommended)">
+        ```bash
+        # Install nvm
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        
+        # Restart terminal or source profile
+        source ~/.bashrc
+        
+        # Install and use Node.js 18
+        nvm install 18
+        nvm use 18
+        nvm alias default 18
+        
+        # Verify installation
+        node --version  # Should show v18.x.x
+        npm --version   # Should show 9.x.x or higher
+        ```
+      </Tab>
+      <Tab title="Direct Installation">
+        **Windows:**
+        - Download from [nodejs.org](https://nodejs.org/)
+        - Run the installer
+        - Restart command prompt
+        
+        **macOS:**
+        ```bash
+        # Using Homebrew
+        brew install node@18
+        
+        # Or download from nodejs.org
+        ```
+        
+        **Linux:**
+        ```bash
+        # Ubuntu/Debian
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        
+        # CentOS/RHEL/Fedora
+        curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+        sudo dnf install -y nodejs npm
+        ```
+      </Tab>
+    </Tabs>
+  </Accordion>
+
+  <Accordion title="Bun (Optional but Recommended)">
+    **Why Bun?**
+    - Faster package installation
+    - Better performance
+    - Built-in bundler and test runner
+    - Drop-in replacement for npm/yarn
+    
+    **Installation:**
+    ```bash
+    # Install Bun
+    curl -fsSL https://bun.sh/install | bash
+    
+    # Restart terminal or source profile
+    source ~/.bashrc
+    
+    # Verify installation
+    bun --version
+    ```
+  </Accordion>
+
+  <Accordion title="PostgreSQL">
+    **Local Installation:**
+    
+    <Tabs>
+      <Tab title="Windows">
+        1. Download from [postgresql.org](https://www.postgresql.org/download/windows/)
+        2. Run the installer
+        3. Remember the password for the `postgres` user
+        4. Add PostgreSQL to PATH
+        
+        **Verify installation:**
+        ```cmd
+        psql --version
+        ```
+      </Tab>
+      <Tab title="macOS">
+        ```bash
+        # Using Homebrew
+        brew install postgresql@15
+        brew services start postgresql@15
+        
+        # Create database user
+        createuser -s postgres
+        
+        # Verify installation
+        psql --version
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        # Ubuntu/Debian
+        sudo apt update
+        sudo apt install postgresql postgresql-contrib
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
+        
+        # CentOS/RHEL/Fedora
+        sudo dnf install postgresql postgresql-server postgresql-contrib
+        sudo postgresql-setup --initdb
+        sudo systemctl start postgresql
+        sudo systemctl enable postgresql
+        
+        # Verify installation
+        psql --version
+        ```
+      </Tab>
+    </Tabs>
+    
+    **Cloud Alternatives:**
+    - [Supabase](https://supabase.com/) (recommended for beginners)
+    - [Neon](https://neon.tech/)
+    - [PlanetScale](https://planetscale.com/)
+    - [Railway](https://railway.app/)
+  </Accordion>
+
+  <Accordion title="Git">
+    **Installation:**
+    
+    <Tabs>
+      <Tab title="Windows">
+        - Download from [git-scm.com](https://git-scm.com/download/win)
+        - Run installer with default settings
+        - Use Git Bash or Windows Terminal
+      </Tab>
+      <Tab title="macOS">
+        ```bash
+        # Using Homebrew
+        brew install git
+        
+        # Or use Xcode Command Line Tools
+        xcode-select --install
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        # Ubuntu/Debian
+        sudo apt install git
+        
+        # CentOS/RHEL/Fedora
+        sudo dnf install git
+        ```
+      </Tab>
+    </Tabs>
+    
+    **Configuration:**
+    ```bash
+    git config --global user.name "Your Name"
+    git config --global user.email "your.email@example.com"
+    git config --global init.defaultBranch main
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Development Tools
+
+### Code Editor
+
+<CardGroup cols={3}>
+  <Card title="VS Code (Recommended)" icon="code">
+    **Download:** [code.visualstudio.com](https://code.visualstudio.com/)
+    
+    **Essential Extensions:**
+    - TypeScript and JavaScript Language Features
+    - Prettier - Code formatter
+    - ESLint
+    - Tailwind CSS IntelliSense
+    - Auto Rename Tag
+    - GitLens
+  </Card>
+  <Card title="WebStorm" icon="code">
+    **Download:** [jetbrains.com/webstorm](https://www.jetbrains.com/webstorm/)
+    
+    **Features:**
+    - Built-in TypeScript support
+    - Intelligent code completion
+    - Advanced debugging
+    - Git integration
+  </Card>
+  <Card title="Cursor" icon="code">
+    **Download:** [cursor.sh](https://cursor.sh/)
+    
+    **Features:**
+    - AI-powered coding assistant
+    - VS Code compatible
+    - Built-in AI chat
+    - Code generation
+  </Card>
+</CardGroup>
+
+### VS Code Configuration
+
+Create a `.vscode/settings.json` file in your project:
+
+```json
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ]
+}
+```
+
+### Browser Development Tools
+
+<CardGroup cols={2}>
+  <Card title="Chrome DevTools" icon="chrome">
+    **Extensions:**
+    - React Developer Tools
+    - Redux DevTools
+    - Lighthouse
+    - Web Vitals
+  </Card>
+  <Card title="Firefox Developer Tools" icon="firefox">
+    **Extensions:**
+    - React Developer Tools
+    - Vue.js devtools
+    - Web Developer
+  </Card>
+</CardGroup>
+
+## Environment Variables
+
+### Required Environment Variables
+
+Create a `.env.local` file in your project root:
+
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/replyiq"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-super-secret-key-change-this"
+
+# OAuth Providers (Optional)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+DISCORD_CLIENT_ID="your-discord-client-id"
+DISCORD_CLIENT_SECRET="your-discord-client-secret"
+
+# Payment Providers (Optional)
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+PAYPAL_CLIENT_ID="your-paypal-client-id"
+PAYPAL_CLIENT_SECRET="your-paypal-client-secret"
+PAYPAL_ENVIRONMENT="sandbox"
+
+# Email (Optional)
+RESEND_API_KEY="re_..."
+FROM_EMAIL="noreply@yourdomain.com"
+
+# Upload (Optional)
+UPLOADTHING_SECRET="sk_live_..."
+UPLOADTHING_APP_ID="your-app-id"
+```
+
+### Environment Variable Setup Guide
+
+<Steps>
+  <Step title="Copy Template">
+    ```bash
+    cp .env.example .env.local
+    ```
+  </Step>
+  <Step title="Database Configuration">
+    **Local PostgreSQL:**
+    ```env
+    DATABASE_URL="postgresql://postgres:password@localhost:5432/replyiq"
+    ```
+    
+    **Supabase:**
+    ```env
+    DATABASE_URL="postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres"
+    ```
+  </Step>
+  <Step title="Authentication Setup">
+    Generate a secure secret:
+    ```bash
+    # Generate random secret
+    openssl rand -base64 32
+    
+    # Or use online generator
+    # https://generate-secret.vercel.app/32
+    ```
+  </Step>
+  <Step title="OAuth Configuration (Optional)">
+    **Google OAuth:**
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select existing
+    3. Enable Google+ API
+    4. Create OAuth 2.0 credentials
+    5. Add `http://localhost:3000/api/auth/callback/google` to redirect URIs
+    
+    **GitHub OAuth:**
+    1. Go to GitHub Settings → Developer settings → OAuth Apps
+    2. Create new OAuth App
+    3. Set Authorization callback URL to `http://localhost:3000/api/auth/callback/github`
+  </Step>
+</Steps>
+
+## Database Setup
+
+### Local PostgreSQL Setup
+
+<Steps>
+  <Step title="Start PostgreSQL Service">
+    <Tabs>
+      <Tab title="Windows">
+        ```cmd
+        # Start PostgreSQL service
+        net start postgresql-x64-15
+        
+        # Or use Services app
+        services.msc
+        ```
+      </Tab>
+      <Tab title="macOS">
+        ```bash
+        # Using Homebrew
+        brew services start postgresql@15
+        
+        # Or manually
+        pg_ctl -D /usr/local/var/postgres start
+        ```
+      </Tab>
+      <Tab title="Linux">
+        ```bash
+        # Ubuntu/Debian
+        sudo systemctl start postgresql
+        
+        # CentOS/RHEL/Fedora
+        sudo systemctl start postgresql
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Create Database">
+    ```bash
+    # Connect to PostgreSQL
+    psql -U postgres
+    
+    # Create database and user
+    CREATE DATABASE replyiq;
+    CREATE USER replyiq_user WITH PASSWORD 'your_password';
+    GRANT ALL PRIVILEGES ON DATABASE replyiq TO replyiq_user;
+    
+    # Exit psql
+    \q
+    ```
+  </Step>
+  <Step title="Test Connection">
+    ```bash
+    # Test connection
+    psql -U replyiq_user -d replyiq -h localhost
+    
+    # Should connect successfully
+    ```
+  </Step>
+</Steps>
+
+### Cloud Database Setup (Supabase)
+
+<Steps>
+  <Step title="Create Supabase Project">
+    1. Go to [supabase.com](https://supabase.com/)
+    2. Sign up/in and create new project
+    3. Choose region and set database password
+    4. Wait for project to be ready
+  </Step>
+  <Step title="Get Connection String">
+    1. Go to Settings → Database
+    2. Copy the connection string
+    3. Replace `[YOUR-PASSWORD]` with your database password
+  </Step>
+  <Step title="Update Environment">
+    ```env
+    DATABASE_URL="postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres"
+    ```
+  </Step>
+</Steps>
+
+## Development Workflow
+
+### Project Setup
+
+<Steps>
+  <Step title="Clone Repository">
+    ```bash
+    git clone https://github.com/alexgutscher26/ReplyIQ.git
+    cd ReplyIQ
+    ```
+  </Step>
+  <Step title="Install Dependencies">
+    <Tabs>
+      <Tab title="Bun (Recommended)">
+        ```bash
+        bun install
+        ```
+      </Tab>
+      <Tab title="npm">
+        ```bash
+        npm install
+        ```
+      </Tab>
+      <Tab title="yarn">
+        ```bash
+        yarn install
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Setup Environment">
+    ```bash
+    cp .env.example .env.local
+    # Edit .env.local with your configuration
+    ```
+  </Step>
+  <Step title="Setup Database">
+    ```bash
+    # Generate and run migrations
+    bun run db:migrate
+    
+    # Seed database (optional)
+    bun run db:seed
+    ```
+  </Step>
+  <Step title="Start Development Server">
+    ```bash
+    bun run dev
+    ```
+  </Step>
+</Steps>
+
+### Available Scripts
+
+<CardGroup cols={2}>
+  <Card title="Development" icon="code">
+    ```bash
+    bun run dev          # Start dev server
+    bun run build        # Build for production
+    bun run start        # Start production server
+    bun run preview      # Build and preview
+    ```
+  </Card>
+  <Card title="Database" icon="database">
+    ```bash
+    bun run db:generate  # Generate migrations
+    bun run db:migrate   # Run migrations
+    bun run db:push      # Push schema changes
+    bun run db:studio    # Open Drizzle Studio
+    ```
+  </Card>
+  <Card title="Quality" icon="check-circle">
+    ```bash
+    bun run lint         # Run ESLint
+    bun run lint:fix     # Fix ESLint issues
+    bun run typecheck    # TypeScript check
+    bun run format:check # Check formatting
+    ```
+  </Card>
+  <Card title="Testing" icon="flask">
+    ```bash
+    bun run test         # Run tests
+    bun run test:watch   # Watch mode
+    bun run test:coverage # Coverage report
+    ```
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Node.js Version Issues">
+    **Problem:** Wrong Node.js version or multiple versions installed
+    
+    **Solution:**
+    ```bash
+    # Check current version
+    node --version
+    
+    # Using nvm to switch versions
+    nvm install 18
+    nvm use 18
+    nvm alias default 18
+    
+    # Clear npm cache if needed
+    npm cache clean --force
+    ```
+  </Accordion>
+
+  <Accordion title="Database Connection Errors">
+    **Problem:** Can't connect to PostgreSQL
+    
+    **Solutions:**
+    1. **Check if PostgreSQL is running:**
+       ```bash
+       # Check status
+       pg_isready -h localhost -p 5432
+       
+       # Start if not running
+       sudo systemctl start postgresql  # Linux
+       brew services start postgresql@15  # macOS
+       ```
+    
+    2. **Verify credentials:**
+       ```bash
+       # Test connection
+       psql -U postgres -h localhost
+       ```
+    
+    3. **Check DATABASE_URL format:**
+       ```env
+       DATABASE_URL="postgresql://username:password@host:port/database"
+       ```
+  </Accordion>
+
+  <Accordion title="Port Already in Use">
+    **Problem:** Port 3000 is already in use
+    
+    **Solutions:**
+    ```bash
+    # Find process using port 3000
+    lsof -ti:3000
+    
+    # Kill the process
+    kill -9 $(lsof -ti:3000)
+    
+    # Or use different port
+    PORT=3001 bun run dev
+    ```
+  </Accordion>
+
+  <Accordion title="Permission Errors">
+    **Problem:** Permission denied errors during installation
+    
+    **Solutions:**
+    ```bash
+    # Fix npm permissions (avoid sudo)
+    npm config set prefix ~/.npm-global
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+    source ~/.bashrc
+    
+    # Or use nvm (recommended)
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+    ```
+  </Accordion>
+
+  <Accordion title="TypeScript Errors">
+    **Problem:** TypeScript compilation errors
+    
+    **Solutions:**
+    ```bash
+    # Clear TypeScript cache
+    rm -rf .next
+    rm -rf node_modules/.cache
+    
+    # Reinstall dependencies
+    rm -rf node_modules
+    bun install
+    
+    # Check TypeScript version
+    npx tsc --version
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Performance Optimization
+
+<CardGroup cols={2}>
+  <Card title="Development Speed" icon="bolt">
+    - Use Bun instead of npm for faster installs
+    - Enable TypeScript incremental compilation
+    - Use SWC for faster builds
+    - Optimize VS Code settings
+  </Card>
+  <Card title="Memory Usage" icon="memory">
+    - Increase Node.js memory limit if needed
+    - Close unnecessary applications
+    - Use `--max-old-space-size=4096` flag
+    - Monitor memory usage with Activity Monitor
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Web App Installation"
+    icon="globe"
+    href="/installation/web-app"
+  >
+    Complete web application setup guide
+  </Card>
+  <Card
+    title="Browser Extension"
+    icon="puzzle-piece"
+    href="/installation/browser-extension"
+  >
+    Install and configure the browser extension
+  </Card>
+  <Card
+    title="Database Setup"
+    icon="database"
+    href="/installation/database-setup"
+  >
+    Detailed database configuration guide
+  </Card>
+  <Card
+    title="Development Guide"
+    icon="code"
+    href="/guides/development-setup"
+  >
+    Advanced development setup and workflows
+  </Card>
+</CardGroup>
+
+---
+
+**Environment ready?** Proceed to the [Web App Installation](/installation/web-app) guide to complete your setup.

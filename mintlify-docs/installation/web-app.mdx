@@ -1,0 +1,229 @@
+---
+title: 'Web Application Installation'
+description: 'Complete guide to installing and setting up the ReplyIQ web application'
+---
+
+## Overview
+
+This guide covers the complete installation process for the ReplyIQ web application, from local development to production deployment.
+
+<Info>
+  **Prerequisites**: Node.js 18+, PostgreSQL database, and optionally Bun 1.0+ for faster package management
+</Info>
+
+## Prerequisites
+
+<CardGroup cols={2}>
+  <Card title="Node.js 18+" icon="node-js">
+    Download from [nodejs.org](https://nodejs.org/) or use a version manager like nvm
+  </Card>
+  <Card title="PostgreSQL" icon="database">
+    Local installation or cloud database (Supabase, Neon, etc.)
+  </Card>
+  <Card title="Bun (Optional)" icon="package">
+    Faster alternative to npm/yarn - [bun.sh](https://bun.sh/)
+  </Card>
+  <Card title="Git" icon="git-alt">
+    For cloning the repository and version control
+  </Card>
+</CardGroup>
+
+## Installation Steps
+
+### 1. Clone the Repository
+
+<CodeGroup>
+
+```bash Git Clone
+git clone https://github.com/alexgutscher26/ReplyIQ.git
+cd ReplyIQ
+```
+
+```bash GitHub CLI
+gh repo clone alexgutscher26/ReplyIQ
+cd ReplyIQ
+```
+
+</CodeGroup>
+
+### 2. Install Dependencies
+
+<Tabs>
+  <Tab title="Bun (Recommended)">
+    ```bash
+    # Install dependencies with Bun
+    bun install
+    
+    # Verify installation
+    bun --version
+    ```
+  </Tab>
+  <Tab title="npm">
+    ```bash
+    # Install dependencies with npm
+    npm install
+    
+    # Verify installation
+    npm --version
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    # Install dependencies with Yarn
+    yarn install
+    
+    # Verify installation
+    yarn --version
+    ```
+  </Tab>
+</Tabs>
+
+### 3. Environment Configuration
+
+<Steps>
+  <Step title="Copy Environment File">
+    ```bash
+    cp .env.example .env.local
+    ```
+  </Step>
+  <Step title="Configure Database">
+    Edit `.env.local` with your database connection:
+    ```env
+    # Database Configuration
+    DATABASE_URL="postgresql://username:password@localhost:5432/replyiq"
+    
+    # Alternative for local development
+    DATABASE_URL="postgresql://postgres:password@localhost:5432/replyiq"
+    ```
+  </Step>
+  <Step title="Configure Authentication">
+    ```env
+    # NextAuth Configuration
+    NEXTAUTH_URL="http://localhost:3000"
+    NEXTAUTH_SECRET="your-secret-key-here"
+    
+    # OAuth Providers (Optional)
+    GOOGLE_CLIENT_ID="your-google-client-id"
+    GOOGLE_CLIENT_SECRET="your-google-client-secret"
+    
+    GITHUB_CLIENT_ID="your-github-client-id"
+    GITHUB_CLIENT_SECRET="your-github-client-secret"
+    ```
+  </Step>
+  <Step title="Configure Payment Providers (Optional)">
+    ```env
+    # Stripe Configuration
+    STRIPE_SECRET_KEY="sk_test_..."
+    STRIPE_PUBLISHABLE_KEY="pk_test_..."
+    STRIPE_WEBHOOK_SECRET="whsec_..."
+    
+    # PayPal Configuration
+    PAYPAL_CLIENT_ID="your-paypal-client-id"
+    PAYPAL_CLIENT_SECRET="your-paypal-client-secret"
+    PAYPAL_ENVIRONMENT="sandbox" # or "production"
+    ```
+  </Step>
+</Steps>
+
+### 4. Database Setup
+
+<Steps>
+  <Step title="Create Database">
+    ```sql
+    -- Connect to PostgreSQL and create database
+    CREATE DATABASE replyiq;
+    CREATE USER replyiq_user WITH PASSWORD 'your_password';
+    GRANT ALL PRIVILEGES ON DATABASE replyiq TO replyiq_user;
+    ```
+  </Step>
+  <Step title="Run Migrations">
+    <Tabs>
+      <Tab title="Bun">
+        ```bash
+        bun run db:migrate
+        ```
+      </Tab>
+      <Tab title="npm">
+        ```bash
+        npm run db:migrate
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Seed Database (Optional)">
+    <Tabs>
+      <Tab title="Bun">
+        ```bash
+        bun run db:seed
+        ```
+      </Tab>
+      <Tab title="npm">
+        ```bash
+        npm run db:seed
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+### 5. Start Development Server
+
+<Tabs>
+  <Tab title="Bun">
+    ```bash
+    # Start development server
+    bun run dev
+    
+    # Server will start on http://localhost:3000
+    ```
+  </Tab>
+  <Tab title="npm">
+    ```bash
+    # Start development server
+    npm run dev
+    
+    # Server will start on http://localhost:3000
+    ```
+  </Tab>
+</Tabs>
+
+<Success>
+  Your ReplyIQ web application should now be running at [http://localhost:3000](http://localhost:3000)
+</Success>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Browser Extension"
+    icon="puzzle-piece"
+    href="/installation/browser-extension"
+  >
+    Install and configure the browser extension
+  </Card>
+  <Card
+    title="AI Configuration"
+    icon="robot"
+    href="/guides/ai-model-setup"
+  >
+    Set up AI models and providers
+  </Card>
+  <Card
+    title="Payment Setup"
+    icon="credit-card"
+    href="/guides/payment-integration"
+  >
+    Configure Stripe and PayPal integration
+  </Card>
+  <Card
+    title="Team Management"
+    icon="users"
+    href="/dashboard/team-management"
+  >
+    Set up team accounts and permissions
+  </Card>
+</CardGroup>
+
+---
+
+Need help with installation? [Contact our support team](mailto:support@replyiq.com) or join our [Discord community](https://discord.gg/replyiq).
