@@ -147,7 +147,8 @@
     {
       "group": "Support",
       "pages": [
-        "support/faq"
+        "support/faq",
+        "support/contact"
       ]
     }
   ],
