@@ -18,6 +18,14 @@ description: 'Welcome to ReplyIQ - The intelligent SaaS platform for AI-powered 
 
 ReplyIQ is an intelligent SaaS platform that empowers users to create engaging, contextually-appropriate responses for social media platforms using advanced AI technology. Designed for social media managers, content creators, and businesses, ReplyIQ streamlines social media engagement across multiple platforms.
 
+<Info>
+  <b>API keys for AI services (OpenAI, Claude, Google, etc.) are required to generate AI-powered replies.</b> See the Quick Start section below for details on obtaining these keys.
+</Info>
+
+<Warning>
+  <b>Security Note:</b> Never share your API keys publicly. Treat them as sensitive credentials.
+</Warning>
+
 <CardGroup cols={2}>
   <Card
     title="AI-Powered Replies"
@@ -86,13 +94,25 @@ Get up and running with ReplyIQ in minutes:
     Create your ReplyIQ account at [replyiq.com](https://replyiq.com)
   </Step>
   <Step title="Configure AI Models">
-    Set up your preferred AI providers (OpenAI, Claude, etc.) in the dashboard
+    Set up your preferred AI providers in the dashboard:
+    <ul>
+      <li>Navigate to <b>Dashboard → Settings → General → AI Model Provider</b></li>
+      <li>Obtain API keys from each provider's website:
+        <ul>
+          <li><b>OpenAI:</b> [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)</li>
+          <li><b>Anthropic (Claude):</b> [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)</li>
+          <li><b>Google AI (Gemini):</b> [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)</li>
+        </ul>
+      </li>
+      <li>Enter your API keys and save your configuration</li>
+    </ul>
   </Step>
   <Step title="Install Browser Extension">
-    Download and install the ReplyIQ browser extension for your preferred browser
+    Download and install the ReplyIQ browser extension for your preferred browser (Chrome, Firefox, Edge).<br/>
+    <b>Note:</b> The extension may not be available in all regions. Check for updates after installation.
   </Step>
   <Step title="Start Generating Replies">
-    Navigate to any social media platform and start generating AI-powered replies!
+    Navigate to any supported social media platform and start generating AI-powered replies!
   </Step>
 </Steps>
 
@@ -177,8 +197,17 @@ graph TB
   >
     Get direct support from our team
   </Card>
+  <Card
+    title="FAQ"
+    icon="question-circle"
+    href="/support/faq"
+  >
+    Frequently asked questions and troubleshooting
+  </Card>
 </CardGroup>
 
 ---
+
+_Last updated: 2024-06-09_
 
 Ready to get started? Check out our [Quick Start Guide](/quickstart) or explore the [API Reference](/api-reference/introduction).
