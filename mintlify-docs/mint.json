@@ -49,11 +49,6 @@
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://blog.replyiq.com"
-    },
-    {
-      "name": "Changelog",
-      "icon": "newspaper",
-      "url": "/changelog"
     }
   ],
   "navigation": [
@@ -62,7 +57,8 @@
       "pages": [
         "introduction",
         "quickstart",
-        "authentication"
+        "authentication",
+        "changelog"
       ]
     },
     {
