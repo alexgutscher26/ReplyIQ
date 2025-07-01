@@ -19,6 +19,20 @@ import {
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Renders a main navigation menu with sidebar components.
+ *
+ * This function maps through the provided `items` array to create a sidebar group
+ * containing labels, menus, and collapsible submenus. It conditionally displays
+ * icons and titles based on the `mini` prop. If an item has nested sub-items,
+ * it renders them as a collapsible section.
+ *
+ * @param items - An array of navigation items with properties for title, URL, icon,
+ *               active status, and optional sub-items.
+ * @param mini - A boolean indicating whether to render the sidebar in mini mode
+ *              (without titles).
+ * @param adminSection - A boolean indicating whether the section is for admins.
+ */
 export default function NavMain({
   items,
   mini = false,
