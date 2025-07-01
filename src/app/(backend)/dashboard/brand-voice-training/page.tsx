@@ -91,6 +91,16 @@ const TONE_ATTRIBUTES = [
   'Playful', 'Direct', 'Warm', 'Expert', 'Approachable'
 ];
 
+/**
+ * Represents a React component for managing brand voice training.
+ *
+ * This component handles the display of brand voices, their training status, and various dialogues for creating,
+ * editing, generating content from, deleting, and viewing analytics of brand voices. It also manages state for
+ * dialogues and filters brand voices based on search queries. The component uses hooks for state management
+ * and API calls to fetch and mutate brand voice data.
+ *
+ * @returns A JSX element representing the Brand Voice Training page with UI components for brand voice management.
+ */
 export default function BrandVoiceTrainingPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [trainingDialogOpen, setTrainingDialogOpen] = useState(false);
@@ -130,31 +140,49 @@ export default function BrandVoiceTrainingPage() {
     },
   });
 
+  /**
+   * Initiates a train mutation with the given brand voice ID.
+   */
   const handleTrain = (id: string) => {
     trainMutation.mutate({ brandVoiceId: id });
   };
 
+  /**
+   * Sets the selected voice and opens the generate dialog.
+   */
   const handleGenerate = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setGenerateDialogOpen(true);
   };
 
+  /**
+   * Sets the selected voice and opens the edit dialog.
+   */
   const handleEdit = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setEditDialogOpen(true);
   };
 
+  /**
+   * Handles deletion of a brand voice after user confirmation.
+   */
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this brand voice? This action cannot be undone.")) {
       deleteMutation.mutate({ id });
     }
   };
 
+  /**
+   * Handles view analytics by setting selected voice and opening analytics dialog.
+   */
   const handleViewAnalytics = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setAnalyticsDialogOpen(true);
   };
 
+  /**
+   * Handles adding training data by setting the selected voice and opening the training dialog.
+   */
   const handleAddTrainingData = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setTrainingDialogOpen(true);
@@ -162,9 +190,6 @@ export default function BrandVoiceTrainingPage() {
 
   /**
    * Filters brand voices by search query (name or industry).
-   * @param brandVoices Array of brand voices
-   * @param search Search string
-   * @returns Filtered array
    */
   function filterBrandVoices(brandVoices: BrandVoice[], search: string): BrandVoice[] {
     return brandVoices.filter((voice) => {
@@ -404,6 +429,21 @@ export default function BrandVoiceTrainingPage() {
   );
 }
 
+/**
+ * Renders a card component for displaying brand voice information and actions.
+ *
+ * This component includes details such as the voice's name, industry, training status,
+ * and provides options to edit, delete, train, generate, view analytics, and add training data.
+ * It also displays visual indicators for the training status and progress.
+ *
+ * @param {BrandVoice} voice - The brand voice object containing all necessary information.
+ * @param {(id: string) => void} onTrain - Callback function to initiate training of the voice.
+ * @param {(voice: BrandVoice) => void} onGenerate - Callback function to generate content using the voice.
+ * @param {(voice: BrandVoice) => void} onEdit - Callback function to edit the voice details.
+ * @param {(id: string) => void} onDelete - Callback function to delete the voice.
+ * @param {(voice: BrandVoice) => void} onViewAnalytics - Callback function to view analytics of the voice.
+ * @param {(voice: BrandVoice) => void} onAddTrainingData - Callback function to add training data for the voice.
+ */
 function BrandVoiceCard({ voice, onTrain, onGenerate, onEdit, onDelete, onViewAnalytics, onAddTrainingData }: {
   voice: BrandVoice;
   onTrain: (id: string) => void;
@@ -432,6 +472,18 @@ function BrandVoiceCard({ voice, onTrain, onGenerate, onEdit, onDelete, onViewAn
   };
 
   // Status dot color
+  /**
+   * Determines the color class based on the provided status and returns a span element with that color.
+   *
+   * The function checks the `status` parameter and assigns a corresponding background color class.
+   * If `status` is "trained", it sets the color to "bg-green-500".
+   * If `status` is "analyzing", it sets the color to "bg-blue-500".
+   * If `status` is "error", it sets the color to "bg-red-500".
+   * For any other status, including null, it defaults to "bg-gray-400".
+   *
+   * @param {string | null} status - The current status of the entity.
+   * @returns A span element with a colored dot and a title attribute set to the status or "draft" if status is null.
+   */
   const statusDot = (status: string | null) => {
     let color = "bg-gray-400";
     if (status === "trained") color = "bg-green-500";
@@ -835,6 +887,17 @@ function TrainingDataDialog({ voice, open, onOpenChange, onSuccess }: {
   );
 }
 
+/**
+ * Generates a content dialog component.
+ *
+ * This function creates a modal dialog that allows users to generate content based on selected options and prompts.
+ * It includes form fields for prompt, content type, platform, and max length. Upon submission, it calls the API to generate content,
+ * handles different response types, and displays the generated content. Users can also copy the generated content.
+ *
+ * @param voice - The brand voice object used for generating content.
+ * @param open - A boolean indicating whether the dialog is open or closed.
+ * @param onOpenChange - A function to handle changes in the dialog's open state.
+ */
 function GenerateContentDialog({ voice, open, onOpenChange }: {
   voice: BrandVoice;
   open: boolean;
@@ -857,6 +920,16 @@ function GenerateContentDialog({ voice, open, onOpenChange }: {
   const [copied, setCopied] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Handles the form submission by generating content and updating the result state.
+   *
+   * It first resets the result and error states, then attempts to generate content using a mutation.
+   * Depending on the response type, it extracts the content from different properties.
+   * If successful, it updates the result state and scrolls the view to the result element smoothly.
+   * If an error occurs during the generation process, it sets the error state with the error message.
+   *
+   * @param data - An object containing form data for content generation.
+   */
   const onSubmit = async (data: GenerateContentForm) => {
     setResult("");
     setError(null);
@@ -864,12 +937,40 @@ function GenerateContentDialog({ voice, open, onOpenChange }: {
     try {
       const res = await generateMutation.mutateAsync(data);
       // Type guard for content property
+      /**
+       * Checks if the given object has a 'content' property that is a string.
+       *
+       * This function verifies if the input is an object, not null, and contains
+       * a 'content' property whose type is a string. It uses type guards to ensure
+       * TypeScript recognizes the object as having the shape `{ content: string }`.
+       *
+       * @param obj - The unknown input to be checked.
+       */
       function hasContent(obj: unknown): obj is { content: string } {
         return typeof obj === 'object' && obj !== null && 'content' in obj && typeof (obj as any).content === 'string';
       }
+      /**
+       * Checks if the given object has a 'text' property that is of type string.
+       *
+       * This function verifies that the input is an object, not null, and contains a 'text' property.
+       * The 'text' property must also be a string for the function to return true.
+       *
+       * @param obj - The object to check for the presence and type of 'text' property.
+       */
       function hasText(obj: unknown): obj is { text: string } {
         return typeof obj === 'object' && obj !== null && 'text' in obj && typeof (obj as any).text === 'string';
       }
+      /**
+       * Checks if the provided object has a `generatedContent` property that is a string.
+       *
+       * This function verifies that the input is an object, not null, and contains
+       * the `generatedContent` property with a string value. It uses type guards to
+       * ensure TypeScript recognizes the object as having the `generatedContent`
+       * property if the check passes.
+       *
+       * @param obj - The object to check for generated content.
+       * @returns A boolean indicating whether the object has valid generated content.
+       */
       function hasGeneratedContent(obj: unknown): obj is { generatedContent: string } {
         return typeof obj === 'object' && obj !== null && 'generatedContent' in obj && typeof (obj as any).generatedContent === 'string';
       }
@@ -890,6 +991,9 @@ function GenerateContentDialog({ voice, open, onOpenChange }: {
     }
   };
 
+  /**
+   * Copies text to clipboard and shows a copied status.
+   */
   const handleCopy = async () => {
     if (result) {
       await navigator.clipboard.writeText(result);
@@ -1002,6 +1106,19 @@ function GenerateContentDialog({ voice, open, onOpenChange }: {
   );
 }
 
+/**
+ * EditBrandVoiceDialog component for updating a brand voice profile.
+ *
+ * This component provides a dialog interface to edit various attributes of a brand voice, including its name,
+ * description, industry, and tone attributes. It uses React Hook Form for form handling and manages state using useState.
+ * The component fetches industry options via an API query and updates the brand voice on submission. Error handling
+ * is implemented to display toast notifications in case of success or failure during the update process.
+ *
+ * @param open - A boolean indicating whether the dialog is open.
+ * @param onOpenChange - A function to handle changes in the dialog's open state.
+ * @param voice - The brand voice object to be edited.
+ * @param onSuccess - A callback function to execute upon successful brand voice update.
+ */
 function EditBrandVoiceDialog({ open, onOpenChange, voice, onSuccess }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -1033,6 +1150,9 @@ function EditBrandVoiceDialog({ open, onOpenChange, voice, onSuccess }: {
       });
     },
   });
+  /**
+   * Updates brand voice data with form inputs and selected tones.
+   */
   const onSubmit = (data: CreateBrandVoiceForm) => {
     updateMutation.mutate({
       ...data,
@@ -1040,6 +1160,9 @@ function EditBrandVoiceDialog({ open, onOpenChange, voice, onSuccess }: {
       toneAttributes: selectedTones,
     });
   };
+  /**
+   * Toggles a specified tone in the selected tones list.
+   */
   const toggleTone = (tone: string) => {
     setSelectedTones(prev =>
       prev.includes(tone)
@@ -1144,6 +1267,9 @@ function EditBrandVoiceDialog({ open, onOpenChange, voice, onSuccess }: {
   );
 }
 
+/**
+ * Renders a dialog displaying analytics information for a brand voice.
+ */
 function AnalyticsDialog({ open, onOpenChange, voice }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
