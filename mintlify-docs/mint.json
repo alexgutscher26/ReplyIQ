@@ -70,8 +70,7 @@
       "pages": [
         "installation/web-app",
         "installation/browser-extension",
-        "installation/environment-setup",
-        "installation/database-setup"
+        "installation/environment-setup"
       ]
     },
     {
