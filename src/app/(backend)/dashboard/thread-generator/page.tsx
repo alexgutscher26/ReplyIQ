@@ -1,6 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +16,9 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Loader2, MessageSquare, Copy, Check } from "lucide-react";
+import { Loader2, MessageSquare, Copy, Check, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ThreadResponse {
   thread: string[];
@@ -39,6 +42,12 @@ export default function ThreadGeneratorPage() {
   const [error, setError] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [loadedFromExtension, setLoadedFromExtension] = useState(false);
+  const [showError, setShowError] = useState(true);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editedPosts, setEditedPosts] = useState<string[]>([]);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const topicInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Load thread data transferred from extension
   useEffect(() => {
@@ -152,9 +161,43 @@ export default function ThreadGeneratorPage() {
     }
   };
 
+  const resetAll = () => {
+    setTopic("");
+    setPlatform("twitter");
+    setThreadLength(5);
+    setPostLength("short");
+    setTone("engaging");
+    setThread([]);
+    setEditedPosts([]);
+    setError(null);
+    setShowError(true);
+    setCopiedIndex(null);
+  };
+
+  const handleRegenerate = async () => {
+    setIsRegenerating(true);
+    await handleGenerate();
+    setIsRegenerating(false);
+  };
+
+  // Inline editing
+  useEffect(() => {
+    setEditedPosts(thread);
+  }, [thread]);
+
+  const handleEditPost = (value: string, idx: number) => {
+    setEditedPosts((prev) => prev.map((p, i) => (i === idx ? value : p)));
+  };
+
+  // Reading time estimate
+  const getReadingTime = () => {
+    const totalWords = editedPosts.reduce((acc, post) => acc + post.split(/\s+/).length, 0);
+    return Math.max(1, Math.round(totalWords / 200)); // 200 wpm
+  };
+
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="grid gap-6 max-w-4xl mx-auto">
+    <div className="flex min-h-[60vh] items-center justify-center py-10 px-2">
+      <div className="w-full max-w-xl space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -172,105 +215,146 @@ export default function ThreadGeneratorPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label htmlFor="topic" className="text-sm font-medium">
+          <CardContent>
+            <div className="mb-4">
+              <Label htmlFor="topic" className="text-sm font-medium flex items-center gap-2">
                 Thread Topic
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="ml-1 size-4 cursor-pointer text-muted-foreground" aria-label="Thread topic info" />
+                    </TooltipTrigger>
+                    <TooltipContent>What is your thread about?</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </Label>
               <Textarea
                 id="topic"
+                ref={topicInputRef}
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="What would you like to create a thread about? (e.g., 'The importance of AI in modern business')"
                 rows={3}
                 className="mt-1 resize-y"
                 disabled={loading}
+                aria-describedby="topic-char-count"
+              />
+              <span id="topic-char-count" className="block mt-1 text-xs text-muted-foreground text-right">
+                {topic.length} chars
+              </span>
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="platform" className="text-sm font-medium flex items-center gap-2">
+                Platform
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="ml-1 size-4 cursor-pointer text-muted-foreground" aria-label="Platform info" />
+                    </TooltipTrigger>
+                    <TooltipContent>Choose where you'll post this thread.</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
+              <Select value={platform} onValueChange={(value: Platform) => setPlatform(value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select platform" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="twitter">Twitter/X</SelectItem>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="linkedin">LinkedIn</SelectItem>
+                  <SelectItem value="youtube">YouTube</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="mb-4">
+              <Label htmlFor="threadLength" className="text-sm font-medium flex items-center gap-2">
+                Thread Length (posts)
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="ml-1 size-4 cursor-pointer text-muted-foreground" aria-label="Thread length info" />
+                    </TooltipTrigger>
+                    <TooltipContent>How many posts in the thread? (2-20)</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
+              <Input
+                id="threadLength"
+                type="number"
+                min={2}
+                max={20}
+                value={threadLength}
+                onChange={(e) => setThreadLength(Number.parseInt(e.target.value) || 5)}
+                className="mt-1"
+                disabled={loading}
+                placeholder="5"
+                aria-describedby="thread-length-info"
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <Label htmlFor="platform" className="text-sm font-medium">
-                  Platform
-                </Label>
-                <Select value={platform} onValueChange={(value: Platform) => setPlatform(value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="twitter">Twitter/X</SelectItem>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="linkedin">LinkedIn</SelectItem>
-                    <SelectItem value="youtube">YouTube</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="threadLength" className="text-sm font-medium">
-                  Thread Length (posts)
-                </Label>
-                <Input
-                  id="threadLength"
-                  type="number"
-                  min={2}
-                  max={20}
-                  value={threadLength}
-                  onChange={(e) => setThreadLength(Number.parseInt(e.target.value) || 5)}
-                  className="mt-1"
-                  disabled={loading}
-                  placeholder="5"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="postLength" className="text-sm font-medium">
-                  Post Length
-                </Label>
-                <Select value={postLength} onValueChange={(value: typeof postLength) => setPostLength(value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select post length" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="short">Short (50-100 words)</SelectItem>
-                    <SelectItem value="medium">Medium (100-200 words)</SelectItem>
-                    <SelectItem value="long">Long (200-500 words)</SelectItem>
-                    <SelectItem value="x-pro">X Pro (500+ words)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="tone" className="text-sm font-medium">
-                  Tone
-                </Label>
-                <Select value={tone} onValueChange={(value: typeof tone) => setTone(value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select tone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="casual">Casual</SelectItem>
-                    <SelectItem value="informative">Informative</SelectItem>
-                    <SelectItem value="engaging">Engaging</SelectItem>
-                    <SelectItem value="humorous">Humorous</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="mb-4">
+              <Label htmlFor="postLength" className="text-sm font-medium flex items-center gap-2">
+                Post Length
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="ml-1 size-4 cursor-pointer text-muted-foreground" aria-label="Post length info" />
+                    </TooltipTrigger>
+                    <TooltipContent>How long should each post be?</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
+              <Select value={postLength} onValueChange={(value: typeof postLength) => setPostLength(value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select post length" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="short">Short (50-100 words)</SelectItem>
+                  <SelectItem value="medium">Medium (100-200 words)</SelectItem>
+                  <SelectItem value="long">Long (200-500 words)</SelectItem>
+                  <SelectItem value="x-pro">X Pro (500+ words)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-
-            {error && (
-              <div className="rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-destructive text-sm">
-                {error}
+            <div className="mb-4">
+              <Label htmlFor="tone" className="text-sm font-medium flex items-center gap-2">
+                Tone
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="ml-1 size-4 cursor-pointer text-muted-foreground" aria-label="Tone info" />
+                    </TooltipTrigger>
+                    <TooltipContent>Choose the style of your thread.</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
+              <Select value={tone} onValueChange={(value: typeof tone) => setTone(value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select tone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="professional">Professional</SelectItem>
+                  <SelectItem value="casual">Casual</SelectItem>
+                  <SelectItem value="informative">Informative</SelectItem>
+                  <SelectItem value="engaging">Engaging</SelectItem>
+                  <SelectItem value="humorous">Humorous</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {error && showError && (
+              <div className="mb-4 rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-destructive text-sm flex items-center justify-between" role="alert">
+                <span>{error}</span>
+                <Button variant="ghost" size="sm" onClick={() => setShowError(false)} aria-label="Dismiss error">×</Button>
               </div>
             )}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col items-end gap-2">
             <Button
               onClick={handleGenerate}
               disabled={loading || topic.length < 3}
               className="w-full"
               size="lg"
+              aria-label="Generate Thread"
             >
               {loading ? (
                 <>
@@ -280,17 +364,25 @@ export default function ThreadGeneratorPage() {
                 "Generate Thread"
               )}
             </Button>
+            <Button
+              onClick={resetAll}
+              disabled={loading && thread.length === 0}
+              variant="secondary"
+              aria-label="Clear"
+              className="w-full"
+            >
+              Clear
+            </Button>
           </CardFooter>
         </Card>
-
         {thread.length > 0 && (
-          <Card className="shadow-lg">
+          <Card className="shadow-lg mt-8">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl">Generated Thread</CardTitle>
                   <CardDescription>
-                    {thread.length} posts for {platform} • {tone} tone
+                    {thread.length} posts for {platform} • {tone} tone • ~{getReadingTime()} min read
                   </CardDescription>
                 </div>
                 <Button
@@ -298,6 +390,7 @@ export default function ThreadGeneratorPage() {
                   size="sm"
                   onClick={copyAllThread}
                   className="flex items-center gap-2"
+                  aria-label="Copy All Posts"
                 >
                   {copiedIndex === -1 ? (
                     <>
@@ -315,69 +408,95 @@ export default function ThreadGeneratorPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {thread.map((post, index) => (
-                  <div
-                    key={index}
-                    className="relative bg-muted/50 rounded-lg p-4 border border-border"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground text-xs font-bold rounded-full">
-                            {index + 1}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {platform === 'twitter' ? (
-                              postLength === 'short' ? `${post.length}/280 chars` :
-                              postLength === 'medium' ? `${post.length}/2,200 chars` :
-                              postLength === 'long' ? `${post.length}/4,000 chars` :
-                              `${post.length}/25,000 chars (X Pro)`
-                            ) : platform === 'instagram' ? (
-                              postLength === 'short' ? `${post.length}/1,000 chars` :
-                              postLength === 'medium' ? `${post.length}/1,500 chars` :
-                              postLength === 'long' ? `${post.length}/2,200 chars` :
-                              `${post.length}/2,200 chars (X Pro)`
-                            ) : platform === 'linkedin' ? (
-                              postLength === 'short' ? `${post.length}/1,300 chars` :
-                              postLength === 'medium' ? `${post.length}/2,000 chars` :
-                              postLength === 'long' ? `${post.length}/3,000 chars` :
-                              `${post.length}/3,000 chars (X Pro)`
-                            ) : platform === 'youtube' ? (
-                              postLength === 'short' ? `${post.length}/2,000 chars` :
-                              postLength === 'medium' ? `${post.length}/3,000 chars` :
-                              postLength === 'long' ? `${post.length}/5,000 chars` :
-                              `${post.length}/5,000 chars (X Pro)`
-                            ) : `${post.length} chars`}
-                          </span>
-                        </div>
-                        <div className="text-sm leading-relaxed">
-                          {post.split('\n\n').map((paragraph, pIndex) => (
-                            <p key={pIndex} className={pIndex > 0 ? "mt-3" : ""}>
-                              {paragraph.split('\n').map((line, lIndex) => (
-                                <span key={lIndex}>
-                                  {line}
-                                  {lIndex < paragraph.split('\n').length - 1 && <br />}
-                                </span>
+                <AnimatePresence>
+                  {editedPosts.map((post, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.2, delay: index * 0.05 }}
+                      className="relative bg-muted/50 rounded-lg p-4 border border-border"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-primary-foreground text-xs font-bold rounded-full">
+                              {index + 1}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {platform === 'twitter' ? (
+                                postLength === 'short' ? `${post.length}/280 chars` :
+                                postLength === 'medium' ? `${post.length}/2,200 chars` :
+                                postLength === 'long' ? `${post.length}/4,000 chars` :
+                                `${post.length}/25,000 chars (X Pro)`
+                              ) : platform === 'instagram' ? (
+                                postLength === 'short' ? `${post.length}/1,000 chars` :
+                                postLength === 'medium' ? `${post.length}/1,500 chars` :
+                                postLength === 'long' ? `${post.length}/2,200 chars` :
+                                `${post.length}/2,200 chars (X Pro)`
+                              ) : platform === 'linkedin' ? (
+                                postLength === 'short' ? `${post.length}/1,300 chars` :
+                                postLength === 'medium' ? `${post.length}/2,000 chars` :
+                                postLength === 'long' ? `${post.length}/3,000 chars` :
+                                `${post.length}/3,000 chars (X Pro)`
+                              ) : platform === 'youtube' ? (
+                                postLength === 'short' ? `${post.length}/2,000 chars` :
+                                postLength === 'medium' ? `${post.length}/3,000 chars` :
+                                postLength === 'long' ? `${post.length}/5,000 chars` :
+                                `${post.length}/5,000 chars (X Pro)`
+                              ) : `${post.length} chars`}
+                            </span>
+                            <span className="ml-2 text-xs text-muted-foreground">{post.split(/\s+/).length} words</span>
+                          </div>
+                          {editingIndex === index ? (
+                            <Textarea
+                              value={post}
+                              onChange={e => handleEditPost(e.target.value, index)}
+                              onBlur={() => setEditingIndex(null)}
+                              autoFocus
+                              className="mb-2"
+                              aria-label={`Edit post ${index + 1}`}
+                            />
+                          ) : (
+                            <div
+                              className="text-sm leading-relaxed cursor-pointer"
+                              tabIndex={0}
+                              role="button"
+                              aria-label={`Edit post ${index + 1}`}
+                              onClick={() => setEditingIndex(index)}
+                              onKeyDown={e => { if (e.key === 'Enter') setEditingIndex(index); }}
+                            >
+                              {post.split('\n\n').map((paragraph, pIndex) => (
+                                <p key={pIndex} className={pIndex > 0 ? "mt-3" : ""}>
+                                  {paragraph.split('\n').map((line, lIndex) => (
+                                    <span key={lIndex}>
+                                      {line}
+                                      {lIndex < paragraph.split('\n').length - 1 && <br />}
+                                    </span>
+                                  ))}
+                                </p>
                               ))}
-                            </p>
-                          ))}
+                            </div>
+                          )}
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyToClipboard(post, index)}
+                          className="shrink-0"
+                          aria-label={`Copy post ${index + 1}`}
+                        >
+                          {copiedIndex === index ? (
+                            <Check className="size-4" />
+                          ) : (
+                            <Copy className="size-4" />
+                          )}
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(post, index)}
-                        className="shrink-0"
-                      >
-                        {copiedIndex === index ? (
-                          <Check className="size-4" />
-                        ) : (
-                          <Copy className="size-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             </CardContent>
           </Card>

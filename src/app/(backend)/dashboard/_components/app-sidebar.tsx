@@ -91,12 +91,12 @@ const data = {
       icon: Brain,
       description: "Analyze emotional tone before responding",
     },
-    {
-      title: "Brand Voice Training",
-      url: "/dashboard/brand-voice-training",
-      icon: Mic,
-      description: "Train AI on your unique brand voice",
-    },
+    // { TODO: Add back in later NOTE: This is not working yet
+    //   title: "Brand Voice Training",
+    //   url: "/dashboard/brand-voice-training",
+    //   icon: Mic,
+    //   description: "Train AI on your unique brand voice",
+    // },
     {
       title: "Reports",
       url: "/dashboard/reports",

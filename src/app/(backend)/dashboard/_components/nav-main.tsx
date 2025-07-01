@@ -21,6 +21,8 @@ import Link from "next/link";
 
 export default function NavMain({
   items,
+  mini = false,
+  adminSection = false,
 }: {
   items: {
     title: string;
@@ -32,10 +34,12 @@ export default function NavMain({
       url: string;
     }[];
   }[];
+  mini?: boolean;
+  adminSection?: boolean;
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{adminSection ? "Admin Tools" : "Platform"}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
@@ -43,7 +47,7 @@ export default function NavMain({
               <SidebarMenuButton asChild tooltip={item.title}>
                 <Link href={item.url}>
                   <item.icon />
-                  <span>{item.title}</span>
+                  {!mini && <span>{item.title}</span>}
                 </Link>
               </SidebarMenuButton>
               {item.items?.length ? (

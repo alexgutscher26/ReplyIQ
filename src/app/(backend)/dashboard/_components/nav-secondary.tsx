@@ -12,6 +12,7 @@ import SupportDialog from "./support-dialog";
 
 export default function NavSecondary({
   items,
+  mini = false,
   ...props
 }: {
   items: {
@@ -20,6 +21,7 @@ export default function NavSecondary({
     icon: LucideIcon;
     dialog?: boolean;
   }[];
+  mini?: boolean;
 } & ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const [supportOpen, setSupportOpen] = useState(false);
 
@@ -36,13 +38,13 @@ export default function NavSecondary({
                     onClick={() => setSupportOpen(true)}
                   >
                     <item.icon />
-                    <span>{item.title}</span>
+                    {!mini && <span>{item.title}</span>}
                   </SidebarMenuButton>
                 ) : (
                   <SidebarMenuButton asChild size="sm">
                     <Link href={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      {!mini && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
                 )}

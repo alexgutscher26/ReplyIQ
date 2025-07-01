@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -11,18 +13,61 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Loader2, Hash } from "lucide-react";
+import { Loader2, Hash, Copy, Check, Save } from "lucide-react";
+
+// --- New: HashtagChip sub-component ---
+interface HashtagChipProps {
+  tag: string;
+  onCopy: (tag: string) => void;
+  copied: boolean;
+  onSave: (tag: string) => void;
+  saved: boolean;
+}
+
+const HashtagChip = ({ tag, onCopy, copied, onSave, saved }: HashtagChipProps) => (
+  <span className="bg-muted px-2 py-1 rounded text-sm font-mono border border-border flex items-center gap-1" tabIndex={0} aria-label={`Hashtag ${tag}`}> 
+    {tag}
+    <button
+      className="ml-1 text-primary hover:underline"
+      onClick={() => onCopy(tag)}
+      aria-label={`Copy hashtag ${tag}`}
+      tabIndex={0}
+    >
+      {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+    </button>
+    <button
+      className="ml-1 text-green-600 hover:underline"
+      onClick={() => onSave(tag)}
+      aria-label={`Save hashtag ${tag}`}
+      tabIndex={0}
+    >
+      {saved ? <Check className="size-3" /> : <Save className="size-3" />}
+    </button>
+  </span>
+);
+// --- End HashtagChip ---
 
 export default function HashtagGeneratorPage() {
   const [content, setContent] = useState("");
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedTag, setCopiedTag] = useState<string | null>(null);
+  const [copiedAll, setCopiedAll] = useState(false);
+  const [savedTags, setSavedTags] = useState<string[]>([]);
+
+  // Load saved hashtags from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("savedHashtags");
+    if (saved) setSavedTags(JSON.parse(saved));
+  }, []);
 
   const handleGenerate = async () => {
     setLoading(true);
     setError(null);
     setHashtags([]);
+    setCopiedAll(false);
+    setCopiedTag(null);
     try {
       const res = await fetch("/api/ai/hashtags", {
         method: "POST",
@@ -51,6 +96,34 @@ export default function HashtagGeneratorPage() {
     }
   };
 
+  const handleCopyTag = async (tag: string) => {
+    try {
+      await navigator.clipboard.writeText(tag);
+      setCopiedTag(tag);
+      setTimeout(() => setCopiedTag(null), 1500);
+    } catch {}
+  };
+
+  const handleCopyAll = async () => {
+    try {
+      await navigator.clipboard.writeText(hashtags.join(" "));
+      setCopiedAll(true);
+      setTimeout(() => setCopiedAll(false), 1500);
+    } catch {}
+  };
+
+  const handleSaveTag = (tag: string) => {
+    if (!savedTags.includes(tag)) {
+      const updated = [...savedTags, tag];
+      setSavedTags(updated);
+      localStorage.setItem("savedHashtags", JSON.stringify(updated));
+    }
+  };
+
+  // --- Analytics ---
+  const hashtagCount = hashtags.length;
+  const totalChars = hashtags.reduce((acc, tag) => acc + tag.length, 0);
+
   return (
     <div className="flex min-h-[60vh] items-center justify-center py-10 px-2">
       <Card className="w-full max-w-xl shadow-lg">
@@ -73,24 +146,62 @@ export default function HashtagGeneratorPage() {
             rows={5}
             className="mb-4 resize-y"
             disabled={loading}
+            aria-label="Post content input"
           />
           {error && (
-            <div className="mb-4 rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-destructive text-sm">
+            <div className="mb-4 rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-destructive text-sm flex items-center justify-between">
               {error}
+              <Button variant="ghost" size="sm" onClick={handleGenerate} aria-label="Retry">
+                Retry
+              </Button>
             </div>
           )}
-          {hashtags.length > 0 && (
+          {loading && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {[...Array(6)].map((_, i) => (
+                <span key={i} className="bg-muted px-2 py-1 rounded text-sm font-mono border border-border opacity-50 animate-pulse w-20 h-6" />
+              ))}
+            </div>
+          )}
+          {hashtags.length > 0 && !loading && (
             <div className="mt-6">
-              <h2 className="font-semibold mb-2">Suggested Hashtags:</h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-semibold">Suggested Hashtags:</h2>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyAll}
+                    aria-label="Copy all hashtags"
+                  >
+                    {copiedAll ? <Check className="size-4" /> : <Copy className="size-4" />} Copy All
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      hashtags.forEach(handleSaveTag);
+                    }}
+                    aria-label="Save all hashtags"
+                  >
+                    <Save className="size-4" /> Save All
+                  </Button>
+                </div>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {hashtags.map((tag) => (
-                  <span
+                  <HashtagChip
                     key={tag}
-                    className="bg-muted px-2 py-1 rounded text-sm font-mono border border-border"
-                  >
-                    {tag}
-                  </span>
+                    tag={tag}
+                    onCopy={handleCopyTag}
+                    copied={copiedTag === tag}
+                    onSave={handleSaveTag}
+                    saved={savedTags.includes(tag)}
+                  />
                 ))}
+              </div>
+              <div className="mt-2 text-xs text-muted-foreground">
+                {hashtagCount} hashtags • {totalChars} total characters
               </div>
             </div>
           )}
@@ -101,6 +212,7 @@ export default function HashtagGeneratorPage() {
             disabled={loading || content.length < 5}
             className="w-full"
             size="lg"
+            aria-label="Generate hashtags"
           >
             {loading ? (
               <>
