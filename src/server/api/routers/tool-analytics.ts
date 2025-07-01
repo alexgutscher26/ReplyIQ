@@ -5,6 +5,12 @@ import { TRPCError } from "@trpc/server";
 import { and, eq, gte, lte, desc, count, sql } from "drizzle-orm";
 import { z } from "zod";
 
+// Declare global type for alert cache
+declare global {
+  // eslint-disable-next-line no-var
+  var __performanceAlertCache: Record<string, number> | undefined;
+}
+
 export const toolAnalyticsRouter = createTRPCRouter({
   // Track tool usage - protected for all users
   trackUsage: protectedProcedure
@@ -267,6 +273,23 @@ export const toolAnalyticsRouter = createTRPCRouter({
 
   // Get overview stats for admin dashboard
   getOverviewStats: adminProcedure.query(async ({ ctx }) => {
+    // In-memory alert cache to prevent spamming (per process)
+    const globalWithCache = globalThis as typeof globalThis & { __performanceAlertCache?: Record<string, number> };
+    if (!globalWithCache.__performanceAlertCache) {
+      globalWithCache.__performanceAlertCache = {};
+    }
+    const alertCache = globalWithCache.__performanceAlertCache;
+
+    // Fetch performance alert settings
+    const settingsRow = await ctx.db.query.settings.findFirst();
+    const performanceAlerts = settingsRow?.general?.performanceAlerts ?? {
+      enabled: true,
+      successRateThreshold: 85,
+      growthThreshold: -10,
+      errorRateThreshold: 5,
+    };
+    const alertsEnabled = performanceAlerts.enabled !== false;
+
     const last24h = new Date();
     last24h.setHours(last24h.getHours() - 24);
 
@@ -386,6 +409,68 @@ export const toolAnalyticsRouter = createTRPCRouter({
     const prevUsage30d = Number(prev30dCount[0]?.count ?? 0);
     const prevActiveUsers7dCount = Number(prevActiveUsers7d[0]?.count ?? 0);
 
+    // Calculate error rate for last 30 days
+    const errorRate = totalCurrentActions > 0 ? (errorCurrentActions / totalCurrentActions) * 100 : 0;
+    // Calculate usage growth (last 30d vs prev 30d)
+    const usageGrowth = calculateTrend(usage30d, prevUsage30d);
+
+    // Helper to send alert if not sent in last 24h
+    async function maybeSendAlert(metric: string, value: number, threshold: number, direction: 'below' | 'above', period: string, extra?: string) {
+      if (!alertsEnabled) return;
+      const cacheKey = `${metric}-${direction}`;
+      const now = Date.now();
+      const lastSent = alertCache[cacheKey] ?? 0;
+      if (now - lastSent < 24 * 60 * 60 * 1000) return; // 24h
+      alertCache[cacheKey] = now;
+      // Compose email
+      const siteName = settingsRow?.general?.site?.name ?? 'AI Social Replier';
+      const mailConfiguration = settingsRow?.general?.mail;
+      if (!mailConfiguration?.apiKey) return;
+      const resend = new (await import('resend')).Resend(mailConfiguration.apiKey);
+      const subject = `[${siteName}] Performance Alert: ${metric} ${direction === 'below' ? 'Below' : 'Above'} Threshold`;
+      const text = `Performance Alert for ${siteName}\n\nMetric: ${metric}\nCurrent Value: ${value.toFixed(2)}%\nThreshold: ${threshold}% (${direction})\nPeriod: ${period}\n${extra ? `\n${extra}\n` : ''}\nThis alert was generated automatically by the analytics system.`;
+      await resend.emails.send({
+        from: `${siteName} <${mailConfiguration.fromEmail}>`,
+        to: `${mailConfiguration.toName} <${mailConfiguration.toEmail}>`,
+        subject,
+        text,
+      });
+    }
+
+    // Check thresholds and send alerts if needed
+    if (alertsEnabled) {
+      if (currentSuccessRate < performanceAlerts.successRateThreshold) {
+        await maybeSendAlert(
+          'Success Rate',
+          currentSuccessRate,
+          performanceAlerts.successRateThreshold,
+          'below',
+          'last 30 days',
+          'The success rate has dropped below the configured threshold.'
+        );
+      }
+      if (usageGrowth < performanceAlerts.growthThreshold) {
+        await maybeSendAlert(
+          'Usage Growth',
+          usageGrowth,
+          performanceAlerts.growthThreshold,
+          'below',
+          'last 30 days',
+          'Usage growth is negative and below the configured threshold.'
+        );
+      }
+      if (errorRate > performanceAlerts.errorRateThreshold) {
+        await maybeSendAlert(
+          'Error Rate',
+          errorRate,
+          performanceAlerts.errorRateThreshold,
+          'above',
+          'last 30 days',
+          'The error rate has exceeded the configured threshold.'
+        );
+      }
+    }
+
     return {
       totalUsage,
       usage24h,
@@ -409,4 +494,56 @@ export const toolAnalyticsRouter = createTRPCRouter({
       } : null,
     };
   }),
+
+  // Send performance alert email - admin only
+  sendPerformanceAlert: adminProcedure
+    .input(z.object({
+      type: z.string(), // e.g., 'success-rate', 'growth', 'error-rate'
+      message: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Fetch mail configuration from settings
+      const siteSettings = await ctx.db.query.settings.findFirst();
+      const mailConfiguration = siteSettings?.general?.mail;
+      if (!mailConfiguration?.apiKey) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Mail configuration is missing or incomplete.",
+        });
+      }
+      const resend = new (await import("resend")).Resend(mailConfiguration.apiKey);
+      const alertTypeMap: Record<string, string> = {
+        "success-rate": "Success Rate Threshold Exceeded",
+        "growth": "Usage Growth Alert",
+        "error-rate": "Error Rate Alert",
+      };
+      const subject = alertTypeMap[input.type] ?? `Performance Alert: ${input.type}`;
+      const text = input.message ?? `A performance alert was triggered: ${subject}`;
+      const from = `${siteSettings?.general?.site?.name ?? "AI Social Replier"} <${mailConfiguration.fromEmail}>`;
+      const to = `${mailConfiguration.toName} <${mailConfiguration.toEmail}>`;
+      try {
+        const { data, error } = await resend.emails.send({
+          from,
+          to,
+          subject,
+          text,
+        });
+        if (error) {
+          throw new Error(error.message ?? "Unknown error from Resend");
+        }
+        return {
+          success: true,
+          message: `Performance alert sent successfully. Reference ID: ${data?.id}`,
+        };
+      } catch (error: unknown) {
+        let message = "Failed to send performance alert.";
+        if (typeof error === "object" && error && "message" in error && typeof (error as { message?: unknown }).message === "string") {
+          message = (error as { message: string }).message;
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
 }); 

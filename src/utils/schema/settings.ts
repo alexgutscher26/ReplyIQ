@@ -279,6 +279,12 @@ export const generalSettingsSchema = z.object({
   storage: storageProviderSettingsSchema.default({}).optional(),
   download: downloadExtensionSchema.default({}).optional(),
   mail: mailConfigurationSchema.default({}).optional(),
+  performanceAlerts: z.object({
+    successRateThreshold: z.preprocess((val) => Number(val), z.number().min(0).max(100)).default(85),
+    growthThreshold: z.preprocess((val) => Number(val), z.number().min(-100).max(100)).default(-10),
+    errorRateThreshold: z.preprocess((val) => Number(val), z.number().min(0).max(100)).default(5),
+    enabled: z.boolean().default(true),
+  }).default({}),
 });
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>;
 

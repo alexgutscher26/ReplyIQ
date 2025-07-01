@@ -10,7 +10,6 @@ import { db } from "@/server/db";
 import { user } from "@/server/db/schema/auth-schema";
 import { settings } from "@/server/db/schema/settings-schema";
 import { getAIInstance, getSession, getStorageInstance } from "@/server/utils";
-import { getBaseUrl } from "@/utils";
 import {
   accountSettingsSchema,
   type AIModel,
@@ -34,6 +33,14 @@ import { generateText } from "ai";
 import { eq } from "drizzle-orm";
 import { reset, seed } from "drizzle-seed";
 import { Resend } from "resend";
+
+// Helper for default performanceAlerts
+const defaultPerformanceAlerts = {
+  successRateThreshold: 85,
+  growthThreshold: -10,
+  errorRateThreshold: 5,
+  enabled: true,
+};
 
 export const settingsRouter = createTRPCRouter({
   account: protectedProcedure.query(async ({ ctx }) => {
@@ -91,17 +98,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             site: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   socialAuthProviders: publicProcedure.query(async ({
@@ -130,20 +138,19 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             auth: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
-      // Refresh the config store after update
       await getAuthSettingsFromDB();
-
       return result;
     }),
   aiModel: adminProcedure.query(async ({ ctx }) => {
@@ -157,17 +164,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             ai: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   paymentProvider: adminProcedure.query(async ({ ctx }) => {
@@ -188,17 +196,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             payment: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   webhookSecretForPaymentProvider: publicProcedure.query(async ({ ctx }) => {
@@ -219,35 +228,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
-      input.endpoint =
-        ctx.payments.provider.key === "stripe"
-          ? `${getBaseUrl()}/api/webhook/stripe`
-          : `${getBaseUrl()}/api/webhook/paypal`;
-
-      if (input.mode === "auto") {
-        const webhook = await ctx.payments.instance.createWebhook({
-          endpoint: input.endpoint ?? "",
-          events:
-            ctx.payments.provider.key === "stripe"
-              ? (input.stripeEvents?.map((event) => event.value) ?? [])
-              : (input.paypalEvents?.map((event) => event.value) ?? []),
-        });
-
-        input.secret = webhook.secret;
-        input.endpoint = webhook.url;
-      }
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             webhook: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   storageProvider: adminProcedure.query(async ({ ctx }) => {
@@ -263,17 +255,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             storage: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   storageProviderKey: publicProcedure.query(async ({ ctx }) => {
@@ -291,17 +284,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             download: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   mailConfiguration: adminProcedure.query(async ({ ctx }) => {
@@ -315,17 +309,18 @@ export const settingsRouter = createTRPCRouter({
       const existingSettings =
         (await ctx.db.query.settings.findFirst()) ??
         (await ctx.db.insert(settings).values({}).returning())[0];
-
+      const performanceAlerts =
+        existingSettings?.general?.performanceAlerts ?? defaultPerformanceAlerts;
       const result = await ctx.db
         .update(settings)
         .set({
           general: {
             ...existingSettings?.general,
             mail: input,
+            performanceAlerts,
           },
         })
         .where(eq(settings.id, existingSettings!.id));
-
       return result;
     }),
   testAiConnection: adminProcedure

@@ -6,10 +6,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/components/ui/chart";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -27,24 +30,10 @@ import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { api } from "@/trpc/react";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-} from "recharts";
+
 import {
   TrendingUp,
   TrendingDown,
@@ -73,14 +62,12 @@ import {
   CheckCircle2,
   XCircle,
 
-  TrendingUp as Compare,
   Settings,
   Bell,
   FileText,
   Download as Export,
   Eye,
   Lightbulb,
-  Star,
   Gauge,
   Grid3X3,
   Mail,
@@ -106,11 +93,6 @@ interface PerformanceData {
   successRate?: number;
 }
 
-interface ComparisonData extends ToolUsageData {
-  previousCount: number;
-  growth: number;
-}
-
 interface UserData {
   userId: string;
   userName: string | null;
@@ -119,48 +101,8 @@ interface UserData {
   totalDuration: number;
 }
 
-interface CategoryData {
-  category: string;
-  count: number;
-}
-
-
-
-// Enhanced chart configuration
-const chartConfig = {
-  usage: {
-    label: "Usage",
-    color: "hsl(var(--chart-1))",
-  },
-  users: {
-    label: "Users",
-    color: "hsl(var(--chart-2))",
-  },
-  success: {
-    label: "Success Rate",
-    color: "hsl(var(--chart-3))",
-  },
-  performance: {
-    label: "Performance",
-    color: "hsl(var(--chart-4))",
-  },
-  'ai-generation': {
-    label: "AI Generation",
-    color: "hsl(var(--chart-1))",
-  },
-  'analysis': {
-    label: "Analysis",
-    color: "hsl(var(--chart-2))",
-  },
-  'translation': {
-    label: "Translation",
-    color: "hsl(var(--chart-3))",
-  },
-  'enhancement': {
-    label: "Enhancement",
-    color: "hsl(var(--chart-4))",
-  },
-} satisfies ChartConfig;
+// 1. Define the type
+type ToolFilter = { type: 'low-usage' } | null;
 
 // Enhanced tool icon mapping with more visual variety
 const getToolIcon = (toolName: string) => {
@@ -186,6 +128,8 @@ const getToolIcon = (toolName: string) => {
       return <Activity className={iconClass} />;
   }
 };
+
+
 
 // Enhanced trend indicator with more detailed analysis
 const getTrendIndicator = (growth: number, size: "sm" | "md" | "lg" = "sm") => {
@@ -221,7 +165,7 @@ function OverviewCards() {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="relative">
+          <Card key={i}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-4 w-4" />
@@ -278,13 +222,10 @@ function OverviewCards() {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card, index) => (
-        <Card key={index} className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300">
-          <div className={`absolute top-0 right-0 w-20 h-20 ${card.bgColor} rounded-full -translate-y-6 translate-x-6 opacity-20`} />
+        <Card key={index}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-            <div className={`p-1 rounded-lg ${card.bgColor}`}>
-              <card.icon className={`h-4 w-4 ${card.color}`} />
-            </div>
+            <card.icon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">
@@ -311,17 +252,27 @@ function OverviewCards() {
   );
 }
 
-// Enhanced tool usage chart with multiple visualization options
+// Enhanced tool usage table
 function ToolUsageChart({ 
-  period, 
-  chartType, 
-  onChartTypeChange
+  period,
+  onExport,
+  toolFilter,
+  setToolFilter
 }: { 
   period: "7d" | "30d" | "90d" | "1y"; 
-  chartType: "bar" | "line" | "area";
-  onChartTypeChange: (type: "bar" | "line" | "area") => void;
+  onExport: () => void;
+  toolFilter: ToolFilter;
+  setToolFilter: React.Dispatch<React.SetStateAction<ToolFilter>>;
 }) {
   const { data: stats, isLoading } = api.toolAnalytics.getToolUsageStats.useQuery({ period });
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  // Scroll table into view when filter is set
+  React.useEffect(() => {
+    if (toolFilter && tableRef.current) {
+      tableRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [toolFilter]);
 
   if (isLoading) {
     return (
@@ -337,45 +288,15 @@ function ToolUsageChart({
     );
   }
 
-  const renderChart = () => {
-    const data = stats?.toolUsageCounts ?? [];
-    
-    switch (chartType) {
-      case 'line':
-        return (
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="toolDisplayName" angle={-45} textAnchor="end" height={100} fontSize={12} />
-            <YAxis />
-            <ChartTooltip content={<CustomTooltip />} />
-            <Line type="monotone" dataKey="count" stroke="var(--color-usage)" strokeWidth={2} />
-          </LineChart>
-        );
-      case 'area':
-        return (
-          <AreaChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="toolDisplayName" angle={-45} textAnchor="end" height={100} fontSize={12} />
-            <YAxis />
-            <ChartTooltip content={<CustomTooltip />} />
-            <Area type="monotone" dataKey="count" stroke="var(--color-usage)" fill="var(--color-usage)" fillOpacity={0.3} />
-          </AreaChart>
-        );
-      default:
-        return (
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="toolDisplayName" angle={-45} textAnchor="end" height={100} fontSize={12} />
-            <YAxis />
-            <ChartTooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" fill="var(--color-usage)" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        );
-    }
-  };
+  // Sort data in descending order
+  let sortedData = [...(stats?.toolUsageCounts ?? [])].sort((a, b) => b.count - a.count);
+
+  if (toolFilter?.type === 'low-usage') {
+    sortedData = sortedData.filter(tool => tool.count < 10);
+  }
 
   return (
-    <Card className="col-span-full border-0 shadow-md">
+    <Card className="col-span-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -384,259 +305,105 @@ function ToolUsageChart({
               Tool Usage Analytics
             </CardTitle>
             <CardDescription>
-              Comprehensive usage breakdown by AI tool ({period})
+              Usage breakdown by AI tool ({period})
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
-            <Select value={chartType} onValueChange={(value: string) => onChartTypeChange(value as "bar" | "line" | "area")}>
-              <SelectTrigger className="w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bar">Bar</SelectItem>
-                <SelectItem value="line">Line</SelectItem>
-                <SelectItem value="area">Area</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4" />
+          <Button variant="outline" size="sm" onClick={onExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        </div>
+        {toolFilter && (
+          <div className="my-2 flex items-center gap-2">
+            {toolFilter.type === 'low-usage' && (
+              <Badge variant="outline" className="mb-2">Filtered: Low Usage Tools</Badge>
+            )}
+            <Button variant="secondary" size="sm" onClick={() => setToolFilter(null)}>
+              Clear Filter
             </Button>
+          </div>
+        )}
+        
+        {/* Statistics Summary */}
+        <div className="flex items-center gap-6 mt-4 p-3 bg-muted/30 rounded-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary"></div>
+            <span className="text-sm font-medium">
+              {stats?.toolUsageCounts?.length ?? 0} Tools Tracked
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary/80"></div>
+            <span className="text-sm font-medium">
+              {(stats?.toolUsageCounts?.reduce((sum, tool) => sum + tool.count, 0) ?? 0).toLocaleString()} Total Uses
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary/60"></div>
+            <span className="text-sm font-medium">
+              {stats?.toolUsageCounts?.reduce((sum, tool) => sum + Number(tool.uniqueUsers || 0), 0).toLocaleString()} Active Users
+            </span>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            {renderChart()}
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Custom tooltip component
-interface TooltipProps {
-  active?: boolean;
-  payload?: Array<{
-    payload: {
-      count: number;
-      percentage: string;
-      uniqueUsers: number;
-      totalDuration?: number;
-      successRate?: number;
-    };
-  }>;
-  label?: string;
-}
-
-function CustomTooltip({ active, payload, label }: TooltipProps) {
-  if (active && payload?.[0]?.payload) {
-    const data = payload[0].payload;
-    return (
-      <div className="bg-background border rounded-lg shadow-lg p-4 min-w-[200px]">
-        <p className="font-semibold text-sm mb-2">{label}</p>
-        <div className="space-y-1">
-          <p className="text-sm flex justify-between">
-            <span className="text-muted-foreground">Usage:</span>
-            <span className="font-medium text-blue-600">{data.count} ({data.percentage}%)</span>
-          </p>
-          <p className="text-sm flex justify-between">
-            <span className="text-muted-foreground">Users:</span>
-            <span className="font-medium text-green-600">{data.uniqueUsers}</span>
-          </p>
-          {data.totalDuration && (
-            <p className="text-sm flex justify-between">
-              <span className="text-muted-foreground">Avg Duration:</span>
-              <span className="font-medium text-purple-600">{Math.round(data.totalDuration / data.count)}ms</span>
-            </p>
+        <div className="rounded-md border" ref={tableRef}>
+          {sortedData.length === 0 ? (
+            <div className="p-6 text-center text-muted-foreground">No low-usage tools found.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">#</TableHead>
+                  <TableHead>Tool</TableHead>
+                  <TableHead className="text-right">Usage Count</TableHead>
+                  <TableHead className="text-right">Percentage</TableHead>
+                  <TableHead className="text-right">Unique Users</TableHead>
+                  <TableHead className="text-right">Avg Duration</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedData.map((tool, index) => (
+                  <TableRow key={tool.toolName} className="hover:bg-muted/50">
+                    <TableCell className="font-medium">
+                      <Badge variant={index < 3 ? "default" : "outline"} className="w-8 h-8 flex items-center justify-center p-0">
+                        {index + 1}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {getToolIcon(tool.toolName)}
+                        <div>
+                          <div className="font-medium">{tool.toolDisplayName}</div>
+                          <div className="text-sm text-muted-foreground">{tool.toolName}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {tool.count.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="w-16 bg-muted rounded-full h-2">
+                          <div 
+                            className="bg-primary h-2 rounded-full transition-all" 
+                            style={{ width: `${tool.percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-sm font-medium">{tool.percentage}%</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {Number(tool.uniqueUsers).toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {tool.totalDuration ? `${Math.round(tool.totalDuration / tool.count)}ms` : 'N/A'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
-          {data.successRate && (
-            <p className="text-sm flex justify-between">
-              <span className="text-muted-foreground">Success Rate:</span>
-              <span className="font-medium text-orange-600">{data.successRate}%</span>
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-  return null;
-}
-
-
-
-// AI-Powered Insights Component
-interface InsightData {
-  type: 'success' | 'warning' | 'info';
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  action: string;
-}
-
-function AIInsights({ period }: { period: "7d" | "30d" | "90d" | "1y" }) {
-  const { data: stats } = api.toolAnalytics.getToolUsageStats.useQuery({ period });
-  
-  const insights = useMemo((): InsightData[] => {
-    if (!stats) return [];
-    
-    const insights: InsightData[] = [];
-    
-    // Top performing tool
-    const topTool = stats.toolUsageCounts[0];
-    if (topTool) {
-      insights.push({
-        type: 'success',
-        icon: Star,
-        title: 'Top Performer',
-        description: `${topTool.toolDisplayName} leads with ${topTool.count} uses`,
-        action: 'Optimize similar tools'
-      });
-    }
-    
-    // Growth opportunity
-    const lowUsageTools = stats.toolUsageCounts.filter((tool: ToolUsageData) => tool.count < 10);
-    if (lowUsageTools.length > 0) {
-      insights.push({
-        type: 'warning',
-        icon: TrendingUp,
-        title: 'Growth Opportunity',
-        description: `${lowUsageTools.length} tools have low usage`,
-        action: 'Consider promotion or improvement'
-      });
-    }
-    
-    // User engagement
-    const totalUsers = stats.toolUsageCounts.reduce((sum: number, tool: ToolUsageData) => sum + tool.uniqueUsers, 0);
-    if (totalUsers > 100) {
-      insights.push({
-        type: 'info',
-        icon: Users,
-        title: 'High Engagement',
-        description: `${totalUsers} active users this ${period}`,
-        action: 'Maintain current strategy'
-      });
-    }
-    
-    return insights;
-  }, [stats, period]);
-
-  if (insights.length === 0) return null;
-
-  return (
-    <Card className="border-0 shadow-md">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-yellow-500" />
-          AI Insights
-        </CardTitle>
-        <CardDescription>
-          Automated insights and recommendations
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {insights.map((insight, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
-              <div className={`p-1 rounded-lg ${
-                insight.type === 'success' ? 'bg-green-100 text-green-600' :
-                insight.type === 'warning' ? 'bg-yellow-100 text-yellow-600' :
-                'bg-blue-100 text-blue-600'
-              }`}>
-                <insight.icon className="h-4 w-4" />
-              </div>
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">{insight.title}</p>
-                <p className="text-xs text-muted-foreground">{insight.description}</p>
-                <p className="text-xs text-primary cursor-pointer hover:underline">
-                  {insight.action}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Comparative Analytics Component
-function ComparativeAnalytics({ 
-  currentPeriod, 
-  comparePeriod 
-}: { 
-  currentPeriod: "7d" | "30d" | "90d" | "1y";
-  comparePeriod: "7d" | "30d" | "90d" | "1y";
-}) {
-  const { data: currentStats } = api.toolAnalytics.getToolUsageStats.useQuery({ period: currentPeriod });
-  const { data: compareStats } = api.toolAnalytics.getToolUsageStats.useQuery({ period: comparePeriod });
-
-  if (!currentStats || !compareStats) {
-    return (
-      <Card className="border-0 shadow-md">
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[200px] w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const comparison: ComparisonData[] = currentStats.toolUsageCounts.map((currentTool: ToolUsageData) => {
-    const compareTool = compareStats.toolUsageCounts.find((t: ToolUsageData) => t.toolName === currentTool.toolName);
-    const growth = compareTool ? ((currentTool.count - compareTool.count) / compareTool.count) * 100 : 0;
-    
-    return {
-      ...currentTool,
-      previousCount: compareTool?.count ?? 0,
-      growth: isFinite(growth) ? growth : 0
-    };
-  });
-
-  return (
-    <Card className="border-0 shadow-md">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Compare className="h-5 w-5" />
-          Period Comparison
-        </CardTitle>
-        <CardDescription>
-          Comparing {currentPeriod} vs {comparePeriod}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {comparison.slice(0, 5).map((tool: ComparisonData, index: number) => (
-            <div key={tool.toolName} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-3">
-                <Badge variant="outline" className="w-6 h-6 flex items-center justify-center p-0 text-xs">
-                  {index + 1}
-                </Badge>
-                {getToolIcon(tool.toolName)}
-                <span className="text-sm font-medium">{tool.toolDisplayName}</span>
-              </div>
-              <div className="flex items-center gap-4 text-right">
-                <div className="text-sm">
-                  <span className="font-medium">{tool.count}</span>
-                  <span className="text-xs text-muted-foreground ml-1">
-                    (was {tool.previousCount})
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {getTrendIndicator(tool.growth, "sm")}
-                  <span className={`text-xs font-medium ${
-                    tool.growth > 0 ? 'text-green-600' : 
-                    tool.growth < 0 ? 'text-red-600' : 'text-gray-600'
-                  }`}>
-                    {tool.growth > 0 ? '+' : ''}{tool.growth.toFixed(1)}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </CardContent>
     </Card>
@@ -649,7 +416,7 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
 
   if (isLoading) {
     return (
-      <Card className="col-span-2 border-0 shadow-md">
+      <Card className="col-span-2">
         <CardHeader>
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-48" />
@@ -669,7 +436,7 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
   }
 
   return (
-    <Card className="col-span-2 border-0 shadow-md">
+    <Card className="col-span-2">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Growth className="h-5 w-5" />
@@ -945,16 +712,12 @@ function SettingsModal({
   onClose,
   dashboardLayout,
   setDashboardLayout,
-  chartType,
-  setChartType,
   applyTheme
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   dashboardLayout: string;
   setDashboardLayout: (layout: string) => void;
-  chartType: "bar" | "line" | "area";
-  setChartType: (type: "bar" | "line" | "area") => void;
   applyTheme: (theme: string) => void;
 }) {
   const [settings, setSettings] = useState(() => {
@@ -1104,46 +867,6 @@ function SettingsModal({
 
           <Separator />
 
-          {/* Chart Settings */}
-          <div className="space-y-3">
-            <h4 className="font-medium flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Chart Preferences
-            </h4>
-            <div className="space-y-3">
-              <div className="space-y-2">
-                <Label className="text-sm">Default Chart Type</Label>
-                <Select value={chartType} onValueChange={(value: "bar" | "line" | "area") => setChartType(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bar">Bar Chart</SelectItem>
-                    <SelectItem value="line">Line Chart</SelectItem>
-                    <SelectItem value="area">Area Chart</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm">Default Time Period</Label>
-                <Select value={settings.defaultPeriod} onValueChange={(value) => setSettings({...settings, defaultPeriod: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7d">Last 7 days</SelectItem>
-                    <SelectItem value="30d">Last 30 days</SelectItem>
-                    <SelectItem value="90d">Last 90 days</SelectItem>
-                    <SelectItem value="1y">Last year</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
           {/* Data & Export Settings */}
           <div className="space-y-3">
             <h4 className="font-medium flex items-center gap-2">
@@ -1214,6 +937,47 @@ function SettingsModal({
 
 // Performance Alerts Component
 function PerformanceAlerts() {
+  const { data: settings, isLoading } = api.settings.general.useQuery();
+  const sendAlert = api.toolAnalytics.sendPerformanceAlert.useMutation();
+
+  const handleSendAlert = () => {
+    sendAlert.mutate(
+      {
+        type: 'success-rate',
+        message: 'Manual test alert from dashboard',
+      },
+      {
+        onSuccess: (data) => {
+          toast.success('Performance alert sent!', { description: data.message });
+        },
+        onError: (error) => {
+          toast.error('Failed to send alert', { description: error.message });
+        },
+      }
+    );
+  };
+
+  if (isLoading || !settings) {
+    return (
+      <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 dark:border-amber-800 dark:from-amber-950/20 dark:to-yellow-950/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-amber-600" />
+            Performance Alerts
+          </CardTitle>
+          <CardDescription>
+            Get notified when metrics exceed your thresholds
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 text-sm text-muted-foreground">Loading thresholds...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const performanceAlerts = settings.performanceAlerts || {};
+
   return (
     <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 dark:border-amber-800 dark:from-amber-950/20 dark:to-yellow-950/20">
       <CardHeader>
@@ -1229,19 +993,19 @@ function PerformanceAlerts() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <Label className="text-sm">Success Rate Threshold</Label>
-            <Badge variant="outline">85%</Badge>
+            <Badge variant="outline">{performanceAlerts.successRateThreshold ?? 85}%</Badge>
           </div>
           <div className="flex items-center justify-between">
             <Label className="text-sm">Usage Growth Alert</Label>
-            <Badge variant="outline">-10%</Badge>
+            <Badge variant="outline">{performanceAlerts.growthThreshold ?? -10}%</Badge>
           </div>
           <div className="flex items-center justify-between">
             <Label className="text-sm">Error Rate Alert</Label>
-            <Badge variant="outline">5%</Badge>
+            <Badge variant="outline">{performanceAlerts.errorRateThreshold ?? 5}%</Badge>
           </div>
-          <Button size="sm" className="w-full">
+          <Button size="sm" className="w-full" onClick={handleSendAlert} disabled={sendAlert.isPending}>
             <Mail className="h-4 w-4 mr-2" />
-            Configure Email Alerts
+            {sendAlert.isPending ? 'Sending...' : 'Send Test Alert'}
           </Button>
         </div>
       </CardContent>
@@ -1252,7 +1016,6 @@ function PerformanceAlerts() {
 // Main analytics dashboard component
 export default function ToolAnalyticsPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "1y">("30d");
-  const [chartType, setChartType] = useState<"bar" | "line" | "area">("bar");
   const [activeTab, setActiveTab] = useState("overview");
   const [isRefreshing, setIsRefreshing] = useState(false);
   
@@ -1260,6 +1023,7 @@ export default function ToolAnalyticsPage() {
   const [comparePeriod, setComparePeriod] = useState<"7d" | "30d" | "90d" | "1y">("7d");
   const [showExportModal, setShowExportModal] = useState(false);
   const [dashboardLayout, setDashboardLayout] = useState('default');
+  const [toolFilter, setToolFilter] = useState<ToolFilter>(null);
 
   // Apply theme helper function
   const applyTheme = useCallback((theme: string) => {
@@ -1425,6 +1189,8 @@ export default function ToolAnalyticsPage() {
     setShowSettingsModal(true);
   }, []);
 
+  const handleOpenExportModal = () => setShowExportModal(true);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -1554,8 +1320,6 @@ export default function ToolAnalyticsPage() {
           onClose={() => setShowSettingsModal(false)}
           dashboardLayout={dashboardLayout}
           setDashboardLayout={setDashboardLayout}
-          chartType={chartType}
-          setChartType={setChartType}
           applyTheme={applyTheme}
         />
 
@@ -1589,14 +1353,14 @@ export default function ToolAnalyticsPage() {
             {/* Enhanced Analytics Grid */}
             <div className={`grid gap-6 ${dashboardLayout === 'compact' ? 'lg:grid-cols-2' : 'lg:grid-cols-3'}`}>
               <div className="lg:col-span-2">
-                <ToolUsageChart 
-                  period={period} 
-                  chartType={chartType} 
-                  onChartTypeChange={setChartType}
-                />
+                              <ToolUsageChart 
+                period={period} 
+                onExport={handleOpenExportModal} 
+                toolFilter={toolFilter}
+                setToolFilter={setToolFilter}
+              />
               </div>
               <div className="space-y-6">
-                <AIInsights period={period} />
                 <PerformanceAlerts />
               </div>
             </div>
@@ -1605,10 +1369,6 @@ export default function ToolAnalyticsPage() {
             <div className="grid gap-6 md:grid-cols-3">
               <CategoryBreakdown period={period} />
               <PerformanceMetrics period={period === "1y" ? "90d" : period} />
-              <ComparativeAnalytics 
-                currentPeriod={period} 
-                comparePeriod={comparePeriod} 
-              />
             </div>
           </TabsContent>
 
@@ -1616,16 +1376,13 @@ export default function ToolAnalyticsPage() {
             <div className="grid gap-6">
               <ToolUsageChart 
                 period={period} 
-                chartType={chartType} 
-                onChartTypeChange={setChartType}
+                onExport={handleOpenExportModal} 
+                toolFilter={toolFilter}
+                setToolFilter={setToolFilter}
               />
               
               <div className="grid gap-6 md:grid-cols-2">
                 <CategoryBreakdown period={period} />
-                <ComparativeAnalytics 
-                  currentPeriod={period} 
-                  comparePeriod={comparePeriod} 
-                />
               </div>
             </div>
           </TabsContent>
@@ -1634,7 +1391,6 @@ export default function ToolAnalyticsPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <PerformanceMetrics period={period === "1y" ? "90d" : period} />
               <div className="space-y-6">
-                <AIInsights period={period} />
                 <PerformanceAlerts />
               </div>
             </div>
@@ -1815,7 +1571,7 @@ function CategoryBreakdown({
 
   if (isLoading) {
     return (
-      <Card className="border-0 shadow-md">
+      <Card>
         <CardHeader>
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-48" />
@@ -1827,10 +1583,8 @@ function CategoryBreakdown({
     );
   }
 
-  const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))'];
-
   return (
-    <Card className="border-0 shadow-md">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <PieChartIcon className="h-5 w-5" />
@@ -1841,27 +1595,27 @@ function CategoryBreakdown({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={stats?.categoryBreakdown}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ category, count }: { category: string; count: number }) => `${category}: ${count}`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="count"
-              >
-                {stats?.categoryBreakdown.map((entry: CategoryData, index: number) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <ChartTooltip content={<CustomTooltip />} />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+        <div className="space-y-4">
+          {stats?.categoryBreakdown?.map((category, index) => (
+            <div key={category.category} className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Badge variant="outline" className="w-6 h-6 flex items-center justify-center p-0 text-xs">
+                  {index + 1}
+                </Badge>
+                <span className="font-medium">{category.category}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-24 bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all" 
+                    style={{ width: `${(category.count / Math.max(...(stats?.categoryBreakdown?.map(c => c.count) ?? [1]))) * 100}%` }}
+                  />
+                </div>
+                <span className="text-sm font-mono w-12 text-right">{category.count}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
@@ -1876,7 +1630,7 @@ function TopUsers({
 
   if (isLoading) {
     return (
-      <Card className="border-0 shadow-md">
+      <Card>
         <CardHeader>
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-48" />
@@ -1896,7 +1650,7 @@ function TopUsers({
   }
 
   return (
-    <Card className="border-0 shadow-md">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5" />

@@ -13,6 +13,7 @@ import { UpdatePaymentProviderSettingsForm } from "./_components/update-payment-
 import { UpdateSiteSettingsForm } from "./_components/update-site-settings-form";
 import { UpdateStorageProviderSettingsForm } from "./_components/update-storage-provider-settings-form";
 import UpdateWebhookForStripeForm from "./_components/update-webhook-for-stripe-form";
+import { UpdatePerformanceAlertsSettingsForm } from "./_components/update-performance-alerts-settings-form";
 
 export default async function SettingsGeneralPage() {
   const session = await getSession();
@@ -32,6 +33,7 @@ export default async function SettingsGeneralPage() {
       </div>
       <Separator />
       <UpdateSiteSettingsForm />
+      <UpdatePerformanceAlertsSettingsForm />
       <UpdateAuthSocialProviderForm />
       <UpdateAiModelProviderSettingsForm />
       <UpdatePaymentProviderSettingsForm />
