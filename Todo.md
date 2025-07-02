@@ -172,7 +172,6 @@ This roadmap transforms ReplyIQ from a social media reply generator into a compr
 - [ ] **Privacy Mode** - Enhanced privacy controls
 - [ ] **Extension Widgets** - Customizable dashboard widgets
 - [ ] **Voice Commands** - Voice-activated extension controls
-- [ ] **Gesture Controls** - Mouse gesture support
 - [ ] **Extension Marketplace** - Third-party plugin support
 
 ### Analytics & Insights
