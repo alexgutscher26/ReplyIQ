@@ -38,9 +38,16 @@ const logger = {
   },
 }
 
-// API request utility with retry logic
+// API request utility with retry logic and offline support
 async function makeAPIRequest(endpoint: string, data: unknown, retries = 2): Promise<Response> {
   const url = new URL(endpoint, import.meta.env.WXT_SITE_URL).href
+  const _cacheKey = `${endpoint}-${JSON.stringify(data)}` // For future offline caching
+
+  // Check if we're offline
+  if (!navigator.onLine) {
+    logger.debug('Offline - cannot make API request', { endpoint })
+    throw new Error('You are currently offline. Please check your internet connection.')
+  }
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -60,19 +67,33 @@ async function makeAPIRequest(endpoint: string, data: unknown, retries = 2): Pro
         return response
       }
 
-      if (attempt === retries) {
-        logger.error(`API request failed after ${retries + 1} attempts`, {
+      if (!response.ok) {
+        const errorText = await response.text()
+        logger.error(`API request failed with status ${response.status}`, {
+          attempt,
           endpoint,
+          errorText,
           status: response.status,
           statusText: response.statusText,
         })
-        return response
-      }
 
-      // Wait before retry (exponential backoff)
-      await new Promise(resolve => setTimeout(resolve, 2 ** attempt * 1000))
-    }
-    catch (error) {
+        // If this is the last attempt, throw the error
+        if (attempt === retries) {
+          // If we're offline, provide a more helpful error message
+          if (!navigator.onLine) {
+            throw new Error('You are currently offline. Please check your internet connection.')
+          }
+
+          throw new Error(`API request failed: ${response.status} ${response.statusText}`)
+        }
+
+        // Exponential backoff: 1s, 2s, 4s, etc.
+        const delay = 1000 * 2 ** attempt
+        logger.debug(`Retrying in ${delay}ms...`)
+        await new Promise(resolve => setTimeout(resolve, delay))
+        continue
+      }
+    } catch (error) {
       logger.error(`API request error on attempt ${attempt + 1}`, error)
 
       if (attempt === retries) {
@@ -95,11 +116,11 @@ function processContentForAI(input: {
     handle: string
     images: string[]
     text: string
-    video?: { poster?: string, url: string }
+    video?: { poster?: string; url: string }
   }
   text: string
   username?: string
-  video?: { poster?: string, url: string }
+  video?: { poster?: string; url: string }
 }) {
   const { handle, images, quotedPost, text, username, video } = input
   let fullText = text
@@ -184,8 +205,7 @@ const router = t.router({
         })
 
         return data
-      }
-      catch (error) {
+      } catch (error) {
         logger.error('Failed to fetch emoji suggestions', error)
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -229,8 +249,7 @@ const router = t.router({
         })
 
         return data
-      }
-      catch (error) {
+      } catch (error) {
         logger.error('Failed to generate content', error)
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -239,17 +258,15 @@ const router = t.router({
       }
     }),
 
-  greeting: t.procedure
-    .input(z.object({ name: z.string() }))
-    .query((req) => {
-      const { input } = req
-      ee.emit('greeting', `Greeted ${input.name}`)
-      logger.debug('Greeting sent', { name: input.name })
-      return `Hello ${input.name}` as const
-    }),
+  greeting: t.procedure.input(z.object({ name: z.string() })).query(req => {
+    const { input } = req
+    ee.emit('greeting', `Greeted ${input.name}`)
+    logger.debug('Greeting sent', { name: input.name })
+    return `Hello ${input.name}` as const
+  }),
 
   onGreeting: t.procedure.subscription(() => {
-    return observable((emit) => {
+    return observable(emit => {
       function onGreet(hello: string) {
         emit.next(hello)
       }
@@ -273,8 +290,7 @@ const router = t.router({
 
       logger.debug('Usage data fetched successfully', data)
       return data
-    }
-    catch (error) {
+    } catch (error) {
       logger.error('Failed to fetch usage data', error)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -287,13 +303,40 @@ const router = t.router({
 export type AppRouter = typeof router
 export const trpcReact = createTRPCReact<AppRouter>()
 
+// Listen for online/offline events and notify the UI
+function handleOnlineStatusChange() {
+  const status = navigator.onLine ? 'online' : 'offline'
+  logger.info(`Network status changed: ${status}`)
+
+  // Notify all tabs about the status change
+  chrome.tabs.query({}, tabs => {
+    for (const tab of tabs) {
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, { status, type: 'NETWORK_STATUS' })
+      }
+    }
+  })
+}
+
+// Initialize network status listeners
+function initNetworkListeners() {
+  // Use chrome.runtime for extension context instead of window
+  chrome.runtime.onStartup.addListener(handleOnlineStatusChange)
+  chrome.runtime.onInstalled.addListener(handleOnlineStatusChange)
+
+  // Initial status check
+  handleOnlineStatusChange()
+}
+
 export default defineBackground({
   main() {
+    // Initialize network status listeners
+    initNetworkListeners()
     logger.info('Background script starting')
 
     createChromeHandler({
       createContext: undefined,
-      onError: (opts: { error: any, path: any, type: any }) => {
+      onError: (opts: { error: any; path: any; type: any }) => {
         logger.error('tRPC error occurred', {
           error: opts.error,
           path: opts.path,

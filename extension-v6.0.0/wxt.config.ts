@@ -44,11 +44,11 @@ export default defineConfig({
 
   extensionApi: 'chrome',
   hooks: {
-    'build:before': (wxt) => {
+    'build:before': wxt => {
       console.log(`Building extension for ${wxt.config.command} mode...`)
     },
 
-    'build:done': (wxt) => {
+    'build:done': wxt => {
       console.log(`✅ Extension build completed for ${wxt.config.command} mode`)
     },
 
@@ -66,16 +66,12 @@ export default defineConfig({
       // Add CSP for production builds
       if (wxt.config.command === 'build') {
         manifest.content_security_policy = {
-          extension_pages: 'script-src \'self\'; object-src \'self\';',
+          extension_pages: "script-src 'self'; object-src 'self';",
         }
       }
 
       // Add additional permissions based on environment
-      manifest.permissions = [
-        'activeTab',
-        'storage',
-        ...(IS_DEV ? ['tabs'] : []),
-      ]
+      manifest.permissions = ['activeTab', 'storage', ...(IS_DEV ? ['tabs'] : [])]
 
       // Set version name for development builds
       if (IS_DEV) {
@@ -107,9 +103,8 @@ export default defineConfig({
     },
     // Content script CSP
     content_security_policy: {
-      extension_pages: 'script-src \'self\'; object-src \'self\';',
+      extension_pages: "script-src 'self'; object-src 'self';",
     },
-
     default_locale: 'en',
 
     description: '__MSG_extension_description__',
@@ -134,15 +129,12 @@ export default defineConfig({
     name: '__MSG_extension_name__',
 
     // Optional permissions for future features
-    optional_permissions: [
-      'tabs',
-      'scripting',
-    ],
+    optional_permissions: ['tabs', 'scripting'],
 
-    permissions: [
-      'activeTab',
-      'storage',
-    ],
+    permissions: ['activeTab', 'storage', 'offline'],
+
+    // Service worker for offline support
+    service_worker: 'sw.js',
 
     version: '6.0.0',
 
@@ -155,11 +147,7 @@ export default defineConfig({
     ],
   }),
 
-  modules: [
-    '@wxt-dev/module-react',
-    '@wxt-dev/auto-icons',
-    '@wxt-dev/i18n/module',
-  ],
+  modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons', '@wxt-dev/i18n/module'],
 
   // Build configuration
   outDir: '.output',
@@ -169,7 +157,20 @@ export default defineConfig({
   // Production optimizations
   vite: () => ({
     build: {
+      // Increase chunk size warning limit
+      chunkSizeWarningLimit: 1000, // 1000 kB
+      // Disable inlineDynamicImports to allow for better chunking
+      // This will split the code into multiple chunks automatically
+      // based on the dynamic imports in your code
+      inlineDynamicImports: false,
       minify: !IS_DEV,
+      rollupOptions: {
+        output: {
+          assetFileNames: 'assets/[name].[hash][extname]',
+          chunkFileNames: 'js/[name].[hash].js',
+          entryFileNames: 'js/[name].[hash].js',
+        },
+      },
       sourcemap: IS_DEV,
     },
     define: {
@@ -179,5 +180,19 @@ export default defineConfig({
     esbuild: {
       drop: IS_DEV ? [] : ['console', 'debugger'],
     },
+    // Add service worker to the build
+    plugins: [
+      {
+        enforce: 'post',
+        generateBundle() {
+          this.emitFile({
+            fileName: 'sw.js',
+            source: 'importScripts("sw.js")',
+            type: 'asset',
+          })
+        },
+        name: 'copy-service-worker',
+      },
+    ],
   }),
 })

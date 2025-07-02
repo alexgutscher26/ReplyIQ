@@ -163,7 +163,7 @@ This roadmap transforms ReplyIQ from a social media reply generator into a compr
 - [ ] **Auto-Reply Settings** - Automated responses with conditions
 - [ ] **Reply Templates** - Save and reuse common reply templates
 - [ ] **Extension Manifest V3** - Full migration to Manifest V3 for all browsers
-- [ ] **Offline Mode** - Limited functionality when offline
+- [x] **Offline Mode** - Limited functionality when offline
 - [ ] **Extension Analytics** - Track extension usage and performance
 - [ ] **Smart Notifications** - Intelligent notification system
 - [ ] **Extension Themes** - Customizable UI themes

@@ -95,6 +95,7 @@
     "ua-parser-js": "^2.0.3",
     "uploadthing": "^7.5.2",
     "vaul": "^1.1.2",
+    "vitest": "^3.2.4",
     "zod": "^3.25.67"
   },
   "devDependencies": {
