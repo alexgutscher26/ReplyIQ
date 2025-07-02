@@ -1,5 +1,13 @@
-import { createTRPCRouter, protectedProcedure, adminProcedure } from "@/server/api/trpc";
-import { toolAnalytics, AI_TOOLS, type AIToolKey } from "@/server/db/schema/tool-analytics-schema";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  adminProcedure,
+} from "@/server/api/trpc";
+import {
+  toolAnalytics,
+  AI_TOOLS,
+  type AIToolKey,
+} from "@/server/db/schema/tool-analytics-schema";
 import { user } from "@/server/db/schema/auth-schema";
 import { TRPCError } from "@trpc/server";
 import { and, eq, gte, lte, desc, count, sql } from "drizzle-orm";
@@ -16,9 +24,11 @@ export const toolAnalyticsRouter = createTRPCRouter({
   trackUsage: protectedProcedure
     .input(
       z.object({
-        toolName: z.string().refine((val): val is AIToolKey => val in AI_TOOLS, {
-          message: "Invalid tool name",
-        }),
+        toolName: z
+          .string()
+          .refine((val): val is AIToolKey => val in AI_TOOLS, {
+            message: "Invalid tool name",
+          }),
         metadata: z.record(z.any()).optional(),
         duration: z.number().optional(),
         tokensUsed: z.number().optional(),
@@ -26,7 +36,7 @@ export const toolAnalyticsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const tool = AI_TOOLS[input.toolName];
-      
+
       try {
         await ctx.db.insert(toolAnalytics).values({
           userId: ctx.session.user.id,
@@ -68,9 +78,7 @@ export const toolAnalyticsRouter = createTRPCRouter({
       startDate.setDate(startDate.getDate() - periodDays[input.period]);
 
       // Base query conditions
-      const conditions = [
-        gte(toolAnalytics.createdAt, startDate),
-      ];
+      const conditions = [gte(toolAnalytics.createdAt, startDate)];
 
       if (input.toolName) {
         conditions.push(eq(toolAnalytics.toolName, input.toolName));
@@ -136,7 +144,10 @@ export const toolAnalyticsRouter = createTRPCRouter({
         .limit(10);
 
       // Calculate total statistics
-      const totalUsage = toolUsageCounts.reduce((sum, tool) => sum + tool.count, 0);
+      const totalUsage = toolUsageCounts.reduce(
+        (sum, tool) => sum + tool.count,
+        0,
+      );
       const totalUniqueUsers = await ctx.db
         .select({
           count: sql<number>`count(distinct ${toolAnalytics.userId})`,
@@ -147,10 +158,12 @@ export const toolAnalyticsRouter = createTRPCRouter({
       return {
         totalUsage,
         totalUniqueUsers: totalUniqueUsers[0]?.count ?? 0,
-        toolUsageCounts: toolUsageCounts.map(tool => ({
+        toolUsageCounts: toolUsageCounts.map((tool) => ({
           ...tool,
-          toolDisplayName: AI_TOOLS[tool.toolName as AIToolKey]?.name ?? tool.toolName,
-          percentage: totalUsage > 0 ? ((tool.count / totalUsage) * 100).toFixed(1) : "0",
+          toolDisplayName:
+            AI_TOOLS[tool.toolName as AIToolKey]?.name ?? tool.toolName,
+          percentage:
+            totalUsage > 0 ? ((tool.count / totalUsage) * 100).toFixed(1) : "0",
         })),
         dailyUsage,
         categoryBreakdown,
@@ -193,9 +206,10 @@ export const toolAnalyticsRouter = createTRPCRouter({
         .orderBy(desc(toolAnalytics.createdAt))
         .limit(input.limit);
 
-      return activities.map(activity => ({
+      return activities.map((activity) => ({
         ...activity,
-        toolDisplayName: AI_TOOLS[activity.toolName as AIToolKey]?.name ?? activity.toolName,
+        toolDisplayName:
+          AI_TOOLS[activity.toolName as AIToolKey]?.name ?? activity.toolName,
       }));
     }),
 
@@ -214,10 +228,14 @@ export const toolAnalyticsRouter = createTRPCRouter({
       };
 
       const currentPeriodStart = new Date();
-      currentPeriodStart.setDate(currentPeriodStart.getDate() - periodDays[input.period]);
+      currentPeriodStart.setDate(
+        currentPeriodStart.getDate() - periodDays[input.period],
+      );
 
       const previousPeriodStart = new Date();
-      previousPeriodStart.setDate(previousPeriodStart.getDate() - (periodDays[input.period] * 2));
+      previousPeriodStart.setDate(
+        previousPeriodStart.getDate() - periodDays[input.period] * 2,
+      );
 
       // Current period stats
       const currentStats = await ctx.db
@@ -247,16 +265,22 @@ export const toolAnalyticsRouter = createTRPCRouter({
         .groupBy(toolAnalytics.toolName);
 
       // Combine current and previous stats
-      const performance = currentStats.map(current => {
-        const previous = previousStats.find(p => p.toolName === current.toolName);
+      const performance = currentStats.map((current) => {
+        const previous = previousStats.find(
+          (p) => p.toolName === current.toolName,
+        );
         const previousCount = previous?.count ?? 0;
-        const growthRate = previousCount > 0 
-          ? (((current.count - previousCount) / previousCount) * 100)
-          : current.count > 0 ? 100 : 0;
+        const growthRate =
+          previousCount > 0
+            ? ((current.count - previousCount) / previousCount) * 100
+            : current.count > 0
+              ? 100
+              : 0;
 
         return {
           toolName: current.toolName,
-          toolDisplayName: AI_TOOLS[current.toolName as AIToolKey]?.name ?? current.toolName,
+          toolDisplayName:
+            AI_TOOLS[current.toolName as AIToolKey]?.name ?? current.toolName,
           currentPeriodUsage: current.count,
           previousPeriodUsage: previousCount,
           growthRate: Math.round(growthRate * 100) / 100,
@@ -266,7 +290,9 @@ export const toolAnalyticsRouter = createTRPCRouter({
       });
 
       return {
-        performance: performance.sort((a, b) => b.currentPeriodUsage - a.currentPeriodUsage),
+        performance: performance.sort(
+          (a, b) => b.currentPeriodUsage - a.currentPeriodUsage,
+        ),
         period: input.period,
       };
     }),
@@ -274,10 +300,10 @@ export const toolAnalyticsRouter = createTRPCRouter({
   // Get overview stats for admin dashboard
   getOverviewStats: adminProcedure.query(async ({ ctx }) => {
     // In-memory alert cache to prevent spamming (per process)
-    const globalWithCache = globalThis as typeof globalThis & { __performanceAlertCache?: Record<string, number> };
-    if (!globalWithCache.__performanceAlertCache) {
-      globalWithCache.__performanceAlertCache = {};
-    }
+    const globalWithCache = globalThis as typeof globalThis & {
+      __performanceAlertCache?: Record<string, number>;
+    };
+    globalWithCache.__performanceAlertCache ??= {};
     const alertCache = globalWithCache.__performanceAlertCache;
 
     // Fetch performance alert settings
@@ -326,16 +352,62 @@ export const toolAnalyticsRouter = createTRPCRouter({
       prevActiveUsers7d,
     ] = await Promise.all([
       ctx.db.select({ count: count() }).from(toolAnalytics),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last24h)),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last7d)),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last30d)),
-      ctx.db.select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` }).from(toolAnalytics),
-      ctx.db.select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last7d)),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(gte(toolAnalytics.createdAt, last24h)),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(gte(toolAnalytics.createdAt, last7d)),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(gte(toolAnalytics.createdAt, last30d)),
+      ctx.db
+        .select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` })
+        .from(toolAnalytics),
+      ctx.db
+        .select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` })
+        .from(toolAnalytics)
+        .where(gte(toolAnalytics.createdAt, last7d)),
       // Previous periods
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev24h), lte(toolAnalytics.createdAt, prev24hStart))),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev7d), lte(toolAnalytics.createdAt, last7d))),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev30d), lte(toolAnalytics.createdAt, last30d))),
-      ctx.db.select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev7d), lte(toolAnalytics.createdAt, last7d))),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, prev24h),
+            lte(toolAnalytics.createdAt, prev24hStart),
+          ),
+        ),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, prev7d),
+            lte(toolAnalytics.createdAt, last7d),
+          ),
+        ),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, prev30d),
+            lte(toolAnalytics.createdAt, last30d),
+          ),
+        ),
+      ctx.db
+        .select({ count: sql<number>`count(distinct ${toolAnalytics.userId})` })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, prev7d),
+            lte(toolAnalytics.createdAt, last7d),
+          ),
+        ),
     ]);
 
     // Calculate trend percentages with robust error handling
@@ -343,45 +415,80 @@ export const toolAnalyticsRouter = createTRPCRouter({
       // Convert to numbers and handle null/undefined
       const curr = Number(current) || 0;
       const prev = Number(previous) || 0;
-      
+
       // Handle edge cases
       if (!isFinite(curr) || !isFinite(prev)) return 0;
       if (isNaN(curr) || isNaN(prev)) return 0;
       if (prev === 0 && curr === 0) return 0;
       if (prev === 0 && curr > 0) return 100;
       if (prev === 0 && curr < 0) return -100;
-      
+
       // Calculate percentage change
       const percentage = ((curr - prev) / prev) * 100;
-      
+
       // Ensure result is finite and reasonable
       if (!isFinite(percentage) || isNaN(percentage)) return 0;
-      
+
       // Cap at reasonable limits to prevent display issues
       const cappedPercentage = Math.max(-999, Math.min(999, percentage));
-      
+
       return Math.round(cappedPercentage * 100) / 100;
     };
 
     // Get success rate (all actions vs error actions in last 30 days)
     const [allActions, errorActions] = await Promise.all([
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(gte(toolAnalytics.createdAt, last30d)),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, last30d), eq(toolAnalytics.actionType, "error"))),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(gte(toolAnalytics.createdAt, last30d)),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, last30d),
+            eq(toolAnalytics.actionType, "error"),
+          ),
+        ),
     ]);
 
     const totalCurrentActions = allActions[0]?.count ?? 0;
     const errorCurrentActions = errorActions[0]?.count ?? 0;
-    const currentSuccessRate = totalCurrentActions > 0 ? ((totalCurrentActions - errorCurrentActions) / totalCurrentActions) * 100 : 95;
+    const currentSuccessRate =
+      totalCurrentActions > 0
+        ? ((totalCurrentActions - errorCurrentActions) / totalCurrentActions) *
+          100
+        : 95;
 
     // Previous success rate for comparison
     const [prevAllActions, prevErrorActions] = await Promise.all([
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev30d), lte(toolAnalytics.createdAt, last30d))),
-      ctx.db.select({ count: count() }).from(toolAnalytics).where(and(gte(toolAnalytics.createdAt, prev30d), lte(toolAnalytics.createdAt, last30d), eq(toolAnalytics.actionType, "error"))),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, prev30d),
+            lte(toolAnalytics.createdAt, last30d),
+          ),
+        ),
+      ctx.db
+        .select({ count: count() })
+        .from(toolAnalytics)
+        .where(
+          and(
+            gte(toolAnalytics.createdAt, prev30d),
+            lte(toolAnalytics.createdAt, last30d),
+            eq(toolAnalytics.actionType, "error"),
+          ),
+        ),
     ]);
 
     const totalPrevActions = prevAllActions[0]?.count ?? 0;
     const errorPrevActions = prevErrorActions[0]?.count ?? 0;
-    const prevSuccessRate = totalPrevActions > 0 ? ((totalPrevActions - errorPrevActions) / totalPrevActions) * 100 : 95;
+    const prevSuccessRate =
+      totalPrevActions > 0
+        ? ((totalPrevActions - errorPrevActions) / totalPrevActions) * 100
+        : 95;
 
     // Get most popular tool
     const popularTool = await ctx.db
@@ -410,12 +517,22 @@ export const toolAnalyticsRouter = createTRPCRouter({
     const prevActiveUsers7dCount = Number(prevActiveUsers7d[0]?.count ?? 0);
 
     // Calculate error rate for last 30 days
-    const errorRate = totalCurrentActions > 0 ? (errorCurrentActions / totalCurrentActions) * 100 : 0;
+    const errorRate =
+      totalCurrentActions > 0
+        ? (errorCurrentActions / totalCurrentActions) * 100
+        : 0;
     // Calculate usage growth (last 30d vs prev 30d)
     const usageGrowth = calculateTrend(usage30d, prevUsage30d);
 
     // Helper to send alert if not sent in last 24h
-    async function maybeSendAlert(metric: string, value: number, threshold: number, direction: 'below' | 'above', period: string, extra?: string) {
+    async function maybeSendAlert(
+      metric: string,
+      value: number,
+      threshold: number,
+      direction: "below" | "above",
+      period: string,
+      extra?: string,
+    ) {
       if (!alertsEnabled) return;
       const cacheKey = `${metric}-${direction}`;
       const now = Date.now();
@@ -423,12 +540,14 @@ export const toolAnalyticsRouter = createTRPCRouter({
       if (now - lastSent < 24 * 60 * 60 * 1000) return; // 24h
       alertCache[cacheKey] = now;
       // Compose email
-      const siteName = settingsRow?.general?.site?.name ?? 'AI Social Replier';
+      const siteName = settingsRow?.general?.site?.name ?? "AI Social Replier";
       const mailConfiguration = settingsRow?.general?.mail;
       if (!mailConfiguration?.apiKey) return;
-      const resend = new (await import('resend')).Resend(mailConfiguration.apiKey);
-      const subject = `[${siteName}] Performance Alert: ${metric} ${direction === 'below' ? 'Below' : 'Above'} Threshold`;
-      const text = `Performance Alert for ${siteName}\n\nMetric: ${metric}\nCurrent Value: ${value.toFixed(2)}%\nThreshold: ${threshold}% (${direction})\nPeriod: ${period}\n${extra ? `\n${extra}\n` : ''}\nThis alert was generated automatically by the analytics system.`;
+      const resend = new (await import("resend")).Resend(
+        mailConfiguration.apiKey,
+      );
+      const subject = `[${siteName}] Performance Alert: ${metric} ${direction === "below" ? "Below" : "Above"} Threshold`;
+      const text = `Performance Alert for ${siteName}\n\nMetric: ${metric}\nCurrent Value: ${value.toFixed(2)}%\nThreshold: ${threshold}% (${direction})\nPeriod: ${period}\n${extra ? `\n${extra}\n` : ""}\nThis alert was generated automatically by the analytics system.`;
       await resend.emails.send({
         from: `${siteName} <${mailConfiguration.fromEmail}>`,
         to: `${mailConfiguration.toName} <${mailConfiguration.toEmail}>`,
@@ -441,32 +560,32 @@ export const toolAnalyticsRouter = createTRPCRouter({
     if (alertsEnabled) {
       if (currentSuccessRate < performanceAlerts.successRateThreshold) {
         await maybeSendAlert(
-          'Success Rate',
+          "Success Rate",
           currentSuccessRate,
           performanceAlerts.successRateThreshold,
-          'below',
-          'last 30 days',
-          'The success rate has dropped below the configured threshold.'
+          "below",
+          "last 30 days",
+          "The success rate has dropped below the configured threshold.",
         );
       }
       if (usageGrowth < performanceAlerts.growthThreshold) {
         await maybeSendAlert(
-          'Usage Growth',
+          "Usage Growth",
           usageGrowth,
           performanceAlerts.growthThreshold,
-          'below',
-          'last 30 days',
-          'Usage growth is negative and below the configured threshold.'
+          "below",
+          "last 30 days",
+          "Usage growth is negative and below the configured threshold.",
         );
       }
       if (errorRate > performanceAlerts.errorRateThreshold) {
         await maybeSendAlert(
-          'Error Rate',
+          "Error Rate",
           errorRate,
           performanceAlerts.errorRateThreshold,
-          'above',
-          'last 30 days',
-          'The error rate has exceeded the configured threshold.'
+          "above",
+          "last 30 days",
+          "The error rate has exceeded the configured threshold.",
         );
       }
     }
@@ -487,20 +606,26 @@ export const toolAnalyticsRouter = createTRPCRouter({
         usage24h: calculateTrend(usage24h, prevUsage24h),
         successRate: calculateTrend(currentSuccessRate, prevSuccessRate),
       },
-      mostPopularTool: popularTool[0] ? {
-        name: popularTool[0].toolName,
-        displayName: AI_TOOLS[popularTool[0].toolName as AIToolKey]?.name ?? popularTool[0].toolName,
-        usage: popularTool[0].count,
-      } : null,
+      mostPopularTool: popularTool[0]
+        ? {
+            name: popularTool[0].toolName,
+            displayName:
+              AI_TOOLS[popularTool[0].toolName as AIToolKey]?.name ??
+              popularTool[0].toolName,
+            usage: popularTool[0].count,
+          }
+        : null,
     };
   }),
 
   // Send performance alert email - admin only
   sendPerformanceAlert: adminProcedure
-    .input(z.object({
-      type: z.string(), // e.g., 'success-rate', 'growth', 'error-rate'
-      message: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        type: z.string(), // e.g., 'success-rate', 'growth', 'error-rate'
+        message: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // Fetch mail configuration from settings
       const siteSettings = await ctx.db.query.settings.findFirst();
@@ -511,14 +636,18 @@ export const toolAnalyticsRouter = createTRPCRouter({
           message: "Mail configuration is missing or incomplete.",
         });
       }
-      const resend = new (await import("resend")).Resend(mailConfiguration.apiKey);
+      const resend = new (await import("resend")).Resend(
+        mailConfiguration.apiKey,
+      );
       const alertTypeMap: Record<string, string> = {
         "success-rate": "Success Rate Threshold Exceeded",
-        "growth": "Usage Growth Alert",
+        growth: "Usage Growth Alert",
         "error-rate": "Error Rate Alert",
       };
-      const subject = alertTypeMap[input.type] ?? `Performance Alert: ${input.type}`;
-      const text = input.message ?? `A performance alert was triggered: ${subject}`;
+      const subject =
+        alertTypeMap[input.type] ?? `Performance Alert: ${input.type}`;
+      const text =
+        input.message ?? `A performance alert was triggered: ${subject}`;
       const from = `${siteSettings?.general?.site?.name ?? "AI Social Replier"} <${mailConfiguration.fromEmail}>`;
       const to = `${mailConfiguration.toName} <${mailConfiguration.toEmail}>`;
       try {
@@ -537,7 +666,12 @@ export const toolAnalyticsRouter = createTRPCRouter({
         };
       } catch (error: unknown) {
         let message = "Failed to send performance alert.";
-        if (typeof error === "object" && error && "message" in error && typeof (error as { message?: unknown }).message === "string") {
+        if (
+          typeof error === "object" &&
+          error &&
+          "message" in error &&
+          typeof (error as { message?: unknown }).message === "string"
+        ) {
           message = (error as { message: string }).message;
         }
         throw new TRPCError({
@@ -546,4 +680,4 @@ export const toolAnalyticsRouter = createTRPCRouter({
         });
       }
     }),
-}); 
+});

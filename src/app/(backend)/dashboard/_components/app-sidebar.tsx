@@ -32,7 +32,6 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
-  Mic,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -69,7 +68,7 @@ const data = {
     },
     {
       title: "Image Caption Generator",
-      url: "/dashboard/image-caption-generator", 
+      url: "/dashboard/image-caption-generator",
       icon: Image,
       description: "AI captions for uploaded images",
     },
@@ -165,33 +164,48 @@ const AppSidebar = memo(function AppSidebar({
 }: AppSidebarProps) {
   const { user } = useSession();
   const pathname = usePathname();
-  
-  const { 
-    data: usage, 
-    isLoading: usageLoading, 
+
+  const {
+    data: usage,
+    isLoading: usageLoading,
     error: usageError,
-    isStale: usageStale 
-  } = api.usage.getTotalUsage.useQuery({}, {
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
-    retry: 3,
-  });
+    isStale: usageStale,
+  } = api.usage.getTotalUsage.useQuery(
+    {},
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+      retry: 3,
+    },
+  );
 
   // Helper function to check if user is admin
   const isAdmin = useMemo(() => {
     if (!user?.role) return false;
     const role = user.role.toUpperCase();
-    return role === "ADMIN" || role === "ADMINISTRATOR" || user.role === "admin";
+    return (
+      role === "ADMIN" || role === "ADMINISTRATOR" || user.role === "admin"
+    );
   }, [user?.role]);
 
   // Memoize filtered navigation items
   const filteredNavMain = useMemo(() => {
     // Debug logging - remove in production
-    console.log("User role:", user?.role, "Type:", typeof user?.role, "Is Admin:", isAdmin);
-    
-    return data.navMain.filter(item => {
+    console.log(
+      "User role:",
+      user?.role,
+      "Type:",
+      typeof user?.role,
+      "Is Admin:",
+      isAdmin,
+    );
+
+    return data.navMain.filter((item) => {
       if (item.requireAdmin && !isAdmin) {
-        console.log(`Filtering out ${item.title} - requires admin but user role is:`, user?.role);
+        console.log(
+          `Filtering out ${item.title} - requires admin but user role is:`,
+          user?.role,
+        );
         return false;
       }
       return true;
@@ -205,7 +219,7 @@ const AppSidebar = memo(function AppSidebar({
     if (usageLoading) {
       return (
         <div className="flex items-center gap-2">
-          <Loader2 className="size-3 animate-spin text-muted-foreground" />
+          <Loader2 className="text-muted-foreground size-3 animate-spin" />
           <Skeleton className="h-3 w-16" />
         </div>
       );
@@ -213,7 +227,7 @@ const AppSidebar = memo(function AppSidebar({
 
     if (usageError) {
       return (
-        <div className="flex items-center gap-1.5 text-xs text-destructive">
+        <div className="text-destructive flex items-center gap-1.5 text-xs">
           <AlertCircle className="size-3" />
           <span>Usage unavailable</span>
         </div>
@@ -224,22 +238,28 @@ const AppSidebar = memo(function AppSidebar({
       <div className="flex items-center gap-1.5">
         {showStatusIndicators && (
           <>
-            <CheckCircle2 className={cn(
-              "size-3 transition-colors",
-              usageStale ? "text-yellow-500" : "text-green-500"
-            )} />
+            <CheckCircle2
+              className={cn(
+                "size-3 transition-colors",
+                usageStale ? "text-yellow-500" : "text-green-500",
+              )}
+            />
             {usage?.total !== undefined && usage.total > 1000 && (
-              <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+              <Badge variant="secondary" className="px-1.5 py-0.5 text-xs">
                 High Usage
               </Badge>
             )}
           </>
         )}
-        <span className={cn(
-          "truncate text-xs transition-colors",
-          usageStale ? "text-yellow-600" : "text-muted-foreground"
-        )}>
-          {usage?.total ? `${usage.total.toLocaleString()} generations` : "No usage yet"}
+        <span
+          className={cn(
+            "truncate text-xs transition-colors",
+            usageStale ? "text-yellow-600" : "text-muted-foreground",
+          )}
+        >
+          {usage?.total
+            ? `${usage.total.toLocaleString()} generations`
+            : "No usage yet"}
         </span>
       </div>
     );
@@ -248,37 +268,39 @@ const AppSidebar = memo(function AppSidebar({
   // Brand header component
   const BrandHeader = memo(function BrandHeader() {
     const isCurrentPage = pathname === "/dashboard";
-    
+
     return (
-      <SidebarMenuButton 
-        size="lg" 
-        asChild 
+      <SidebarMenuButton
+        size="lg"
+        asChild
         className={cn(
-          "group transition-all duration-200 hover:bg-accent/60 active:scale-[0.98]",
-          isCurrentPage && "bg-accent/30"
+          "group hover:bg-accent/60 transition-all duration-200 active:scale-[0.98]",
+          isCurrentPage && "bg-accent/30",
         )}
       >
-        <Link 
+        <Link
           href="/dashboard"
-          className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md"
+          className="focus:ring-ring rounded-md focus:ring-2 focus:ring-offset-2 focus:outline-none"
           aria-label="Navigate to dashboard home"
         >
-          <div className={cn(
-            "flex aspect-square size-8 items-center justify-center rounded-lg transition-all duration-200",
-            "bg-sidebar-primary text-sidebar-primary-foreground",
-            "group-hover:scale-105 group-hover:shadow-sm",
-            isCurrentPage && "scale-105 shadow-sm"
-          )}>
+          <div
+            className={cn(
+              "flex aspect-square size-8 items-center justify-center rounded-lg transition-all duration-200",
+              "bg-sidebar-primary text-sidebar-primary-foreground",
+              "group-hover:scale-105 group-hover:shadow-sm",
+              isCurrentPage && "scale-105 shadow-sm",
+            )}
+          >
             <Command className="size-4 transition-transform group-hover:rotate-3" />
           </div>
-          <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
-            <span className="truncate font-semibold group-hover:text-foreground transition-colors">
+          <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
+            <span className="group-hover:text-foreground truncate font-semibold transition-colors">
               AI Replier
             </span>
             <UsageStatus />
           </div>
           {showStatusIndicators && isAdmin && (
-            <Badge variant="outline" className="text-xs px-1.5 py-0.5 ml-2">
+            <Badge variant="outline" className="ml-2 px-1.5 py-0.5 text-xs">
               Admin
             </Badge>
           )}
@@ -288,39 +310,44 @@ const AppSidebar = memo(function AppSidebar({
   });
 
   return (
-    <Sidebar 
-      variant="inset" 
+    <Sidebar
+      variant="inset"
       className={cn("border-r-2 transition-all duration-300", className)}
       role="navigation"
       aria-label="Main navigation sidebar"
       {...props}
     >
-      <SidebarHeader className="border-b px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-background to-accent/10">
+      <SidebarHeader className="from-background to-accent/10 border-b bg-gradient-to-r px-4 py-3 sm:px-6 sm:py-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <BrandHeader />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
-      <SidebarContent className="px-2 sm:px-3 py-2">
+
+      <SidebarContent className="px-2 py-2 sm:px-3">
         <NavMain items={filteredNavMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      
-      <SidebarFooter className="border-t px-2 py-2 sm:px-3 sm:py-3 bg-gradient-to-r from-background to-accent/5">
+
+      <SidebarFooter className="from-background to-accent/5 border-t bg-gradient-to-r px-2 py-2 sm:px-3 sm:py-3">
         <NavUser />
-        
+
         {/* Status indicator bar */}
         {showStatusIndicators && (
-          <div className="flex items-center justify-between px-2 py-1 mt-2 rounded-md bg-accent/20">
+          <div className="bg-accent/20 mt-2 flex items-center justify-between rounded-md px-2 py-1">
             <div className="flex items-center gap-2">
-              <div className={cn(
-                "size-2 rounded-full transition-colors",
-                usageError ? "bg-destructive" : 
-                usageStale ? "bg-yellow-500" : "bg-green-500"
-              )} />
-              <span className="text-xs text-muted-foreground">
+              <div
+                className={cn(
+                  "size-2 rounded-full transition-colors",
+                  usageError
+                    ? "bg-destructive"
+                    : usageStale
+                      ? "bg-yellow-500"
+                      : "bg-green-500",
+                )}
+              />
+              <span className="text-muted-foreground text-xs">
                 {usageError ? "Offline" : usageStale ? "Syncing" : "Online"}
               </span>
             </div>

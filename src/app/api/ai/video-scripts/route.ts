@@ -1,67 +1,110 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { generateText } from 'ai';
-import { getAIInstance } from '@/server/utils';
-import { db } from '@/server/db';
-import { auth } from '@/server/auth';
-import { trackToolUsageServer } from '@/utils/track-tool-usage';
-import { brandVoices } from '@/server/db/schema/brand-voice-schema';
-import { eq } from 'drizzle-orm';
-import { ratelimit } from '@/server/utils/ratelimit';
+import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { generateText } from "ai";
+import { getAIInstance } from "@/server/utils";
+import { db } from "@/server/db";
+import { auth } from "@/server/auth";
+import { trackToolUsageServer } from "@/utils/track-tool-usage";
+import { ratelimit } from "@/server/utils/ratelimit";
 
 // Enhanced schema with new features
 const schema = z.object({
-  topic: z.string().min(3, 'Topic is too short').max(200, 'Topic is too long'),
-  videoType: z.enum(['educational', 'promotional', 'entertainment', 'tutorial', 'explainer']),
+  topic: z.string().min(3, "Topic is too short").max(200, "Topic is too long"),
+  videoType: z.enum([
+    "educational",
+    "promotional",
+    "entertainment",
+    "tutorial",
+    "explainer",
+  ]),
   duration: z.number().min(1).max(60).default(5), // Duration in minutes
-  tone: z.enum(['professional', 'casual', 'energetic', 'calm', 'humorous']).default('professional'),
-  platform: z.enum(['youtube', 'tiktok', 'instagram', 'general']).default('youtube'),
+  tone: z
+    .enum(["professional", "casual", "energetic", "calm", "humorous"])
+    .default("professional"),
+  platform: z
+    .enum(["youtube", "tiktok", "instagram", "general"])
+    .default("youtube"),
   targetAudience: z.string().optional(),
   keywords: z.string().optional(),
   includeHook: z.boolean().default(true),
   includeCTA: z.boolean().default(true),
 });
 
-// Content templates for faster generation
-const contentTemplates = {
-  viral_tiktok: {
-    structure: "Hook (3s) → Problem/Trend (10s) → Solution/Revelation (30s) → CTA (5s)",
-    hooks: ["Wait, this actually works...", "Nobody talks about this but...", "I tried this for 30 days and..."],
-    engagement: ["Pattern interrupt", "Trend hijacking", "Controversy"]
-  },
-  youtube_tutorial: {
-    structure: "Introduction (30s) → What You'll Learn (1min) → Step-by-Step (80%) → Recap (2min) → CTA (30s)",
-    hooks: ["In this video, you'll learn...", "By the end of this tutorial...", "I'm going to show you exactly how..."],
-    engagement: ["Clear value proposition", "Progress indicators", "Actionable steps"]
-  },
-  instagram_story: {
-    structure: "Visual Hook (2s) → Problem/Question (8s) → Solution/Answer (30s) → CTA/Follow (5s)",
-    hooks: ["Swipe to see...", "This changed everything...", "You need to try this..."],
-    engagement: ["Interactive stickers", "Visual storytelling", "Story highlights"]
-  }
-};
-
 // Language-specific optimizations with proper typing
-type SupportedLanguage = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'ko' | 'zh' | 'ar' | 'hi' | 'ru';
+type SupportedLanguage =
+  | "en"
+  | "es"
+  | "fr"
+  | "de"
+  | "it"
+  | "pt"
+  | "ja"
+  | "ko"
+  | "zh"
+  | "ar"
+  | "hi"
+  | "ru";
 
-const languageOptimizations: Record<SupportedLanguage, { culturalContext: string; trending: string[] }> = {
-  en: { culturalContext: "American/British context", trending: ["viral", "trending", "must-see"] },
-  es: { culturalContext: "Hispanic/Latino context", trending: ["viral", "tendencia", "imperdible"] },
-  fr: { culturalContext: "French/Francophone context", trending: ["viral", "tendance", "incontournable"] },
-  de: { culturalContext: "German/DACH context", trending: ["viral", "trend", "sehenswert"] },
-  it: { culturalContext: "Italian context", trending: ["virale", "tendenza", "da vedere"] },
-  pt: { culturalContext: "Portuguese/Brazilian context", trending: ["viral", "tendência", "imperdível"] },
-  ja: { culturalContext: "Japanese context", trending: ["バイラル", "トレンド", "必見"] },
-  ko: { culturalContext: "Korean context", trending: ["바이럴", "트렌드", "필수시청"] },
-  zh: { culturalContext: "Chinese context", trending: ["病毒式", "趋势", "必看"] },
-  ar: { culturalContext: "Arabic/Middle Eastern context", trending: ["فيروسي", "رائج", "لا يفوت"] },
-  hi: { culturalContext: "Indian/Hindi context", trending: ["वायरल", "ट्रेंडिंग", "जरूर देखें"] },
-  ru: { culturalContext: "Russian context", trending: ["вирусный", "тренд", "обязательно"] }
+const languageOptimizations: Record<
+  SupportedLanguage,
+  { culturalContext: string; trending: string[] }
+> = {
+  en: {
+    culturalContext: "American/British context",
+    trending: ["viral", "trending", "must-see"],
+  },
+  es: {
+    culturalContext: "Hispanic/Latino context",
+    trending: ["viral", "tendencia", "imperdible"],
+  },
+  fr: {
+    culturalContext: "French/Francophone context",
+    trending: ["viral", "tendance", "incontournable"],
+  },
+  de: {
+    culturalContext: "German/DACH context",
+    trending: ["viral", "trend", "sehenswert"],
+  },
+  it: {
+    culturalContext: "Italian context",
+    trending: ["virale", "tendenza", "da vedere"],
+  },
+  pt: {
+    culturalContext: "Portuguese/Brazilian context",
+    trending: ["viral", "tendência", "imperdível"],
+  },
+  ja: {
+    culturalContext: "Japanese context",
+    trending: ["バイラル", "トレンド", "必見"],
+  },
+  ko: {
+    culturalContext: "Korean context",
+    trending: ["바이럴", "트렌드", "필수시청"],
+  },
+  zh: {
+    culturalContext: "Chinese context",
+    trending: ["病毒式", "趋势", "必看"],
+  },
+  ar: {
+    culturalContext: "Arabic/Middle Eastern context",
+    trending: ["فيروسي", "رائج", "لا يفوت"],
+  },
+  hi: {
+    culturalContext: "Indian/Hindi context",
+    trending: ["वायरल", "ट्रेंडिंग", "जरूर देखें"],
+  },
+  ru: {
+    culturalContext: "Russian context",
+    trending: ["вирусный", "тренд", "обязательно"],
+  },
 };
 
 // Cache for frequently requested scripts (in production, use Redis)
-const scriptCache = new Map<string, { data: any; timestamp: number; expiresAt: number }>();
+const scriptCache = new Map<
+  string,
+  { data: any; timestamp: number; expiresAt: number }
+>();
 const CACHE_DURATION = 1000 * 60 * 30; // 30 minutes
 
 export async function POST(req: NextRequest) {
@@ -71,34 +114,47 @@ export async function POST(req: NextRequest) {
       headers: req.headers,
     });
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Type-safe user access
     const userId = session.user.id;
-    const userLanguage: SupportedLanguage = 'en'; // Default to English for now
+    const userLanguage: SupportedLanguage = "en"; // Default to English for now
 
     // Rate limiting
     const { success, limit, reset, remaining } = await ratelimit.check(userId);
-    
+
     if (!success) {
-      return NextResponse.json({
-        error: 'Rate limit exceeded',
-        limit,
-        reset: new Date(reset),
-        remaining
-      }, { 
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
-          'X-RateLimit-Reset': reset.toString()
-        }
-      });
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded",
+          limit,
+          reset: new Date(reset),
+          remaining,
+        },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+          },
+        },
+      );
     }
 
     const body: unknown = await req.json();
-    const { topic, videoType, duration, tone, platform, targetAudience, keywords, includeHook, includeCTA } = schema.parse(body);
+    const {
+      topic,
+      videoType,
+      duration,
+      tone,
+      platform,
+      targetAudience,
+      keywords,
+      includeHook,
+      includeCTA,
+    } = schema.parse(body);
 
     // Generate cache key with proper language handling
     const cacheKey = JSON.stringify({
@@ -112,33 +168,33 @@ export async function POST(req: NextRequest) {
       culturalContext: languageOptimizations[userLanguage].culturalContext,
       brandVoiceId: null,
       templateId: null,
-      contentGuidelines: null
+      contentGuidelines: null,
     });
 
     // Check cache first
     const cached = scriptCache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) {
       // Track usage for cached response
-      await trackToolUsageServer(db, userId, 'video-script-generator', {
+      await trackToolUsageServer(db, userId, "video-script-generator", {
         cached: true,
         platform,
         videoType,
         duration,
-        language: userLanguage
+        language: userLanguage,
       });
-      
+
       return NextResponse.json({
         ...cached.data,
         cached: true,
-        cacheTimestamp: cached.timestamp
+        cacheTimestamp: cached.timestamp,
       });
     }
 
     // Fetch AI settings from DB
     const settings = await db.query.settings.findFirst();
     const ai = settings?.general?.ai;
-    const enabledModels = ai?.enabledModels ?? ['gpt-4o-mini'];
-    const apiKey = ai?.apiKey ?? process.env.OPENAI_API_KEY ?? '';
+    const enabledModels = ai?.enabledModels ?? ["gpt-4o-mini"];
+    const apiKey = ai?.apiKey ?? process.env.OPENAI_API_KEY ?? "";
 
     const { instance } = await getAIInstance({
       apiKey,
@@ -181,7 +237,7 @@ export async function POST(req: NextRequest) {
 - Focus on universal engagement principles
 - Include flexible timing for different formats
 - Use platform-agnostic storytelling techniques
-- Provide format variations and adaptation notes`
+- Provide format variations and adaptation notes`,
     };
 
     const videoTypeInstructions = {
@@ -223,7 +279,7 @@ export async function POST(req: NextRequest) {
 - Use visual metaphors and real-world examples
 - Include "why this matters" moments
 - Add perspective from different viewpoints
-- Connect to broader implications and applications`
+- Connect to broader implications and applications`,
     };
 
     const toneInstructions = {
@@ -265,11 +321,13 @@ export async function POST(req: NextRequest) {
 - Create comedic relief at strategic points
 - Include self-deprecating humor when appropriate
 - Use observational comedy and relatable situations
-- Balance humor with valuable content delivery`
+- Balance humor with valuable content delivery`,
     };
 
-    const audienceString = targetAudience ? `\nTarget Audience: ${targetAudience}` : '';
-    const keywordsString = keywords ? `\nFocus Keywords: ${keywords}` : '';
+    const audienceString = targetAudience
+      ? `\nTarget Audience: ${targetAudience}`
+      : "";
+    const keywordsString = keywords ? `\nFocus Keywords: ${keywords}` : "";
 
     const prompt = `Create a highly engaging ${duration}-minute ${videoType} video script about "${topic}" for ${platform}.
     
@@ -305,7 +363,7 @@ FORMAT REQUIREMENTS:
 
 **TITLE:** [Create 3 title options with power words and emotional triggers]
 
-${includeHook ? `**HOOK:** [First 3-15 seconds - create immediate curiosity, pattern interrupt, or bold statement. Include specific timing and visual cues]` : ''}
+${includeHook ? `**HOOK:** [First 3-15 seconds - create immediate curiosity, pattern interrupt, or bold statement. Include specific timing and visual cues]` : ""}
 
 **INTRODUCTION:** [Establish credibility, preview value, and create investment in watching. Include audience connection points]
 
@@ -328,7 +386,7 @@ ${includeHook ? `**HOOK:** [First 3-15 seconds - create immediate curiosity, pat
 
 **CONCLUSION:** [Powerful summary with key takeaways and emotional resonance]
 
-${includeCTA ? `**CALL TO ACTION:** [Specific, clear action with urgency and benefit. Include multiple CTA options for different engagement levels]` : ''}
+${includeCTA ? `**CALL TO ACTION:** [Specific, clear action with urgency and benefit. Include multiple CTA options for different engagement levels]` : ""}
 
 **TECHNICAL NOTES:**
 - Total estimated duration: ${duration} minutes
@@ -371,50 +429,65 @@ Always include specific production notes, timing cues, and engagement optimizati
       prompt,
       maxTokens: 3000,
       temperature: 0.8,
-      system: systemPrompt
+      system: systemPrompt,
     });
 
-    const messageContent = typeof result.text === 'string' ? result.text : '';
+    const messageContent = typeof result.text === "string" ? result.text : "";
 
     // Parse the script sections with improved regex patterns
     const scriptSections = {
-      title: '',
-      hook: '',
-      introduction: '',
-      mainContent: '',
-      conclusion: '',
-      callToAction: '',
-      technicalNotes: '',
-      fullScript: messageContent
+      title: "",
+      hook: "",
+      introduction: "",
+      mainContent: "",
+      conclusion: "",
+      callToAction: "",
+      technicalNotes: "",
+      fullScript: messageContent,
     };
 
     if (messageContent) {
       // Extract title (handle multiple title options)
-      const titleMatch = /\*\*TITLE:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      const titleMatch = /\*\*TITLE:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(
+        messageContent,
+      );
       if (titleMatch?.[1]) scriptSections.title = titleMatch[1].trim();
 
       // Extract hook
-      const hookMatch = /\*\*HOOK:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      const hookMatch = /\*\*HOOK:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(
+        messageContent,
+      );
       if (hookMatch?.[1]) scriptSections.hook = hookMatch[1].trim();
 
       // Extract introduction
-      const introMatch = /\*\*INTRODUCTION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      const introMatch = /\*\*INTRODUCTION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(
+        messageContent,
+      );
       if (introMatch?.[1]) scriptSections.introduction = introMatch[1].trim();
 
       // Extract main content
-      const mainMatch = /\*\*MAIN CONTENT:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      const mainMatch = /\*\*MAIN CONTENT:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(
+        messageContent,
+      );
       if (mainMatch?.[1]) scriptSections.mainContent = mainMatch[1].trim();
 
       // Extract conclusion
-      const conclusionMatch = /\*\*CONCLUSION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
-      if (conclusionMatch?.[1]) scriptSections.conclusion = conclusionMatch[1].trim();
+      const conclusionMatch =
+        /\*\*CONCLUSION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      if (conclusionMatch?.[1])
+        scriptSections.conclusion = conclusionMatch[1].trim();
 
       // Extract call to action
-      const ctaMatch = /\*\*CALL TO ACTION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      const ctaMatch = /\*\*CALL TO ACTION:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(
+        messageContent,
+      );
       if (ctaMatch?.[1]) scriptSections.callToAction = ctaMatch[1].trim();
 
       // Extract technical notes
-      const notesMatch = /\*\*TECHNICAL NOTES:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(messageContent);
+      const notesMatch =
+        /\*\*TECHNICAL NOTES:\*\*\s*(.*?)(?=\n\*\*|\n\n|$)/s.exec(
+          messageContent,
+        );
       if (notesMatch?.[1]) scriptSections.technicalNotes = notesMatch[1].trim();
     }
 
@@ -428,18 +501,18 @@ Always include specific production notes, timing cues, and engagement optimizati
       targetAudience,
       keywords,
       estimatedReadingTime: Math.ceil(messageContent.length / 200), // Rough estimate: 200 chars per minute
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
 
     // Cache the response
     scriptCache.set(cacheKey, {
       data: responseData,
       timestamp: Date.now(),
-      expiresAt: Date.now() + CACHE_DURATION
+      expiresAt: Date.now() + CACHE_DURATION,
     });
 
     // Track usage analytics
-    await trackToolUsageServer(db, userId, 'video-script-generator', {
+    await trackToolUsageServer(db, userId, "video-script-generator", {
       platform,
       videoType,
       duration,
@@ -449,48 +522,60 @@ Always include specific production notes, timing cues, and engagement optimizati
       features: {
         streaming: false,
         seoOptimized: false,
-        multiLanguage: userLanguage !== 'en',
-        brandVoice: false
-      }
+        multiLanguage: userLanguage !== "en",
+        brandVoice: false,
+      },
     });
 
     return NextResponse.json(responseData);
   } catch (error: unknown) {
     // Enhanced error handling
-    console.error('Video script generation error:', error);
-    
+    console.error("Video script generation error:", error);
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Invalid input parameters',
-        details: error.errors,
-        type: 'validation_error'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "Invalid input parameters",
+          details: error.errors,
+          type: "validation_error",
+        },
+        { status: 400 },
+      );
     }
 
     // Handle specific AI service errors
-    if (typeof error === 'object' && error !== null && 'message' in error) {
+    if (typeof error === "object" && error !== null && "message" in error) {
       const errorMessage = (error as { message: string }).message;
-      
-      if (errorMessage.includes('rate limit')) {
-        return NextResponse.json({
-          error: 'AI service rate limit exceeded. Please try again later.',
-          type: 'rate_limit_error',
-          retryAfter: 60
-        }, { status: 429 });
+
+      if (errorMessage.includes("rate limit")) {
+        return NextResponse.json(
+          {
+            error: "AI service rate limit exceeded. Please try again later.",
+            type: "rate_limit_error",
+            retryAfter: 60,
+          },
+          { status: 429 },
+        );
       }
-      
-      if (errorMessage.includes('quota')) {
-        return NextResponse.json({
-          error: 'AI service quota exceeded. Please upgrade your plan.',
-          type: 'quota_error'
-        }, { status: 402 });
+
+      if (errorMessage.includes("quota")) {
+        return NextResponse.json(
+          {
+            error: "AI service quota exceeded. Please upgrade your plan.",
+            type: "quota_error",
+          },
+          { status: 402 },
+        );
       }
     }
 
-    return NextResponse.json({ 
-      error: 'Failed to generate video script. Please try again.',
-      type: 'internal_error',
-      timestamp: new Date().toISOString()
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to generate video script. Please try again.",
+        type: "internal_error",
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 },
+    );
   }
 }

@@ -7,19 +7,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
 import {
-  MessagesSquare,
   TrendingUp,
   TrendingDown,
   Minus,
   RefreshCw,
-  BarChart3,
   CheckCircle2,
+  MessagesSquare,
+  BarChart3,
   AlertCircle,
-  Clock,
 } from "lucide-react";
-import { memo, useMemo, useState, useCallback, useRef } from "react";
+import { memo, useMemo, useCallback, useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import React from "react";
 
 // Constants for better maintainability
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
@@ -27,11 +25,6 @@ const SIGNIFICANT_CHANGE_THRESHOLD = 5;
 const MINIMAL_CHANGE_THRESHOLD = 0.1;
 
 // Types
-interface UsageData {
-  total: number;
-  percentageChange: number;
-}
-
 interface TotalUsageProps {
   /** Whether to show site-wide usage vs user-specific */
   isSiteWide?: boolean;
@@ -43,8 +36,7 @@ interface TotalUsageProps {
   interactive?: boolean;
   /** Custom click handler */
   onClick?: () => void;
-  /** Whether to show refresh button */
-  showRefresh?: boolean;
+
   /** Custom class name */
   className?: string;
   /** Custom aria-label for accessibility */
@@ -67,13 +59,16 @@ const getTrendIcon = (change: number) => {
 };
 
 const getTrendColor = (change: number): string => {
-  if (change > MINIMAL_CHANGE_THRESHOLD) return "text-green-600 dark:text-green-400";
-  if (change < -MINIMAL_CHANGE_THRESHOLD) return "text-red-600 dark:text-red-400";
+  if (change > MINIMAL_CHANGE_THRESHOLD)
+    return "text-green-600 dark:text-green-400";
+  if (change < -MINIMAL_CHANGE_THRESHOLD)
+    return "text-red-600 dark:text-red-400";
   return "text-muted-foreground";
 };
 
 const getTrendBg = (change: number): string => {
-  if (change > MINIMAL_CHANGE_THRESHOLD) return "bg-green-50 dark:bg-green-950/20";
+  if (change > MINIMAL_CHANGE_THRESHOLD)
+    return "bg-green-50 dark:bg-green-950/20";
   if (change < -MINIMAL_CHANGE_THRESHOLD) return "bg-red-50 dark:bg-red-950/20";
   return "bg-muted/50";
 };
@@ -114,62 +109,68 @@ const TotalUsage = memo(function TotalUsage({
   showDetails = true,
   interactive = true,
   onClick,
-  showRefresh = true,
   className,
   "aria-label": ariaLabel,
   "data-testid": testId,
 }: TotalUsageProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshTimeoutRef = useRef<NodeJS.Timeout>();
+  const refreshTimeoutRef = useRef<number | null>(null);
 
-  const { data, refetch, isStale, error, isLoading } =
-    api.usage.getTotalUsage.useQuery(
-      { isSiteWide },
-      {
-        staleTime: STALE_TIME,
-        refetchOnWindowFocus: false,
-        suspense: false,
-        retry: 3,
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      },
-    );
+  const { data, refetch, error, isLoading } = api.usage.getTotalUsage.useQuery(
+    { isSiteWide },
+    {
+      staleTime: STALE_TIME,
+      refetchOnWindowFocus: false,
+      suspense: false,
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  );
 
   // Handle manual refresh with debouncing
   const handleRefresh = useCallback(async () => {
     if (isRefreshing) return;
 
     // Clear any existing timeout
-    if (refreshTimeoutRef.current) {
-      clearTimeout(refreshTimeoutRef.current);
+    const currentTimeout = refreshTimeoutRef.current;
+    if (currentTimeout !== null) {
+      window.clearTimeout(currentTimeout);
+      refreshTimeoutRef.current = null;
     }
 
     setIsRefreshing(true);
-    
+
     try {
       await refetch();
       toast.success("Usage data refreshed", {
         icon: <CheckCircle2 className="size-4 text-green-500" />,
         duration: 3000,
       });
-    } catch (refreshError) {
-      console.error("Failed to refresh usage data:", refreshError);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to refresh data";
+      console.error("Failed to refresh usage data:", errorMessage);
       toast.error("Failed to refresh data. Please try again.", {
         icon: <AlertCircle className="text-destructive size-4" />,
         duration: 5000,
       });
     } finally {
       // Add slight delay to prevent rapid clicking
-      refreshTimeoutRef.current = setTimeout(() => {
+      const timeoutId = window.setTimeout(() => {
         setIsRefreshing(false);
       }, 500);
+
+      refreshTimeoutRef.current = timeoutId;
     }
   }, [refetch, isRefreshing]);
 
   // Cleanup timeout on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
+      const currentTimeout = refreshTimeoutRef.current;
+      if (currentTimeout !== null) {
+        window.clearTimeout(currentTimeout);
+        refreshTimeoutRef.current = null;
       }
     };
   }, []);
@@ -180,7 +181,8 @@ const TotalUsage = memo(function TotalUsage({
 
     const TrendIcon = getTrendIcon(data.percentageChange);
     const isGrowing = data.percentageChange > MINIMAL_CHANGE_THRESHOLD;
-    const isSignificantChange = Math.abs(data.percentageChange) > SIGNIFICANT_CHANGE_THRESHOLD;
+    const isSignificantChange =
+      Math.abs(data.percentageChange) > SIGNIFICANT_CHANGE_THRESHOLD;
 
     return {
       total: data.total,
@@ -194,7 +196,12 @@ const TotalUsage = memo(function TotalUsage({
       isSignificantChange,
       // Additional computed values for better UX
       absoluteChange: Math.abs(data.percentageChange),
-      changeDirection: data.percentageChange > 0 ? "increase" : data.percentageChange < 0 ? "decrease" : "stable",
+      changeDirection:
+        data.percentageChange > 0
+          ? "increase"
+          : data.percentageChange < 0
+            ? "decrease"
+            : "stable",
     };
   }, [data]);
 
@@ -204,23 +211,28 @@ const TotalUsage = memo(function TotalUsage({
   // Computed aria-label for better accessibility
   const computedAriaLabel = useMemo(() => {
     if (ariaLabel) return ariaLabel;
-    
+
     const usageType = isSiteWide ? "Site-wide" : "Personal";
     const total = metrics?.formattedTotal ?? "loading";
-    const trend = metrics ? `, ${metrics.changeDirection} by ${metrics.absoluteChange.toFixed(1)}% from last month` : "";
-    
+    const trend = metrics
+      ? `, ${metrics.changeDirection} by ${metrics.absoluteChange.toFixed(1)}% from last month`
+      : "";
+
     return `${usageType} usage: ${total} generations${trend}`;
   }, [ariaLabel, isSiteWide, metrics]);
 
   // Keyboard event handler for accessibility
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!interactive || !onClick) return;
-    
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      onClick();
-    }
-  }, [interactive, onClick]);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!interactive || !onClick) return;
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onClick();
+      }
+    },
+    [interactive, onClick],
+  );
 
   // Loading state
   if (isLoading) {
@@ -249,7 +261,7 @@ const TotalUsage = memo(function TotalUsage({
   // Error state
   if (error || !data) {
     const errorMessage = error?.message ?? "Unable to load usage data";
-    
+
     return (
       <Card
         className={cn(
@@ -265,13 +277,13 @@ const TotalUsage = memo(function TotalUsage({
           <CardTitle className={sizeStyles.title}>
             {isSiteWide ? "Site Usage" : "Your Usage"}
           </CardTitle>
-          <AlertCircle 
-            className={cn("text-destructive", sizeStyles.icon)} 
+          <AlertCircle
+            className={cn("text-destructive", sizeStyles.icon)}
             aria-hidden="true"
           />
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="text-destructive font-medium text-sm">
+          <div className="text-destructive text-sm font-medium">
             {errorMessage}
           </div>
           <Button
@@ -300,12 +312,12 @@ const TotalUsage = memo(function TotalUsage({
         "hover:shadow-primary/5 hover:-translate-y-0.5 hover:shadow-lg",
         interactive && [
           "hover:border-primary/20 cursor-pointer focus-visible:outline-none",
-          "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+          "focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2",
         ],
         metrics?.isGrowing &&
-        "bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/10",
+          "bg-gradient-to-br from-green-50/50 to-transparent dark:from-green-950/10",
         sizeStyles.card,
-        className
+        className,
       )}
       onClick={interactive ? onClick : undefined}
       onKeyDown={handleKeyDown}
@@ -317,14 +329,14 @@ const TotalUsage = memo(function TotalUsage({
       {/* Background gradient effect */}
       <div
         className="from-primary/5 absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        aria-hidden="true" 
+        aria-hidden="true"
       />
 
       <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle
           className={cn(
             "group-hover:text-foreground transition-colors",
-            sizeStyles.title
+            sizeStyles.title,
           )}
         >
           {isSiteWide ? "Total Site Usage" : "Your Usage"}
@@ -333,9 +345,9 @@ const TotalUsage = memo(function TotalUsage({
         <MessagesSquare
           className={cn(
             "text-muted-foreground group-hover:text-primary transition-all group-hover:scale-110",
-            sizeStyles.icon
+            sizeStyles.icon,
           )}
-          aria-hidden="true" 
+          aria-hidden="true"
         />
       </CardHeader>
 
@@ -345,14 +357,15 @@ const TotalUsage = memo(function TotalUsage({
           <div
             className={cn(
               "group-hover:text-primary transition-all",
-              sizeStyles.value
+              sizeStyles.value,
             )}
             aria-label={`${metrics?.total.toLocaleString()} total generations`}
           >
             {metrics?.formattedTotal}
           </div>
           {metrics?.total !== undefined &&
-            metrics.total !== parseFloat(metrics.formattedTotal.replace(/[^\d.-]/g, "")) && (
+            metrics.total !==
+              parseFloat(metrics.formattedTotal.replace(/[^\d.-]/g, "")) && (
               <div
                 className="text-muted-foreground mb-1 font-mono text-xs"
                 aria-label={`Exact count: ${metrics.total.toLocaleString()}`}
@@ -370,7 +383,7 @@ const TotalUsage = memo(function TotalUsage({
                 className={cn(
                   "flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-all",
                   metrics.trendBg,
-                  metrics.trendColor
+                  metrics.trendColor,
                 )}
                 role="status"
                 aria-label={`${metrics.changeDirection} by ${metrics.absoluteChange.toFixed(1)}% from last month`}
