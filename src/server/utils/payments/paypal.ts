@@ -559,6 +559,16 @@ export class PayPalPaymentProvider implements PaymentProvider {
     };
   }
 
+  /**
+   * Fetches and processes the balance information from PayPal.
+   *
+   * This function makes an authenticated request to PayPal's API endpoint to retrieve wallet balance accounts.
+   * It handles the response by checking if it is successful, parsing the JSON data, and mapping the 'reserved' field to 'pending'.
+   * If the response is not successful, it throws an error with the detailed error message from the response.
+   *
+   * @returns An object containing the available balance, pending balance, and currency code.
+   * @throws Error If the API request fails or returns an unsuccessful status.
+   */
   async getBalance() {
     // https://developer.paypal.com/api/limited-release/balance-accounts/v2/
     try {
