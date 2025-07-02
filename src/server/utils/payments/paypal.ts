@@ -19,7 +19,6 @@ import {
 import {
   type PayPalSubscriptionPlan,
   type PayPalSubscriptionResponse,
-  type PayPalBalanceResponse,
 } from "./paypal-types";
 import { type PaymentProvider } from "./types";
 
@@ -87,6 +86,9 @@ export class PayPalPaymentProvider implements PaymentProvider {
       },
       this.client, // Pass the client instance as second argument
     );
+  }
+  getBalance(): Promise<{ available: number; pending: number; currency: string; }> {
+    throw new Error("Method not implemented.");
   }
 
   private currentToken?: OAuthToken;
@@ -557,27 +559,6 @@ export class PayPalPaymentProvider implements PaymentProvider {
       secret: webhookData.id, // Use webhook ID as secret
       url: webhookData.url,
     };
-  }
-
-  async getBalance() {
-    // https://developer.paypal.com/api/limited-release/balance-accounts/v2/
-    try {
-      const response = await this.fetchWithAuth("/v2/wallet/balance-accounts");
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(`PayPal getBalance failed: ${JSON.stringify(error)}`);
-      }
-      const data = (await response.json()) as PayPalBalanceResponse;
-      // The PayPal API does not provide a 'pending' field; we map 'reserved' to 'pending' for compatibility.
-      return {
-        available: parseFloat(data.total_available.value),
-        pending: parseFloat(data.total_reserved.value), // 'reserved' mapped to 'pending'
-        currency: data.total_available.currency_code.toLowerCase(),
-      };
-    } catch (error) {
-      // Optionally log error
-      throw new Error("PayPal getBalance failed: " + (error instanceof Error ? error.message : String(error)));
-    }
   }
 
   manageBillingPortal(customerId: string): Promise<{ url: string }> {
