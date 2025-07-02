@@ -82,6 +82,9 @@ const TIME_RANGES = [
 const PLATFORMS = Object.keys(chartConfig) as Array<keyof typeof chartConfig>;
 
 // Utility function to format dates consistently
+/**
+ * Formats a date string according to specified options.
+ */
 const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions) => {
   try {
     return new Date(dateString).toLocaleDateString("en-US", options);
@@ -91,6 +94,12 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions) => 
 };
 
 // Enhanced CSV export with better formatting and error handling
+/**
+ * Exports usage data to a CSV file.
+ *
+ * This function generates a CSV file containing usage data for specified platforms over a given time range.
+ * It constructs the CSV content by mapping the data entries and platforms, formats dates, and handles potential errors during export.
+ */
 const exportToCSV = (data: UsageEntry[], platforms: string[], timeRange: string) => {
   try {
     const header = ["Date", ...platforms.map(p => chartConfig[p as keyof typeof chartConfig]?.label || p)];
@@ -117,6 +126,9 @@ const exportToCSV = (data: UsageEntry[], platforms: string[], timeRange: string)
 };
 
 // Platform toggle button component
+/**
+ * Toggles platform selection and invokes onToggle callback.
+ */
 const PlatformToggle = ({ 
   platform, 
   isSelected, 
@@ -161,6 +173,16 @@ type DailyStats = {
   youtube?: number;
 };
 
+/**
+ * Usage overview component for displaying daily usage trends across social media platforms.
+ *
+ * This component fetches and processes usage data based on selected time range and platforms.
+ * It handles state management for selected platforms, error handling, and rendering of a chart.
+ * The component also includes controls for exporting the filtered data as CSV.
+ *
+ * @param isSiteWide - Optional boolean indicating whether to display site-wide statistics. Defaults to false.
+ * @param className - Optional string for additional CSS classes. Defaults to an empty string.
+ */
 export function UsageOverview({ isSiteWide = false, className = "" }: UsageOverviewProps) {
   const [timeRange, setTimeRange] = useState<string>("30");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(PLATFORMS);
