@@ -101,3 +101,30 @@ export interface PayPalSubscriptionPlan {
   };
   quantity_supported: boolean;
 }
+
+// --- PayPal Balance API Types ---
+export interface PayPalBalanceAmount {
+  currency_code: string;
+  value: string;
+}
+
+export interface PayPalBalanceAccount {
+  available: PayPalBalanceAmount;
+  reserved: PayPalBalanceAmount;
+  links?: Array<{
+    href: string;
+    rel: string;
+    method: string;
+  }>;
+}
+
+export interface PayPalBalanceResponse {
+  total_available: PayPalBalanceAmount;
+  total_reserved: PayPalBalanceAmount;
+  balance_accounts: PayPalBalanceAccount[];
+  links?: Array<{
+    href: string;
+    rel: string;
+    method: string;
+  }>;
+}
