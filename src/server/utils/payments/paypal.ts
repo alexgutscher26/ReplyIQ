@@ -87,6 +87,9 @@ export class PayPalPaymentProvider implements PaymentProvider {
       this.client, // Pass the client instance as second argument
     );
   }
+  /**
+   * Retrieves the balance information of the user.
+   */
   getBalance(): Promise<{ available: number; pending: number; currency: string; }> {
     throw new Error("Method not implemented.");
   }
@@ -561,6 +564,9 @@ export class PayPalPaymentProvider implements PaymentProvider {
     };
   }
 
+  /**
+   * Throws an error indicating that the method is not implemented.
+   */
   manageBillingPortal(customerId: string): Promise<{ url: string }> {
     throw new Error(`Method not implemented. ${customerId}`);
   }
