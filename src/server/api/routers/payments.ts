@@ -24,10 +24,6 @@ export const paymentsRouter = createTRPCRouter({
       ctx.payments.instance.createSubscription(input),
     ),
 
-  getBalance: paymentProcedure.query(({ ctx }) =>
-    ctx.payments.instance.getBalance(),
-  ),
-
   createCheckout: paymentProcedure
     .input(
       z.object({

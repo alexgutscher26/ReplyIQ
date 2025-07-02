@@ -373,9 +373,6 @@ export const settingsRouter = createTRPCRouter({
       try {
         logs.push(`Testing connection to ${ctx.payments.provider.name}...`);
 
-        const balance = await ctx.payments.instance.getBalance();
-        logs.push(`Balance: ${JSON.stringify(balance)}`);
-
         return {
           success: true,
           message: `Successfully connected to ${ctx.payments.provider.name}`,
