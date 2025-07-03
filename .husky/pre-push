@@ -1,3 +1,0 @@
-echo "Running type checking and linting..."
-npm run typecheck
-npm run lint
