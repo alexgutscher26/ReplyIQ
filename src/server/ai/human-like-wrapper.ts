@@ -93,7 +93,7 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   
   // Implement the required doStream method
   /**
-   * Streams the response from the wrapped model with specified options.
+   * Streams the response from the wrapped model with specified options and additional settings.
    */
   async doStream(
     options: LanguageModelV1CallOptions & {
@@ -122,9 +122,9 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   /**
    * Applies human-like transformations to the input text based on specified options.
    *
-   * This function modifies the input text by adding filler words, grammatical variations,
+   * This function modifies the input text by conditionally adding filler words, grammatical variations,
    * and pauses if the corresponding options are enabled. The transformations include:
-   * - Occasionally adding a filler word at the beginning of the text.
+   * - Occasionally inserting a filler word at the start of the text.
    * - Replacing periods with ellipses or extended spaces to simulate natural pausing.
    */
   private applyHumanLikeTransformations(text: string): string {
@@ -210,6 +210,16 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
     );
   }
 
+  /**
+   * Adds natural pauses to a given text by inserting ellipsis or dashes.
+   *
+   * This function processes each sentence in the input text, and with a 30% probability,
+   * it inserts either an ellipsis or a dash as a pause. The insertion point is randomly chosen
+   * within the sentence, but only if the sentence contains more than five words and has
+   * a length greater than 30 characters.
+   *
+   * @param text - The input string to which natural pauses will be added.
+   */
   private addNaturalPauses(text: string): string {
     // Add ellipsis or dashes for natural pauses
     return text.split('.').map(sentence => {
