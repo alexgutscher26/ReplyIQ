@@ -79,6 +79,9 @@ export function UpdateAiModelProviderSettingsForm() {
     }
   });
 
+  /**
+   * Submits AI model provider settings by updating them.
+   */
   async function onSubmit(data: AIModelProviderSettings) {
     update.mutate(data);
   }
