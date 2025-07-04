@@ -3,6 +3,7 @@ import { billing } from "@/server/db/schema/billing-schema";
 import { generations } from "@/server/db/schema/generations-schema";
 import { usage } from "@/server/db/schema/usage-schema";
 import { getAIInstance } from "@/server/utils";
+import { HumanLikeModelWrapper } from "@/server/ai/human-like-wrapper";
 import { generationsSchema } from "@/utils/schema/generations";
 import { TRPCError } from "@trpc/server";
 import { generateText } from "ai";
@@ -92,13 +93,18 @@ Custom Prompt: ${customPrompt}`;
         ${ai?.systemPrompt?.trim() ? `- customPrompt: ${customPrompt}` : ""}
         `;
 
-      const { instance } = await getAIInstance({
+      const { instance, isHumanLike, humanLikeOptions } = await getAIInstance({
         apiKey: ai?.apiKey ?? "",
         enabledModels,
       });
 
+      // Apply human-like wrapper if needed
+      const modelToUse = isHumanLike && humanLikeOptions
+        ? new HumanLikeModelWrapper(instance, humanLikeOptions)
+        : instance;
+
       const result = await generateText({
-        model: instance,
+        model: modelToUse,
         system,
         prompt: post,
       });
