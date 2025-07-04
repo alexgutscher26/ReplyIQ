@@ -30,6 +30,15 @@ import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+/**
+ * Form component for updating AI model provider settings.
+ *
+ * This function handles the form logic for updating AI model provider settings, including fetching current settings,
+ * handling form submissions, and displaying success or error notifications. It manages human-like options conditionally
+ * based on the selected AI model.
+ *
+ * @returns A React functional component rendering the settings update form.
+ */
 export function UpdateAiModelProviderSettingsForm() {
   const utils = api.useUtils();
   const [settings] = api.settings.aiModel.useSuspenseQuery();
