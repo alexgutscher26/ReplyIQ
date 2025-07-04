@@ -11,6 +11,21 @@ dotenv.config();
 const TEST_PROMPT = 'Tell me a short story about a robot learning to be human';
 
 // Helper function to test a model with the human-like wrapper
+/**
+ * Tests a human-like model wrapper for a given provider and model key.
+ *
+ * This function creates an instance of the base model based on the provider,
+ * initializes a human-like model wrapper with specific configurations, generates text using the wrapper,
+ * and analyzes the response for human-like features such as filler words and natural pauses.
+ *
+ * @param {Object} params - The configuration parameters for testing the human-like model.
+ * @param {string} params.provider - The provider of the AI model (e.g., 'openai', 'mistral', 'google').
+ * @param {string} params.modelKey - The key or identifier of the model to be tested.
+ * @param {string} params.apiKey - The API key for accessing the AI model.
+ * @returns {Promise<Object>} An object containing the test results, including success status,
+ *                             response text, generation duration, and presence of human-like features.
+ * @throws Error If an unsupported provider is specified or if there is an error during text generation.
+ */
 async function testHumanLikeModel({
   provider,
   modelKey,
@@ -88,6 +103,16 @@ async function testHumanLikeModel({
 }
 
 // Main test function
+/**
+ * Runs a series of tests on multiple human-like models using their respective API keys.
+ *
+ * It iterates over an array of model configurations, skipping any without an API key.
+ * For each valid configuration, it calls the `testHumanLikeModel` function and stores the results.
+ * A delay of 1 second is added between tests to avoid overwhelming the servers.
+ * Finally, it prints a summary of all test results, indicating success or failure for each model.
+ *
+ * @returns Promise<void> - The function returns a promise that resolves when all tests are completed.
+ */
 async function main() {
   const models = [
     {
