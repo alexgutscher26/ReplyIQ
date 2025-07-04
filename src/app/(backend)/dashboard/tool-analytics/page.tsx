@@ -560,6 +560,16 @@ function PerformanceMetrics({ period }: { period: "7d" | "30d" | "90d" }) {
 }
 
 // Enhanced export functionality
+/**
+ * Modal component for exporting analytics data in various formats.
+ *
+ * The component fetches analytics data based on the selected period and allows users to export it in CSV, JSON, or PDF format.
+ * It also manages the export process state and handles errors gracefully.
+ *
+ * @param isOpen - A boolean indicating whether the modal is open.
+ * @param onClose - A function to close the modal.
+ * @param period - The time period for which analytics data should be exported, limited to "7d", "30d", "90d", or "1y".
+ */
 function ExportModal({
   isOpen,
   onClose,
@@ -800,6 +810,19 @@ function ExportModal({
 }
 
 // Settings Modal Component
+/**
+ * A modal component for managing analytics dashboard settings.
+ *
+ * This component provides a UI for users to configure various settings such as layout preferences,
+ * data export formats, and theme options. It also includes functionality to save and reset these settings.
+ * The settings are persisted in localStorage, and changes are applied dynamically based on user interactions.
+ *
+ * @param isOpen - A boolean indicating whether the modal is currently open.
+ * @param onClose - A function to close the modal.
+ * @param dashboardLayout - The current layout of the dashboard ("compact" or "default").
+ * @param setDashboardLayout - A function to update the dashboard layout.
+ * @param applyTheme - A function to apply a theme setting.
+ */
 function SettingsModal({
   isOpen,
   onClose,
@@ -842,6 +865,9 @@ function SettingsModal({
     };
   });
 
+  /**
+   * Saves settings to localStorage, applies layout and theme changes, and shows a success message.
+   */
   const handleSaveSettings = () => {
     try {
       // Save to localStorage
@@ -865,6 +891,9 @@ function SettingsModal({
     }
   };
 
+  /**
+   * Resets all settings to their default values and clears local storage.
+   */
   const handleResetSettings = () => {
     const defaultSettings = {
       autoRefresh: false,
@@ -1064,10 +1093,19 @@ function SettingsModal({
 }
 
 // Performance Alerts Component
+/**
+ * Renders a card component displaying performance alerts and provides functionality to send test alerts.
+ *
+ * The function fetches settings data using `api.settings.general.useQuery()` and handles sending alerts
+ * via `api.toolAnalytics.sendPerformanceAlert.useMutation()`. It conditionally renders loading or alert-specific UI based on the state.
+ */
 function PerformanceAlerts() {
   const { data: settings, isLoading } = api.settings.general.useQuery();
   const sendAlert = api.toolAnalytics.sendPerformanceAlert.useMutation();
 
+  /**
+   * Sends a manual test alert from the dashboard.
+   */
   const handleSendAlert = () => {
     sendAlert.mutate(
       {
@@ -1157,6 +1195,30 @@ function PerformanceAlerts() {
 }
 
 // Main analytics dashboard component
+/**
+ * @fileOverview The main component for the Enhanced Analytics Suite v2.0 dashboard.
+ * This component manages the overall layout, state, and functionality of the analytics dashboard,
+ * including tabs, charts, cards, and various admin notices.
+ *
+ * @component AnalyticsDashboard
+ *
+ * @requires React
+ * @requires hooks and components from 'react', 'next/router', 'react-toastify', 'zustand',
+ *           '@tabler/icons-react', 'date-fns', 'lodash', 'clsx', 'react-apexcharts'
+ *
+ * @property {string} activeTab - The currently selected tab in the dashboard.
+ * @property {string} period - The time period for which data is being displayed (e.g., "1y" for 1 year).
+ * @property {string} toolFilter - A filter applied to the tool usage chart.
+ * @property {boolean} isExportModalOpen - Indicates whether the export modal is open.
+ *
+ * @method handleTabChange - Updates the active tab when a new tab is selected.
+ * @method refreshData - Refreshes the data for the current period and tool filter.
+ * @method onToolFilterChange - Updates the tool filter based on user input.
+ * @method handleExportOpen - Opens the export modal for the chart.
+ * @method handleExportClose - Closes the export modal.
+ *
+ * @returns {JSX.Element} The JSX representation of the AnalyticsDashboard component.
+ */
 export default function ToolAnalyticsPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "1y">("30d");
   const [activeTab, setActiveTab] = useState("overview");
@@ -1255,6 +1317,16 @@ export default function ToolAnalyticsPage() {
 
   // Keyboard shortcuts
   useEffect(() => {
+    /**
+     * Handles key down events to perform various actions based on specific key presses.
+     *
+     * This function listens for key down events and performs actions such as manual refresh,
+     * toggling the settings panel, and showing the export modal based on the key pressed.
+     * It checks for specific keys ('r'/'R', 's'/'S', 'e'/'E') and ensures that no modifier keys
+     * (Ctrl, Meta, Shift) are pressed to execute the corresponding actions.
+     *
+     * @param event - The KeyboardEvent object representing the key down event.
+     */
     const handleKeyDown = (event: KeyboardEvent) => {
       // Manual refresh (R key)
       if (event.key === "r" || event.key === "R") {
@@ -1741,6 +1813,16 @@ export default function ToolAnalyticsPage() {
 }
 
 // Keep the existing CategoryBreakdown and TopUsers components (they were working well)
+/**
+ * Renders a category breakdown chart based on tool usage statistics.
+ *
+ * This function fetches tool usage statistics for a specified period and displays them in a card format.
+ * It shows a loading skeleton while the data is being fetched. Once the data is available, it renders
+ * a pie chart-like representation of the category distribution with bar indicators and counts.
+ *
+ * @param {Object} props - The component's properties.
+ * @param {"7d" | "30d" | "90d" | "1y"} props.period - The time period for which to fetch tool usage statistics.
+ */
 function CategoryBreakdown({
   period,
 }: {
