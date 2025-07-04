@@ -17,7 +17,8 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:human-like": "tsx scripts/test-human-like.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mdx}": [

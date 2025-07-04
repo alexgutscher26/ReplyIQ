@@ -11,13 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 import {
@@ -26,8 +19,14 @@ import {
   aiModelProviderSettingsSchema,
 } from "@/utils/schema/settings";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -58,18 +57,27 @@ export function UpdateAiModelProviderSettingsForm() {
 
   const form = useForm<AIModelProviderSettings>({
     resolver: zodResolver(aiModelProviderSettingsSchema),
-    defaultValues: settings,
-  });
-
-  useEffect(() => {
-    if (settings) {
-      form.reset(settings);
+    defaultValues: {
+      ...settings,
+      // Initialize with default human-like options if none exist
+      humanLikeOptions: settings?.humanLikeOptions ?? {
+        temperature: 0.8,
+        topP: 0.9,
+        addFillerWords: true,
+        addGrammaticalVariations: true,
+        addPauses: true
+      }
     }
-  }, [form, settings]);
+  });
 
   async function onSubmit(data: AIModelProviderSettings) {
     update.mutate(data);
   }
+
+  const selectedModel = AI_MODEL_LIST.find(
+    (model) => model.key === form.watch("enabledModels")?.[0]
+  );
+  const isHumanLike = selectedModel?.provider === "human-like";
 
   return (
     <Form {...form}>
@@ -84,23 +92,34 @@ export function UpdateAiModelProviderSettingsForm() {
                 <FormLabel>AI Model</FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange([value])}
-                  value={field.value?.[0]}
+                  value={field.value?.[0] ?? ""}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select AI Model" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {AI_MODEL_LIST.map((model, i) => (
-                      <SelectItem key={i} value={model.key}>
-                        {model.name}
+                    {AI_MODEL_LIST.map((model) => (
+                      <SelectItem key={model.key} value={model.key}>
+                        <div className="flex items-center gap-2">
+                          <span>{model.name}</span>
+                          {model.provider === "human-like" && (
+                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                              Human-like
+                            </span>
+                          )}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <FormDescription>Select an AI model to enable</FormDescription>
                 <FormMessage />
+                {isHumanLike && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Human-like models add natural variations to make AI responses more human-sounding.
+                  </p>
+                )}
               </FormItem>
             )}
           />
@@ -151,6 +170,103 @@ export function UpdateAiModelProviderSettingsForm() {
               </FormItem>
             )}
           />
+
+          {isHumanLike && (
+            <div className="space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <h4 className="text-sm font-medium text-primary">Human-like Settings</h4>
+              <FormField
+                control={form.control}
+                name="humanLikeOptions.temperature"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temperature: {field.value}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        {...field}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Controls randomness (0 = deterministic, 1 = more creative)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="humanLikeOptions.addFillerWords"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Add Filler Words</FormLabel>
+                        <FormDescription>
+                          Include natural-sounding filler words
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={field.onChange}
+                          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="humanLikeOptions.addGrammaticalVariations"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Add Grammatical Variations</FormLabel>
+                        <FormDescription>
+                          Vary sentence structure naturally
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={field.onChange}
+                          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="humanLikeOptions.addPauses"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel>Add Natural Pauses</FormLabel>
+                        <FormDescription>
+                          Include natural pauses in responses
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={field.onChange}
+                          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          )}
 
           <Button
             type="submit"

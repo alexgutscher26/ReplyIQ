@@ -63,6 +63,32 @@ export const AI_MODEL_LIST = [
     name: "Gemini 2.0 Flash-Lite",
     provider: "google",
   },
+  {
+    key: "human-like-gpt",
+    name: "Human-like GPT",
+    provider: "human-like",
+    baseModel: "gpt-4o-mini",
+    humanLikeOptions: {
+      temperature: 0.8,
+      topP: 0.9,
+      addFillerWords: true,
+      addGrammaticalVariations: true,
+      addPauses: true
+    }
+  },
+  {
+    key: "human-like-mistral",
+    name: "Human-like Mistral",
+    provider: "human-like",
+    baseModel: "mistral-small-latest",
+    humanLikeOptions: {
+      temperature: 0.8,
+      topP: 0.9,
+      addFillerWords: true,
+      addGrammaticalVariations: true,
+      addPauses: true
+    }
+  },
 ] as const;
 export type AiModelList = typeof AI_MODEL_LIST;
 export type AIModel = (typeof AI_MODEL_LIST)[number]["key"];
@@ -71,10 +97,46 @@ export const AI_MODELS = AI_MODEL_LIST.map((model) => model.key) as [
   ...string[],
 ];
 
+// Base AI model type
+type BaseAIModel = {
+  key: string;
+  name: string;
+  provider: string;
+};
+
+// Human-like model type
+type HumanLikeAIModel = BaseAIModel & {
+  provider: "human-like";
+  baseModel: string;
+  humanLikeOptions: {
+    temperature: number;
+    topP: number;
+    addFillerWords: boolean;
+    addGrammaticalVariations: boolean;
+    addPauses: boolean;
+  };
+};
+
+// Regular AI model type
+type RegularAIModel = BaseAIModel & {
+  provider: Exclude<string, "human-like">;
+};
+
+export type AIModelType = RegularAIModel | HumanLikeAIModel;
+
+export const humanLikeOptionsSchema = z.object({
+  temperature: z.number().min(0).max(1).default(0.7),
+  topP: z.number().min(0).max(1).default(0.9),
+  addFillerWords: z.boolean().default(true),
+  addGrammaticalVariations: z.boolean().default(true),
+  addPauses: z.boolean().default(true),
+}).default({});
+
 export const aiModelProviderSettingsSchema = z.object({
   enabledModels: z.array(z.enum(AI_MODELS)).default([]),
   apiKey: z.string().default(""),
   systemPrompt: z.string().default(""),
+  humanLikeOptions: humanLikeOptionsSchema,
 });
 export type AIModelProviderSettings = z.infer<
   typeof aiModelProviderSettingsSchema

@@ -11,15 +11,15 @@ import {
   STORAGE_PROVIDERS_LIST,
   type StorageProviderSettings,
 } from "@/utils/schema/settings";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
-import { headers } from "next/headers";
+import { createMistral } from "@ai-sdk/mistral";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { cache } from "react";
 import { UTApi } from "uploadthing/server";
 import { PayPalPaymentProvider } from "./payments/paypal";
 import { StripePaymentProvider } from "./payments/stripe";
 import { type PaymentProvider } from "./payments/types";
+import { headers } from "next/headers";
 
 export const getSession = cache(async (customHeaders?: Headers) => {
   return await auth.api.getSession({
@@ -45,6 +45,57 @@ export const getAIInstance = async ({
     throw new Error("No AI model selected");
   }
 
+  // Handle human-like models - return the base model instance
+  // The human-like wrapper will be applied at the route level if needed
+  if (selectedModel.provider === "human-like") {
+    // Get the base model key
+    const baseModelKey = (selectedModel as any).baseModel;
+    if (!baseModelKey) {
+      throw new Error("Human-like model is missing baseModel configuration");
+    }
+    
+    // Find the base model
+    const baseModel = AI_MODEL_LIST.find(m => m.key === baseModelKey);
+    if (!baseModel) {
+      throw new Error(`Base model ${baseModelKey} not found for human-like model`);
+    }
+
+    // Return the base model instance without the human-like wrapper
+    switch (baseModel.provider) {
+      case "openai": {
+        const openai = createOpenAI({ apiKey });
+        return {
+          instance: openai(baseModel.key),
+          model: baseModel,
+          isHumanLike: true,
+          humanLikeOptions: selectedModel.humanLikeOptions || {}
+        };
+      }
+      case "mistralai": {
+        const mistralai = createMistral({ apiKey });
+        return {
+          instance: mistralai(baseModel.key),
+          model: baseModel,
+          isHumanLike: true,
+          humanLikeOptions: selectedModel.humanLikeOptions || {}
+        };
+      }
+      case "google": {
+        const googleai = createGoogleGenerativeAI({ apiKey });
+        return {
+          instance: googleai(baseModel.key),
+          model: baseModel,
+          isHumanLike: true,
+          humanLikeOptions: selectedModel.humanLikeOptions || {}
+        };
+      }
+      default:
+        throw new Error(`Unsupported base model provider: ${baseModel.provider}`);
+    }
+
+  }
+
+  // Handle regular models
   switch (selectedModel.provider) {
     case "openai": {
       const openai = createOpenAI({ apiKey });
