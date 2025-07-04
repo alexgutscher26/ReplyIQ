@@ -125,6 +125,18 @@ const TONE_ATTRIBUTES = [
   "Approachable",
 ];
 
+/**
+ * Main component for managing brand voices, including training, generating content,
+ * editing, and viewing analytics for each brand voice.
+ *
+ * This component manages state for various dialogs (create, train, generate,
+ * edit, analytics) and fetches all brand voices from the API. It provides
+ * functionality to filter brand voices based on search queries and handles
+ * operations like training, generating content, editing, deleting, and viewing
+ * analytics for each voice.
+ *
+ * @returns The JSX representation of the Brand Voice Training page.
+ */
 export default function BrandVoiceTrainingPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [trainingDialogOpen, setTrainingDialogOpen] = useState(false);
@@ -164,20 +176,32 @@ export default function BrandVoiceTrainingPage() {
     },
   });
 
+  /**
+   * Triggers a train mutation with the given ID.
+   */
   const handleTrain = (id: string) => {
     trainMutation.mutate({ brandVoiceId: id });
   };
 
+  /**
+   * Sets the selected voice and opens the generate dialog.
+   */
   const handleGenerate = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setGenerateDialogOpen(true);
   };
 
+  /**
+   * Handles the edit action by selecting a voice and opening the edit dialog.
+   */
   const handleEdit = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setEditDialogOpen(true);
   };
 
+  /**
+   * Confirms deletion of a brand voice and triggers the mutation to delete it.
+   */
   const handleDelete = (id: string) => {
     if (
       confirm(
@@ -188,11 +212,17 @@ export default function BrandVoiceTrainingPage() {
     }
   };
 
+  /**
+   * Handles setting the selected voice and opening the analytics dialog.
+   */
   const handleViewAnalytics = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setAnalyticsDialogOpen(true);
   };
 
+  /**
+   * Handles adding training data by setting the selected voice and opening the training dialog.
+   */
   const handleAddTrainingData = (voice: BrandVoice) => {
     setSelectedVoice(voice);
     setTrainingDialogOpen(true);
@@ -200,9 +230,8 @@ export default function BrandVoiceTrainingPage() {
 
   /**
    * Filters brand voices by search query (name or industry).
-   * @param brandVoices Array of brand voices
-   * @param search Search string
-   * @returns Filtered array
+   * @param brandVoices - Array of brand voices.
+   * @param search - Search string.
    */
   function filterBrandVoices(
     brandVoices: BrandVoice[],
@@ -479,6 +508,22 @@ export default function BrandVoiceTrainingPage() {
   );
 }
 
+/**
+ * Renders a card representing a brand voice with various interactive options.
+ *
+ * This component displays details about a brand voice, including its status,
+ * training progress, tone attributes, and actions such as editing, deleting,
+ * or generating content based on the voice's state.
+ *
+ * @param {Object} props - The properties for the BrandVoiceCard component.
+ * @param {BrandVoice} props.voice - The brand voice data to display.
+ * @param {Function} props.onTrain - Callback function when training a voice.
+ * @param {Function} props.onGenerate - Callback function when generating content with the voice.
+ * @param {Function} props.onEdit - Callback function when editing the voice.
+ * @param {Function} props.onDelete - Callback function when deleting the voice.
+ * @param {Function} props.onViewAnalytics - Callback function to view analytics for the voice.
+ * @param {Function} props.onAddTrainingData - Callback function to add training data to the voice.
+ */
 function BrandVoiceCard({
   voice,
   onTrain,
@@ -497,6 +542,16 @@ function BrandVoiceCard({
   onAddTrainingData: (voice: BrandVoice) => void;
 }) {
   // Status dot color
+  /**
+   * Determines and returns a status dot component based on the given status.
+   *
+   * This function assigns a background color to an inline-block span element
+   * representing a status dot, using conditional logic to match the input status
+   * with predefined color codes. The span also includes a title attribute that
+   * defaults to "draft" if no status is provided.
+   *
+   * @param {string | null} status - The current status for which the dot is rendered.
+   */
   const statusDot = (status: string | null) => {
     let color = "bg-gray-400";
     if (status === "trained") color = "bg-green-500";
@@ -822,6 +877,13 @@ function CreateBrandVoiceDialog({
   );
 }
 
+/**
+ * Displays a dialog for adding training data related to a brand voice.
+ *
+ * The component uses React Hook Form for form handling and manages state using Zustand.
+ * It fetches content type options from the API and allows users to submit training data.
+ * Upon successful submission, it displays a success toast and resets the form.
+ */
 function TrainingDataDialog({
   voice,
   open,
@@ -858,6 +920,9 @@ function TrainingDataDialog({
     },
   });
 
+  /**
+   * Submits form data with additional branding information.
+   */
   const onSubmit = (data: AddTrainingDataForm) => {
     addDataMutation.mutate({
       ...data,
@@ -988,6 +1053,19 @@ function TrainingDataDialog({
   );
 }
 
+/**
+ * Generates a content dialog component for creating content using a specified brand voice.
+ *
+ * This function handles form submission, validation, and communication with API endpoints to generate content.
+ * It includes type guards for handling different response formats from the server and provides functionality
+ * to copy generated content. The component also manages UI states such as open/close status, error messages,
+ * and result display.
+ *
+ * @param voice - An object containing details about the brand voice.
+ * @param open - A boolean indicating whether the dialog is currently open.
+ * @param onOpenChange - A function to handle changes in the dialog's open state.
+ * @returns The React component rendering the content generation dialog.
+ */
 function GenerateContentDialog({
   voice,
   open,
@@ -1014,6 +1092,16 @@ function GenerateContentDialog({
   const [copied, setCopied] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Handles form submission for generating content.
+   *
+   * This function processes the form data, initiates a mutation to generate content,
+   * and handles the response by determining the correct property containing the generated content.
+   * It sets the result or error state accordingly and scrolls to the result section smoothly.
+   * Additionally, it cleans up any ongoing animations on component unmount.
+   *
+   * @param data - The form data used for generating content.
+   */
   const onSubmit = async (data: GenerateContentForm) => {
     setResult("");
     setError(null);
@@ -1023,6 +1111,14 @@ function GenerateContentDialog({
       const res = await generateMutation.mutateAsync(data);
 
       // Type guard functions with proper type narrowing
+      /**
+       * Checks if the given object has a 'content' property that is a string.
+       *
+       * This function verifies if the provided object is defined, an instance of Object,
+       * not null, and contains a 'content' property whose value is a string.
+       *
+       * @param obj - The unknown object to be checked for content property.
+       */
       const hasContent = (obj: unknown): obj is { content: string } => {
         return Boolean(
           obj &&
@@ -1033,6 +1129,16 @@ function GenerateContentDialog({
         );
       };
 
+      /**
+       * Checks if the provided object has a 'text' property that is a string.
+       *
+       * This function first verifies if the input is an object and not null.
+       * It then checks if the object contains a 'text' property and ensures that
+       * this property is of type string. The function returns true if all these
+       * conditions are met, otherwise false.
+       *
+       * @param obj - The unknown object to be checked for the presence of a string 'text' property.
+       */
       const hasText = (obj: unknown): obj is { text: string } => {
         return Boolean(
           obj &&
@@ -1043,6 +1149,13 @@ function GenerateContentDialog({
         );
       };
 
+      /**
+       * Checks if an object has a 'generatedContent' property that is a string.
+       *
+       * This function verifies if the provided object is not null, is of type 'object',
+       * and contains a 'generatedContent' property which is specifically a string.
+       * It uses TypeScript's type guard syntax to assert the type if the conditions are met.
+       */
       const hasGeneratedContent = (
         obj: unknown,
       ): obj is { generatedContent: string } => {
@@ -1070,6 +1183,9 @@ function GenerateContentDialog({
       setResult(content);
 
       // Use requestAnimationFrame for smoother scrolling
+      /**
+       * Scrolls to the element referenced by `resultRef` smoothly if it exists.
+       */
       const scrollToResult = () => {
         if (resultRef.current) {
           resultRef.current.scrollIntoView({ behavior: "smooth" });
@@ -1098,6 +1214,9 @@ function GenerateContentDialog({
     }
   };
 
+  /**
+   * Copies text to clipboard and toggles copied state.
+   */
   const handleCopy = async () => {
     if (result) {
       await navigator.clipboard.writeText(result);
