@@ -1,0 +1,18 @@
+# Default owners for everything in the repo
+* @your-github-username @another-owner
+
+# Specific owners for certain directories
+/src @frontend-team
+/extension @extension-team
+
+# Documentation owners
+docs/ @docs-team
+README.md @docs-team
+
+# Configuration files
+package.json @devops-team
+bun.lock @devops-team
+*.config.* @devops-team
+
+# GitHub workflows
+.github/ @devops-team
