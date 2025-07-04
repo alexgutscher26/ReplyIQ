@@ -45,6 +45,16 @@ interface StoryResponse {
   fullContent: string;
 }
 
+/**
+ * StoryGeneratorPage component for generating social media stories.
+ *
+ * This component manages user inputs and interactions to generate stories based on specified parameters such as topic, platform,
+ * story type, number of stories, tone, target audience, and visual suggestions. It handles state management using React hooks,
+ * makes API calls to fetch generated stories, and provides functionality to copy individual or all stories to the clipboard.
+ *
+ * The component renders a form for user inputs and displays the generated stories with options to copy each story or all stories
+ * at once. It also includes error handling and loading states to enhance user experience.
+ */
 export default function StoryGeneratorPage() {
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState<"instagram" | "facebook" | "both">("instagram");
@@ -60,6 +70,23 @@ export default function StoryGeneratorPage() {
   const [previewStory, setPreviewStory] = useState<Story | null>(null);
   const [savedStories, setSavedStories] = useState<Story[]>([]);
 
+  /**
+   * Handles the generation of stories based on provided parameters.
+   *
+   * This function sets loading state to true and clears any previous errors or stories.
+   * It then sends a POST request to the `/api/ai/stories` endpoint with the specified parameters.
+   * If the response is successful and contains valid story data, it updates the stories state.
+   * If there's an error in the response or network failure, it sets an appropriate error message.
+   * Finally, it resets the loading state regardless of the outcome.
+   *
+   * @param topic - The topic for which stories are to be generated.
+   * @param platform - The platform where the stories will be published.
+   * @param storyType - The type of stories to generate.
+   * @param storyCount - The number of stories to generate.
+   * @param tone - The desired tone of the stories.
+   * @param targetAudience - The target audience for the stories.
+   * @param includeVisualSuggestions - Whether to include visual suggestions in the stories.
+   */
   const handleGenerate = async () => {
     setLoading(true);
     setError(null);
@@ -99,6 +126,9 @@ export default function StoryGeneratorPage() {
     }
   };
 
+  /**
+   * Copies the given content to the clipboard and sets a copied index with a timeout.
+   */
   const copyToClipboard = async (content: string, index: number) => {
     try {
       await navigator.clipboard.writeText(content);
@@ -109,6 +139,9 @@ export default function StoryGeneratorPage() {
     }
   };
 
+  /**
+   * Copies all stories as formatted text to the clipboard.
+   */
   const copyAllStories = async () => {
     try {
       const allStoriesText = stories.map((story, index) => 
@@ -123,6 +156,9 @@ export default function StoryGeneratorPage() {
     }
   };
 
+  /**
+   * Retrieves the display name for a given story type.
+   */
   const getStoryTypeDisplay = (type: string) => {
     const types = {
       'promotional': 'Promotional',
@@ -136,6 +172,17 @@ export default function StoryGeneratorPage() {
     return types[type as keyof typeof types] || type;
   };
 
+  /**
+   * Determines and returns an icon component based on the specified platform.
+   *
+   * This function uses a switch statement to match the input platform string to one of several predefined cases:
+   * - 'instagram': Returns an Instagram icon with a specific size and class.
+   * - 'facebook': Returns a custom styled div representing the Facebook icon, including background color, text alignment, and size.
+   * - 'both': Combines Instagram and Facebook icons within a flex container.
+   * For any other platform, it defaults to returning the Instagram icon.
+   *
+   * @param platform - The string identifier for the platform whose icon is to be returned.
+   */
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case 'instagram':

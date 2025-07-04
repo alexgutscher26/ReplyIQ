@@ -14,6 +14,18 @@ const storySchema = z.object({
   targetAudience: z.enum(['general', 'young-adults', 'professionals', 'parents', 'entrepreneurs']).default('general'),
 });
 
+/**
+ * Handles a POST request to generate stories based on provided parameters.
+ *
+ * This function processes the incoming request, validates the input using a schema,
+ * fetches AI settings from the database, and generates stories based on the specified
+ * platform, story type, tone, and other parameters. It constructs a detailed prompt for
+ * the AI model and parses the response to extract individual stories. The function
+ * also handles errors gracefully and returns appropriate JSON responses.
+ *
+ * @param req - The Next.js request object containing the story generation parameters.
+ * @returns A JSON response containing the generated stories or an error message.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body: unknown = await req.json();
