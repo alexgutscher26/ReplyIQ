@@ -561,6 +561,9 @@ export class PayPalPaymentProvider implements PaymentProvider {
     };
   }
 
+  /**
+   * Throws an error indicating that the method is not implemented.
+   */
   manageBillingPortal(customerId: string): Promise<{ url: string }> {
     throw new Error(`Method not implemented. ${customerId}`);
   }

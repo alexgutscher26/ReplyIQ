@@ -46,18 +46,47 @@ interface TotalUsageProps {
 }
 
 // Utility functions moved outside component to prevent recreation
+/**
+ * Formats a number into a string with units (M for millions, K for thousands).
+ *
+ * This function checks the magnitude of the input number and formats it accordingly:
+ * - If the number is 1 million or greater, it converts the number to millions with one decimal place and appends 'M'.
+ * - If the number is 1 thousand or greater, it converts the number to thousands with one decimal place and appends 'K'.
+ * - Otherwise, it uses the `toLocaleString` method to format the number as a local string.
+ *
+ * @param num - The number to be formatted.
+ */
 const formatNumber = (num: number): string => {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
   return num.toLocaleString();
 };
 
+/**
+ * Determines the trend icon based on a change value.
+ *
+ * This function evaluates the provided change value and returns an appropriate
+ * trend icon. If the change exceeds the minimal change threshold, it returns
+ * `TrendingUp`. If the change is below the negative of the minimal change
+ * threshold, it returns `TrendingDown`. Otherwise, it defaults to returning `Minus`.
+ *
+ * @param change - The numerical value representing the change.
+ */
 const getTrendIcon = (change: number) => {
   if (change > MINIMAL_CHANGE_THRESHOLD) return TrendingUp;
   if (change < -MINIMAL_CHANGE_THRESHOLD) return TrendingDown;
   return Minus;
 };
 
+/**
+ * Determines the trend color based on a change value.
+ *
+ * This function checks if the change is greater than or less than the minimal change threshold.
+ * If the change exceeds the positive threshold, it returns a green text class; if it's below the negative threshold,
+ * it returns a red text class. Otherwise, it defaults to a muted foreground color.
+ *
+ * @param change - The numerical value representing the change in trend.
+ */
 const getTrendColor = (change: number): string => {
   if (change > MINIMAL_CHANGE_THRESHOLD)
     return "text-green-600 dark:text-green-400";
@@ -66,6 +95,16 @@ const getTrendColor = (change: number): string => {
   return "text-muted-foreground";
 };
 
+/**
+ * Determines the background color based on a change value.
+ *
+ * This function evaluates the `change` parameter against predefined thresholds
+ * to determine the appropriate background color. If the change is above the
+ * positive threshold, it returns a green background. If the change is below
+ * the negative threshold, it returns a red background. Otherwise, it returns a muted background.
+ *
+ * @param change - The numerical value representing the change in some metric or data point.
+ */
 const getTrendBg = (change: number): string => {
   if (change > MINIMAL_CHANGE_THRESHOLD)
     return "bg-green-50 dark:bg-green-950/20";
@@ -73,6 +112,9 @@ const getTrendBg = (change: number): string => {
   return "bg-muted/50";
 };
 
+/**
+ * Determines growth label based on change value.
+ */
 const getGrowthLabel = (change: number): string => {
   if (Math.abs(change) < MINIMAL_CHANGE_THRESHOLD) return "Stable";
   return change > 0 ? "Growing" : "Declining";
