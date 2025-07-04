@@ -62,6 +62,9 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   }
   
   // Implement the required doGenerate method
+  /**
+   * Generates a response using the specified options and applies human-like transformations to the result text if it exists.
+   */
   async doGenerate(
     options: LanguageModelV1CallOptions & {
       inputFormat: 'prompt' | 'messages';
@@ -89,6 +92,9 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   }
   
   // Implement the required doStream method
+  /**
+   * Streams a response from the wrapped model with specified options and temperature settings.
+   */
   async doStream(
     options: LanguageModelV1CallOptions & {
       inputFormat: 'prompt' | 'messages';
@@ -113,6 +119,13 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   }
   
   // Helper method to apply human-like transformations
+  /**
+   * Applies human-like transformations to the input text based on specified options.
+   *
+   * This function modifies the input text by adding filler words, grammatical variations,
+   * and pauses to simulate natural human speech patterns. The transformations are applied
+   * conditionally based on the `options` object provided during initialization.
+   */
   private applyHumanLikeTransformations(text: string): string {
     let result = text;
     
@@ -212,8 +225,7 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   }
 
   /**
-   * Generates text based on the given prompt and options
-   * This is a convenience method that wraps doGenerate for simpler use cases
+   * Generates text based on a prompt and optional settings.
    */
   async generateText(
     prompt: string, 
