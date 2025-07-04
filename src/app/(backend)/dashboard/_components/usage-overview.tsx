@@ -82,6 +82,9 @@ const TIME_RANGES = [
 const PLATFORMS = Object.keys(chartConfig) as Array<keyof typeof chartConfig>;
 
 // Utility function to format dates consistently
+/**
+ * Formats a date string according to specified options.
+ */
 const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions) => {
   try {
     return new Date(dateString).toLocaleDateString("en-US", options);
@@ -91,6 +94,18 @@ const formatDate = (dateString: string, options: Intl.DateTimeFormatOptions) => 
 };
 
 // Enhanced CSV export with better formatting and error handling
+/**
+ * Exports usage data to a CSV file based on provided entries, platforms, and time range.
+ *
+ * This function constructs a CSV file with headers dynamically generated from the list of platforms,
+ * maps each usage entry to a row in the CSV, and triggers a download of the file. It handles formatting
+ * dates and ensuring that missing data is represented as zeros. Errors during the export process are logged
+ * to the console.
+ *
+ * @param data - An array of UsageEntry objects containing the usage data.
+ * @param platforms - An array of strings representing the platforms to include in the CSV.
+ * @param timeRange - A string indicating the time range for which the data is exported.
+ */
 const exportToCSV = (data: UsageEntry[], platforms: string[], timeRange: string) => {
   try {
     const header = ["Date", ...platforms.map(p => chartConfig[p as keyof typeof chartConfig]?.label || p)];
@@ -117,6 +132,9 @@ const exportToCSV = (data: UsageEntry[], platforms: string[], timeRange: string)
 };
 
 // Platform toggle button component
+/**
+ * A button component to toggle platform selection with visual and interactive feedback.
+ */
 const PlatformToggle = ({ 
   platform, 
   isSelected, 
@@ -161,6 +179,16 @@ type DailyStats = {
   youtube?: number;
 };
 
+/**
+ * Renders a usage overview dashboard component.
+ *
+ * This component fetches daily statistics data and displays it in a chart format.
+ * It includes functionality to filter platforms, change time ranges, and export data as CSV.
+ * The component handles loading states, error states, and no data scenarios.
+ *
+ * @param isSiteWide - A boolean indicating whether the statistics are site-wide or personal.
+ * @param className - Additional CSS classes to apply to the card container.
+ */
 export function UsageOverview({ isSiteWide = false, className = "" }: UsageOverviewProps) {
   const [timeRange, setTimeRange] = useState<string>("30");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(PLATFORMS);
