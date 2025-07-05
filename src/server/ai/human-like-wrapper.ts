@@ -93,7 +93,7 @@ export class HumanLikeModelWrapper implements LanguageModelV1 {
   
   // Implement the required doStream method
   /**
-   * Streams the response from the wrapped model with specified options.
+   * Streams the response from the wrapped model with specified options and additional settings.
    */
   async doStream(
     options: LanguageModelV1CallOptions & {
