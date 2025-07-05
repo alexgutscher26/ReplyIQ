@@ -9,13 +9,13 @@ dotenv.config();
 /**
  * Main function to demonstrate and compare responses from a standard model and a human-like model.
  *
- * The function performs the following steps:
- * 1. Checks if the OPENAI_API_KEY environment variable is set and exits with an error if not.
- * 2. Initializes the OpenAI client with the provided API key and creates a base model using 'gpt-4o-mini'.
+ * This function performs several key steps:
+ * 1. Verifies that the OPENAI_API_KEY environment variable is set, exiting with an error if not.
+ * 2. Initializes the OpenAI client using the provided API key and sets up a base model with 'gpt-4o-mini'.
  * 3. Wraps the base model in a human-like wrapper to simulate more natural responses.
  * 4. Generates a short story prompt and retrieves responses from both the standard model and the human-like model.
  * 5. Logs and compares the lengths of the two responses.
- * 6. Checks for specific human-like features (filler words and pauses) in the human-like model's response.
+ * 6. Checks for specific human-like features, such as filler words and pauses, in the human-like model's response.
  */
 async function main() {
   // Check for API key
