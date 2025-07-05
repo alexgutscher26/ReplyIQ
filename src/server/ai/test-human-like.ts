@@ -14,8 +14,8 @@ const TEST_PROMPT = 'Tell me a short story about a robot learning to be human';
 /**
  * Tests a human-like model wrapper for a given provider and model key.
  *
- * This function creates an instance of the base model based on the provider,
- * initializes a human-like model wrapper with specific configurations, generates text using the wrapper,
+ * This function initializes a base model based on the specified provider,
+ * creates a human-like model wrapper with predefined configurations, generates text using the wrapper,
  * and analyzes the response for human-like features such as filler words and natural pauses.
  *
  * @param {Object} params - The configuration parameters for testing the human-like model.
