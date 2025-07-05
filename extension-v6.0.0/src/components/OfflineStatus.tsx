@@ -9,7 +9,8 @@ interface OfflineStatusProps {
 export function OfflineAlert() {
   const isOnline = useOnlineStatus()
 
-  if (isOnline) return null
+  if (isOnline)
+    return null
 
   return (
     <div className="flex items-center gap-2 p-3 mb-4 text-sm rounded-md bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
@@ -40,7 +41,8 @@ export function OfflineStatus({ className = '' }: OfflineStatusProps) {
       }, 5000)
 
       return () => clearTimeout(timer)
-    } else if (wasOffline) {
+    }
+    else if (wasOffline) {
       // Show reconnected message briefly
       setShowOfflineBanner(true)
 
@@ -53,7 +55,8 @@ export function OfflineStatus({ className = '' }: OfflineStatusProps) {
     }
   }, [isOnline, wasOffline])
 
-  if (!showOfflineBanner) return null
+  if (!showOfflineBanner)
+    return null
 
   return (
     <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
@@ -64,17 +67,19 @@ export function OfflineStatus({ className = '' }: OfflineStatusProps) {
             : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200'
         }`}
       >
-        {isOnline ? (
-          <>
-            <Wifi className="w-4 h-4" />
-            <span>Back online. Syncing data...</span>
-          </>
-        ) : (
-          <>
-            <WifiOff className="w-4 h-4" />
-            <span>You're offline. Some features may be limited.</span>
-          </>
-        )}
+        {isOnline
+          ? (
+              <>
+                <Wifi className="w-4 h-4" />
+                <span>Back online. Syncing data...</span>
+              </>
+            )
+          : (
+              <>
+                <WifiOff className="w-4 h-4" />
+                <span>You're offline. Some features may be limited.</span>
+              </>
+            )}
       </div>
     </div>
   )
